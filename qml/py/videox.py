@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# POETASTER
+import sys
+sys.path.append('/usr/share/harbour-clipper/lib/')
+
 import pyotherside
 import time
 import os
@@ -17,11 +21,6 @@ from typing import Iterator
 # global variables
 currentFunctionErrorName = ""
 success = "false"
-
-
-
-
-
 
 # Functions for file operations
 # #######################################################################################
@@ -73,12 +72,12 @@ def renameOriginal ( inputPathPy, newFilePath, newFileName, newFileType ) :
 
 def getVideoInfo ( inputPathPy, isOriginal, thumbnailPath, thumbnailSec ):
     if "true" in isOriginal:
-        videoRotation = subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream_tags=rotate", "-of", "default=noprint_wrappers=1:nokey=1", "/"+inputPathPy ])
+        videoRotation = subprocess.check_output(["ffmpeg", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream_tags=rotate", "-of", "default=noprint_wrappers=1:nokey=1", "/"+inputPathPy ])
     else:
         videoRotation = 0
-    videoResolution = subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "stream=width,height", "-of", "csv=p=0:s=x", "/"+inputPathPy ])
-    playbackDuration = subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0:s=x", "/"+inputPathPy ])
-    videoInfos = ( subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=codec_name,sample_aspect_ratio,display_aspect_ratio,pix_fmt,avg_frame_rate", "-of", "default=noprint_wrappers=1:nokey=1", "/"+inputPathPy ]) ).splitlines()
+    videoResolution = subprocess.check_output(["ffmpeg", "-v", "error", "-show_entries", "stream=width,height", "-of", "csv=p=0:s=x", "/"+inputPathPy ])
+    playbackDuration = subprocess.check_output(["ffmpeg", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0:s=x", "/"+inputPathPy ])
+    videoInfos = ( subprocess.check_output(["ffmpeg", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=codec_name,sample_aspect_ratio,display_aspect_ratio,pix_fmt,avg_frame_rate", "-of", "default=noprint_wrappers=1:nokey=1", "/"+inputPathPy ]) ).splitlines()
     videoCodec = videoInfos[0]
     sampleAspectRatio = videoInfos[1]
     displayAspectRatio = videoInfos[2]

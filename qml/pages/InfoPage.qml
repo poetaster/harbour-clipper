@@ -63,23 +63,7 @@ Page {
                 wrapMode: Text.Wrap
                 font.pixelSize: Theme.fontSizeExtraSmall
                 text: qsTr("CONTACT") + "\n"
-                    + qsTr("Development version. Like to send some greetings, report a bug or request a feature? Feel free to contact me here:") + " "
-                    + "tobias.planitzer@protonmail.com" + ". " + "If you enjoy this app and even descide to support further development, you may sponsor some coffee here." // + "\n"
-            }
-
-            Label {
-                x: Theme.paddingLarge
-                width: parent.width - 2 * Theme.paddingLarge
-                wrapMode: Text.Wrap
-                font.pixelSize: Theme.fontSizeExtraSmall
-                color: Theme.highlightColor
-                text: "PAYPAL.ME/TPLANITZER" + "\n" + "\n"
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        Qt.openUrlExternally("https://paypal.me/tplanitzer")
-                    }
-                }
+                    + qsTr("Development version. Bugs and inspiration: https://github.com/poetaster/harbour-clipper ")
             }
 
             Label {

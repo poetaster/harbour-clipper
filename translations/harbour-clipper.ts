@@ -1323,10 +1323,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Development version. Like to send some greetings, report a bug or request a feature? Feel free to contact me here:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Play, press =&gt; play / pause</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1344,6 +1340,10 @@
     </message>
     <message>
         <source>Clip editor for SailfishOS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Development version. Bugs and inspiration: https://github.com/poetaster/harbour-clipper </source>
         <translation type="unfinished"></translation>
     </message>
 </context>

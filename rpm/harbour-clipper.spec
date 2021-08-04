@@ -6,14 +6,16 @@
 Name:       harbour-clipper
 
 # >> macros
+%define __provides_exclude_from ^%{_datadir}/%{name}/lib/.*\\.so\\>
+%define __requires_exclude_from ^%{_datadir}/%{name}/lib/.*\\.so\\>
 # << macros
 
 Summary:    Videoworks
 Version:    0.3.5
-Release:    0
+Release:    1
 Group:      Qt/Qt
-License:    MIT
-URL:        http://example.org/
+License:    GPLv3
+URL:        https://github.com/poetater/harbour-clipper
 Source0:    %{name}-%{version}.tar.bz2
 Source100:  harbour-clipper.yaml
 Requires:   sailfishsilica-qt5 >= 0.10.9
@@ -22,10 +24,11 @@ BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Quick)
+BuildRequires:  pkgconfig(Qt5Multimedia)
 BuildRequires:  desktop-file-utils
 
 %description
-Short description of my Sailfish OS Application
+Videoworks is a video editing application. In beta.
 
 
 %prep

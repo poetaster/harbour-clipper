@@ -21,6 +21,20 @@ SOURCES += src/harbour-clipper.cpp \
     src/audio-recorder.cpp
 
 DISTFILES += qml/harbour-clipper.qml \
+    lib/frei0r/arm64/colgate.so \
+    lib/frei0r/arm64/glitch0r.so \
+    lib/frei0r/arm64/glow.so \
+    lib/frei0r/arm64/lenscorrection.so \
+    lib/frei0r/arm64/pixeliz0r.so \
+    lib/frei0r/arm64/posterize.so \
+    lib/frei0r/arm64/vertigo.so \
+    lib/frei0r/x86_32/colgate.so \
+    lib/frei0r/x86_32/glitch0r.so \
+    lib/frei0r/x86_32/glow.so \
+    lib/frei0r/x86_32/lenscorrection.so \
+    lib/frei0r/x86_32/pixeliz0r.so \
+    lib/frei0r/x86_32/posterize.so \
+    lib/frei0r/x86_32/vertigo.so \
     qml/cover/CoverPage.qml \
     qml/pages/FirstPage.qml \
     qml/pages/InfoPage.qml \
@@ -29,7 +43,6 @@ DISTFILES += qml/harbour-clipper.qml \
     rpm/harbour-clipper.changes.in \
     rpm/harbour-clipper.changes.run.in \
     rpm/harbour-clipper.spec \
-    rpm/harbour-clipper.yaml \
     translations/*.ts \
     harbour-clipper.desktop
 
@@ -50,17 +63,17 @@ HEADERS += \
 
 # include precompiled static library according to architecture (arm, i486_32bit, arm64)
 equals(QT_ARCH, arm): {
-  ffmpeg_static.files = lib/ffmpeg/arm32/*
+#  ffmpeg_static.files = lib/ffmpeg/arm32/*
   frei0r_plugins.files = lib/frei0r/arm32/*
   message("!!!architecture armv7hl detected!!!");
 }
 equals(QT_ARCH, arm64): {
-  ffmpeg_static.files = lib/ffmpeg/arm64/*
+#  ffmpeg_static.files = lib/ffmpeg/arm64/*
   frei0r_plugins.files = lib/frei0r/arm64/*
   message("!!!architecture arm64 detected!!!");
 }
 equals(QT_ARCH, i386): {
-  ffmpeg_static.files = lib/ffmpeg/x86_32/*
+#  ffmpeg_static.files = lib/ffmpeg/x86_32/*
   frei0r_plugins.files = lib/frei0r/x86_32/*
   message("!!!architecture x86 / 32bit detected!!!");
 }
@@ -68,8 +81,8 @@ equals(QT_ARCH, i386): {
     #message("!!!architecture x86 / 64bit detected!!!");
 #}
 
-ffmpeg_static.path = /usr/share/harbour-clipper/lib/ffmpeg
-frei0r_plugins.path = /usr/lib/frei0r-1/
+#ffmpeg_static.path = /usr/share/harbour-clipper/lib/ffmpeg
+frei0r_plugins.path = /usr/share/harbour-clipper/lib
 
-INSTALLS += ffmpeg_static frei0r_plugins
+INSTALLS += frei0r_plugins
 
