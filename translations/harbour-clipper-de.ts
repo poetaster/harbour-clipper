@@ -2,6 +2,33 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
+    <name>AboutPage</name>
+    <message>
+        <source>About Videoworks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>A Video Editor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copyright © 2020 Tobias Planitzer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> © 2021 Mark Washeim</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Videoworks is open source software licensed under the terms of </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the GNU General Public License v3.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>FirstPage</name>
     <message>
         <source>Select video</source>

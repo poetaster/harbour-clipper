@@ -11,13 +11,12 @@ Name:       harbour-clipper
 # << macros
 
 Summary:    Videoworks
-Version:    0.3.5
+Version:    0.3.6
 Release:    1
 Group:      Qt/Qt
 License:    GPLv3
 URL:        https://github.com/poetater/harbour-clipper
 Source0:    %{name}-%{version}.tar.bz2
-Source100:  harbour-clipper.yaml
 Requires:   sailfishsilica-qt5 >= 0.10.9
 Requires:   pyotherside-qml-plugin-python3-qt5
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
