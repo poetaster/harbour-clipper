@@ -88,6 +88,5 @@ desktop-file-install --delete-original       \
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
-#%{_libdir}/frei0r-1
 # >> files
 # << files

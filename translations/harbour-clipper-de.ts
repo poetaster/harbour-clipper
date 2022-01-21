@@ -631,10 +631,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>share</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>CURRENT FILE</source>
         <translation type="unfinished"></translation>
     </message>
