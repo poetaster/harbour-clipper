@@ -11,3 +11,7 @@ Name=Videoworks
 # a different app name in German locale (de).
 # Name[de]=Videoworks
 #Name[de_DE]=harbour-clipper.desktop
+[X-Sailjail]
+OrganizationName=de.poetaster
+ApplicationName=harbour-clipper
+Permissions=Internet;MediaIndexing;RemovableMedia;UserDirs;Microphone
