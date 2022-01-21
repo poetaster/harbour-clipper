@@ -19,53 +19,56 @@ Page {
     }
 
     // file and folder variables
+    property bool debug: true
     property string origMediaFilePath
     property string origMediaFileName : "none"
     property string origMediaFolderPath
     property string origMediaName
     property string origMediaType : "none"
-    property int origVideoWidth : 0
-    property int origVideoHeight : 0
-    property string origCodecVideo : "none"
-    property string origCodecAudio : "none"
-    property int origFrameRate : 0
-    property string origPixelFormat : "none"
+    property var origVideoWidth : 0
+    property var origVideoHeight : 0
+    property var origCodecVideo : "none"
+    property var origCodecAudio : "none"
+    property var origFrameRate : 0
+    property var origPixelFormat : "none"
     property var origAudioSamplerate : 0
-    property string origAudioLayout : "none"
-    property int origFileSize : 0
-    property int origVideoRotation : 0
+    property var origAudioLayout : "none"
+    property var origFileSize : 0
+    property var origVideoRotation : 0
     property var origVideoDuration : "00:00:00"
     property var origSAR : "0:0"
     property var origDAR : "0:0"
     property string homeDirectory
-    property string tempMediaFolderPath
+    property string tempMediaFolderPath: StandardPaths.home + '/.cache/de.poetaster/harbour-clipper'
+    //property string tempMediaFolderPath: '/home/defaultuser/.cache/de.poetaster/harbour-clipper'
     property string tempMediaType : "mkv"
-    //property string ffmpeg_staticPath : "/usr" + "/share" + "/harbour-clipper" + "/lib" + /ffmpeg/ + "ffmpeg_static" // -> needed since SF included version does not provide some codecs and filters
+    //property string ffmpeg_staticPath : "//usr" + "/share" + "/harbour-clipper" + "/lib" + /ffmpeg/ + "./ffmpeg_static" // -> needed since SF included version does not provide some codecs and filters
     property string ffmpeg_staticPath : "/usr/bin/ffmpeg"
     property string overlaysFolder : "/usr" + "/share" + "/harbour-clipper" + "/qml" + "/overlays/"
     property string filterFolder : "/usr" + "/share" + "/harbour-clipper" + "/qml" + "/filters/"
     property string outputPathPy
     property string inputPathPy : decodeURIComponent( "/" + idMediaPlayer.source.toString().replace(/^(file:\/{3})|(qrc:\/{2})|(http:\/{2})/,"") )
-    property string saveMediaFolderPath : StandardPaths.videos
+    property string saveMediaFolderPath // : "/home" + "/nemo" + "/Videos" + "/Clipper/"
+    //property string saveMediaFolderPath : StandardPaths.home + '/Videos'
     property string lastTmpMedia2delete
-    property string thumbnailPath : tempMediaFolderPath + "thumbnail.png"
-    property string overlayThumbnailPath : tempMediaFolderPath + "thumbnail_overlay.png"
+    property var thumbnailPath : tempMediaFolderPath + "thumbnail.png"
+    property var overlayThumbnailPath : tempMediaFolderPath + "thumbnail_overlay.png"
     property bool thumbnailVisible : false
     property var tmpVideoFileSize : 0
     property var openingArguments : Qt.application.arguments //[0]=app-path, [1]=file-path
     property bool brandNewFile : true
-    property string recordAudioPath : tempMediaFolderPath + "recordedAudio.wav" // pulse recorder can only produce wav
-    property string subtitleTempPath : tempMediaFolderPath + "subtitle.srt" // create manual subtitles here
+    property var recordAudioPath : tempMediaFolderPath + "recordedAudio.wav" // pulse recorder can only produce wav
+    property var subtitleTempPath : tempMediaFolderPath + "subtitle.srt" // create manual subtitles here
 
     // UI variables
-    property real warningLargeSize : 1920 // show warning on loading, this might take long to process
+    property var warningLargeSize : 1920 // show warning on loading, this might take long to process
     property int undoNr : 0
-    property bool finishedLoading : true
-    property bool clipboardAvailable : false
+    property var finishedLoading : true
+    property var clipboardAvailable : false
     property bool noFile : true
     property var plusMinusInfo : ""
-    property int itemsToolbar : 5
-    property int fontSizePreview : Theme.fontSizeExtraLarge
+    property var itemsToolbar : 5
+    property var fontSizePreview : Theme.fontSizeExtraLarge
     property bool trimAreaVisible : (idButtonCut.down && idButtonCutTrim.down) ? true : false
     property bool cropAreaVisible : ( (idButtonCut.down && idButtonCutCrop.down)
                                      || (idButtonImage.down && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) // blur
@@ -91,23 +94,23 @@ Page {
                                           || (idButtonCollage.down && ( idButtonCollageSubtitle.down === false || (idButtonCollageSubtitle.down === true && idComboBoxCollageSubtitleAdd.currentIndex === 0) ) )
                                           || idButtonFile.down
                                          ) ? true : false
-    property string lastToolsButtonPressed : "Cut"
+    property var lastToolsButtonPressed : "Cut"
     property var backColorTools : Theme.rgba(Theme.primaryColor, 0.1) // "transparent" // Theme.rgba(Theme.highlightDimmerColor, 0.5)
-    property int standardDetailItemHeight : 0
-    property int minTrimLength : 750 //ms -> can't find any i-frames at 500ms, so needs something to merge later
-    property int spacerLandscapeLowerToolRow : 0
-    property int processedPercent : 0
-    property int oldSlideshowHeight : 0
-    property int oldStorylineHeight : 0
-    property int oldSubtitleHeight : 0
+    property var standardDetailItemHeight : 0
+    property var minTrimLength : 750 //ms -> can't find any i-frames at 500ms, so needs something to merge later
+    property var spacerLandscapeLowerToolRow : 0
+    property var processedPercent : 0
+    property var oldSlideshowHeight : 0
+    property var oldStorylineHeight : 0
+    property var oldSubtitleHeight : 0
 
     // UI crop handles variables
     property bool delayShowCropMarkers : false
-    property real croppingRatio : 0
-    property real oldRatioCrop : 0
-    property string padRatioText : "1/1"
-    property real padRatio : 1
-    property real handleWidth : 2* Theme.paddingLarge
+    property var croppingRatio : 0
+    property var oldRatioCrop : 0
+    property var padRatioText : "1/1"
+    property var padRatio : 1
+    property var handleWidth : 2* Theme.paddingLarge
     property bool stretchOversizeActive : false // true
     property var oldPosX1
     property var oldPosY1
@@ -134,54 +137,54 @@ Page {
     property var cropWidth
     property var cropHeight
     property var scaleDisplayFactorCrop : ( origVideoRotation !== 90 && origVideoRotation !== -90 ) ? (sourceVideoWidth / idMediaPlayer.width) : ( sourceVideoHeight / idMediaPlayer.width )
-    property int startRecordingHandlePosX : 0
+    property var startRecordingHandlePosX : 0
 
     // add and overlay variables
-    property string addTextColor : "white"
-    property string addTextboxColor : "black"
-    property string addTextboxPlusFactor : 1.1
-    property string standardFont : Theme.fontFamily
+    property var addTextColor : "white"
+    property var addTextboxColor : "black"
+    property var addTextboxPlusFactor : 1.1
+    property var standardFont : Theme.fontFamily
     property var customFontFilePath
     property var customFontName
     property bool fontFileLoaded : false
     property var drawRectangleColor : "black"
     property var drawRectangleThickness
-    property real baseFrameThickness : Theme.paddingSmall
+    property var baseFrameThickness : Theme.paddingSmall
     property var colorToAlpha : "black"
 
     // media variables
-    property int fromPosMillisecond : 0
-    property int toPosMillisecond : 0
+    property var fromPosMillisecond : 0
+    property var toPosMillisecond : 0
     property var fromTimestampPy : new Date(fromPosMillisecond).toISOString().substr(11,12)
     property var toTimestampPy : new Date(toPosMillisecond).toISOString().substr(11,12)
 
-    property int sourceVideoWidth : 0
-    property int sourceVideoHeight : 0
+    property var sourceVideoWidth : 0
+    property var sourceVideoHeight : 0
     property var sourceSampleAspectRatio : "1:1"
     property var sourceDisplayAspectRatio : "0:0"
     property var origVideoRatio : (sourceVideoWidth / sourceVideoHeight)
 
-    property string cubeFilePath : ""
+    property var cubeFilePath : ""
     property var cubeFileName
     property var cubeFileNamePure
     property bool cubeFileLoaded : false
 
-    property string overlayFilePath : ""
+    property var overlayFilePath : ""
     property var overlayFileName
     property var overlayFileNamePure
     property bool overlayFileLoaded : false
 
-    property string addFilePath : ""
+    property var addFilePath : ""
     property var addFileName
     property var addFileNamePure
     property bool addFileLoaded : false
 
-    property string addAudioPath : ""
+    property var addAudioPath : ""
     property var addAudioName
     property var addAudioNamePure
     property bool addAudioLoaded : false
 
-    property string addSubtitlePath : ""
+    property var addSubtitlePath : ""
     property var addSubtitleName
     property var addSubtitleNamePure
     property bool addSubtitleLoaded : false
@@ -190,14 +193,14 @@ Page {
     property var recordingOverlayStart : 0
 
     // overlayPreviewVariables
-    property int previewImageWidth : idPreviewOverlayImage.sourceSize.width
-    property int previewImageHeight : idPreviewOverlayImage.sourceSize.height
+    property var previewImageWidth : idPreviewOverlayImage.sourceSize.width
+    property var previewImageHeight : idPreviewOverlayImage.sourceSize.height
     property var previewRatioFileImage : previewImageWidth / previewImageHeight
-    property int previewVideoWidth : 1
-    property int previewVideoHeight : 1
+    property var previewVideoWidth : 1
+    property var previewVideoHeight : 1
     property var previewRatioFileVideo: previewVideoWidth / previewVideoHeight
     property var previewAlphaType
-    property int filePreviewDuration : 0
+    property var filePreviewDuration : 0
     property var resultingFilePreviewWidth : (page.width - 2*(Theme.paddingLarge + addThemeSliderPaddingSides )) / idMediaPlayer.duration * filePreviewDuration
 
     // collage variables
@@ -223,8 +226,9 @@ Page {
     property bool showHintSavingSubtitles : false
 
     // Patch: when Theme changes: adjust slider markings, since slider has different width on
-    property color mainColor : Theme.primaryColor
-    property int addThemeSliderPaddingSides : 0
+    property var mainColor : Theme.primaryColor
+    property var addThemeSliderPaddingSides : 0
+
     onMainColorChanged: {
         checkThemechangeAdjustMarkerPadding()
     }
@@ -232,6 +236,7 @@ Page {
 
     // autostart items
     Component.onCompleted: {
+        console.debug(StandardPaths.home)
         py.getHomePath() // get home path for multiuser environments
         standardDetailItemHeight = idToolsRowCutAdd.height * 4 / 3  // Patch: 1 px sometimes needed???
         openWithPath()
@@ -639,9 +644,9 @@ Page {
 
             // Handlers do something to QML with received infos from Pythonfile (=pyotherside.send)
             setHandler('homePathFolder', function( homeDir ) {
-                //tempMediaFolderPath = homeDir + "/.cache/de.poetaster/harbour-clipper/"
-                tempMediaFolderPath =  StandardPaths.temporary
-                saveMediaFolderPath =  StandardPaths.videos
+                tempMediaFolderPath = homeDir + "/.cache/de.poetaster/harbour-clipper/"
+                //tempMediaFolderPath =  StandardPaths.temporary
+                saveMediaFolderPath =  homeDir + "/Videos"
                 homeDirectory = homeDir
                 py.createTmpAndSaveFolder()
                 py.deleteAllTMPFunction()
@@ -1307,6 +1312,7 @@ Page {
             call("videox.overlayFileFunction", [ ffmpeg_staticPath, inputPathPy, outputPathPy, overlayPath, fromSec, toSec, cropX, cropY, cropWidth, cropHeight, scaleDisplayFactorCrop, overlayOpacity, overlayType, overlayDuration, drawRectangleColor, drawRectangleThickness ])
         }
         function overlayAlphaClipFunction( pathOverlayVideo, partFull, colorKey ) {
+            if (debug) console.debug("path:" + pathOverlayVideo + ' partFull:' + partFull + " colorKey:" + colorKey)
             preparePathAndUndo()
             generateCroppingPixelsFromHandles()
             var overlayOpacity = "1"
@@ -1432,7 +1438,6 @@ Page {
             else if ( idComboBoxCollageImageExtract.currentIndex === 2 ) { modeExtractImg = "singleImage" }
             call("videox.extractImagesFunction", [ ffmpeg_staticPath, inputPathPy, modeExtractImg, thumbnailSec, thumbnailSecFileName, imageInterval, origMediaFolderPath ])
         }
-
         onError: {
             // when an exception is raised, this error handler will be called
             console.log('python error: ' + traceback);
