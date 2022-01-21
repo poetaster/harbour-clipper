@@ -19,7 +19,7 @@ Page {
     }
 
     // file and folder variables
-    property bool debug: true
+    property bool debug: false
     property string origMediaFilePath
     property string origMediaFileName : "none"
     property string origMediaFolderPath
@@ -40,9 +40,7 @@ Page {
     property var origDAR : "0:0"
     property string homeDirectory
     property string tempMediaFolderPath: StandardPaths.home + '/.cache/de.poetaster/harbour-clipper'
-    //property string tempMediaFolderPath: '/home/defaultuser/.cache/de.poetaster/harbour-clipper'
     property string tempMediaType : "mkv"
-    //property string ffmpeg_staticPath : "//usr" + "/share" + "/harbour-clipper" + "/lib" + /ffmpeg/ + "./ffmpeg_static" // -> needed since SF included version does not provide some codecs and filters
     property string ffmpeg_staticPath : "/usr/bin/ffmpeg"
     property string overlaysFolder : "/usr" + "/share" + "/harbour-clipper" + "/qml" + "/overlays/"
     property string filterFolder : "/usr" + "/share" + "/harbour-clipper" + "/qml" + "/filters/"
@@ -2670,14 +2668,14 @@ Page {
                         }
                         if ( idButtonFile.down ) {
                             //DISABLE share
-                            /*if (idButtonFileShare.down === true) {
-                                pageStack.push(Qt.resolvedUrl("SharePage.qml"), {
+                            if (idButtonFileShare.down === true) {
+                                /*pageStack.push(Qt.resolvedUrl("SharePage.qml"), {
                                     shareFilePath : idMediaPlayer.source.toString(),
                                     shareFileName : origMediaFileName,
                                     tmpVideoFileSize : tmpVideoFileSize,
-                                })
-                                console.log(tmpVideoFileSize)
-                            }*/
+                                })*/
+                                if (debug) console.log(tmpVideoFileSize)
+                            }
                             if (idButtonFileRename.down === true) {
                                 py.renameOriginal()
                             }
@@ -3340,7 +3338,7 @@ Page {
                 width: idToolsCategoriesRow.width
 
                 //Disable Share
-                /*IconButton {
+                IconButton {
                     id: idButtonFileShare
                     down: true
                     width: parent.width / 4
@@ -3365,7 +3363,7 @@ Page {
                         anchors.bottomMargin: anchors.topMargin
                         color: backColorTools
                     }
-                }*/
+                }
                 IconButton {
                     id: idButtonFileInfo
                     width: parent.width / 4
