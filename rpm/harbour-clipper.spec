@@ -11,15 +11,16 @@ Name:       harbour-clipper
 # << macros
 
 Summary:    Videoworks
-Version:    0.3.6
+Version:    0.3.7
 Release:    1
 Group:      Qt/Qt
 License:    GPLv3
 URL:        https://github.com/poetater/harbour-clipper
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   sailfishsilica-qt5 >= 0.10.9
+Requires:   ffmpeg
 Requires:   ffmpeg-tools
-Requires:   pyotherside-qml-plugin-python3-qt5
+Requires:       pyotherside-qml-plugin-python3-qt5
 BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Qml)
@@ -67,6 +68,7 @@ desktop-file-install --delete-original       \
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
-%{_libdir}/frei0r-1
+
+#%{_libdir}/frei0r-1
 # >> files
 # << files

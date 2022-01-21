@@ -49,30 +49,30 @@ HEADERS += \
     src/audio-recorder.h
 
 # include precompiled static library according to architecture (arm, i486_32bit, arm64)
-equals(QT_ARCH, arm): {
-  ffmpeg_static.files = lib/ffmpeg/arm32/*
-  frei0r_plugins.files = lib/frei0r/arm32/*
-  frei0r_plugins.path = /usr/lib/frei0r-1
-  #message("!!!architecture armv7hl detected!!!");
-}
-equals(QT_ARCH, arm64): {
-  ffmpeg_static.files = lib/ffmpeg/arm64/*
-  frei0r_plugins.files = lib/frei0r/arm64/*
-  frei0r_plugins.path = /usr/lib64/frei0r-1
-  message("!!!architecture arm64 detected!!!");
-}
-equals(QT_ARCH, i386): {
-  ffmpeg_static.files = lib/ffmpeg/x86_32/*
-  frei0r_plugins.files = lib/frei0r/x86_32/*
-  frei0r_plugins.path = /usr/lib/frei0r-1
-  #message("!!!architecture x86 / 32bit detected!!!");
-}
+#equals(QT_ARCH, arm): {
+#  ffmpeg_static.files = lib/ffmpeg/arm32/*
+#  frei0r_plugins.files = lib/frei0r/arm32/*
+#  frei0r_plugins.path = /usr/lib/frei0r-1
+#  #message("!!!architecture armv7hl detected!!!");
+#}
+#equals(QT_ARCH, arm64): {
+#  ffmpeg_static.files = lib/ffmpeg/arm64/*
+#  frei0r_plugins.files = lib/frei0r/arm64/*
+#  frei0r_plugins.path = /usr/lib64/frei0r-1
+#  message("!!!architecture arm64 detected!!!");
+#}
+#equals(QT_ARCH, i386): {
+#  ffmpeg_static.files = lib/ffmpeg/x86_32/*
+#  frei0r_plugins.files = lib/frei0r/x86_32/*
+#  frei0r_plugins.path = /usr/lib/frei0r-1
+#  #message("!!!architecture x86 / 32bit detected!!!");
+#}
 #equals(QT_ARCH, x86_64): {
     #message("!!!architecture x86 / 64bit detected!!!");
 #}
 
-ffmpeg_static.path = /usr/share/harbour-clipper/lib/ffmpeg
+#ffmpeg_static.path = /usr/share/harbour-clipper/lib/ffmpeg
 
-INSTALLS += frei0r_plugins
-INSTALLS += ffmpeg_static
+#INSTALLS += frei0r_plugins
+#INSTALLS += ffmpeg_static
 

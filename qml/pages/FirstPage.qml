@@ -24,47 +24,48 @@ Page {
     property string origMediaFolderPath
     property string origMediaName
     property string origMediaType : "none"
-    property var origVideoWidth : 0
-    property var origVideoHeight : 0
-    property var origCodecVideo : "none"
-    property var origCodecAudio : "none"
-    property var origFrameRate : 0
-    property var origPixelFormat : "none"
+    property int origVideoWidth : 0
+    property int origVideoHeight : 0
+    property string origCodecVideo : "none"
+    property string origCodecAudio : "none"
+    property int origFrameRate : 0
+    property string origPixelFormat : "none"
     property var origAudioSamplerate : 0
-    property var origAudioLayout : "none"
-    property var origFileSize : 0
-    property var origVideoRotation : 0
+    property string origAudioLayout : "none"
+    property int origFileSize : 0
+    property int origVideoRotation : 0
     property var origVideoDuration : "00:00:00"
     property var origSAR : "0:0"
     property var origDAR : "0:0"
     property string homeDirectory
     property string tempMediaFolderPath
     property string tempMediaType : "mkv"
-    property string ffmpeg_staticPath : "//usr" + "/share" + "/harbour-clipper" + "/lib" + /ffmpeg/ + "./ffmpeg_static" // -> needed since SF included version does not provide some codecs and filters
+    //property string ffmpeg_staticPath : "/usr" + "/share" + "/harbour-clipper" + "/lib" + /ffmpeg/ + "ffmpeg_static" // -> needed since SF included version does not provide some codecs and filters
+    property string ffmpeg_staticPath : "/usr/bin/ffmpeg"
     property string overlaysFolder : "/usr" + "/share" + "/harbour-clipper" + "/qml" + "/overlays/"
     property string filterFolder : "/usr" + "/share" + "/harbour-clipper" + "/qml" + "/filters/"
     property string outputPathPy
     property string inputPathPy : decodeURIComponent( "/" + idMediaPlayer.source.toString().replace(/^(file:\/{3})|(qrc:\/{2})|(http:\/{2})/,"") )
-    property string saveMediaFolderPath // : "/home" + "/nemo" + "/Videos" + "/Clipper/"
+    property string saveMediaFolderPath : "/home/defaultuser/Videos"
     property string lastTmpMedia2delete
-    property var thumbnailPath : tempMediaFolderPath + "thumbnail.png"
-    property var overlayThumbnailPath : tempMediaFolderPath + "thumbnail_overlay.png"
+    property string thumbnailPath : tempMediaFolderPath + "thumbnail.png"
+    property string overlayThumbnailPath : tempMediaFolderPath + "thumbnail_overlay.png"
     property bool thumbnailVisible : false
     property var tmpVideoFileSize : 0
     property var openingArguments : Qt.application.arguments //[0]=app-path, [1]=file-path
     property bool brandNewFile : true
-    property var recordAudioPath : tempMediaFolderPath + "recordedAudio.wav" // pulse recorder can only produce wav
-    property var subtitleTempPath : tempMediaFolderPath + "subtitle.srt" // create manual subtitles here
+    property string recordAudioPath : tempMediaFolderPath + "recordedAudio.wav" // pulse recorder can only produce wav
+    property string subtitleTempPath : tempMediaFolderPath + "subtitle.srt" // create manual subtitles here
 
     // UI variables
-    property var warningLargeSize : 1920 // show warning on loading, this might take long to process
+    property real warningLargeSize : 1920 // show warning on loading, this might take long to process
     property int undoNr : 0
-    property var finishedLoading : true
-    property var clipboardAvailable : false
+    property bool finishedLoading : true
+    property bool clipboardAvailable : false
     property bool noFile : true
     property var plusMinusInfo : ""
-    property var itemsToolbar : 5
-    property var fontSizePreview : Theme.fontSizeExtraLarge
+    property int itemsToolbar : 5
+    property int fontSizePreview : Theme.fontSizeExtraLarge
     property bool trimAreaVisible : (idButtonCut.down && idButtonCutTrim.down) ? true : false
     property bool cropAreaVisible : ( (idButtonCut.down && idButtonCutCrop.down)
                                      || (idButtonImage.down && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) // blur
@@ -90,23 +91,23 @@ Page {
                                           || (idButtonCollage.down && ( idButtonCollageSubtitle.down === false || (idButtonCollageSubtitle.down === true && idComboBoxCollageSubtitleAdd.currentIndex === 0) ) )
                                           || idButtonFile.down
                                          ) ? true : false
-    property var lastToolsButtonPressed : "Cut"
+    property string lastToolsButtonPressed : "Cut"
     property var backColorTools : Theme.rgba(Theme.primaryColor, 0.1) // "transparent" // Theme.rgba(Theme.highlightDimmerColor, 0.5)
-    property var standardDetailItemHeight : 0
-    property var minTrimLength : 750 //ms -> can't find any i-frames at 500ms, so needs something to merge later
-    property var spacerLandscapeLowerToolRow : 0
-    property var processedPercent : 0
-    property var oldSlideshowHeight : 0
-    property var oldStorylineHeight : 0
-    property var oldSubtitleHeight : 0
+    property int standardDetailItemHeight : 0
+    property int minTrimLength : 750 //ms -> can't find any i-frames at 500ms, so needs something to merge later
+    property int spacerLandscapeLowerToolRow : 0
+    property int processedPercent : 0
+    property int oldSlideshowHeight : 0
+    property int oldStorylineHeight : 0
+    property int oldSubtitleHeight : 0
 
     // UI crop handles variables
     property bool delayShowCropMarkers : false
-    property var croppingRatio : 0
-    property var oldRatioCrop : 0
-    property var padRatioText : "1/1"
-    property var padRatio : 1
-    property var handleWidth : 2* Theme.paddingLarge
+    property real croppingRatio : 0
+    property real oldRatioCrop : 0
+    property string padRatioText : "1/1"
+    property real padRatio : 1
+    property real handleWidth : 2* Theme.paddingLarge
     property bool stretchOversizeActive : false // true
     property var oldPosX1
     property var oldPosY1
@@ -133,54 +134,54 @@ Page {
     property var cropWidth
     property var cropHeight
     property var scaleDisplayFactorCrop : ( origVideoRotation !== 90 && origVideoRotation !== -90 ) ? (sourceVideoWidth / idMediaPlayer.width) : ( sourceVideoHeight / idMediaPlayer.width )
-    property var startRecordingHandlePosX : 0
+    property int startRecordingHandlePosX : 0
 
     // add and overlay variables
-    property var addTextColor : "white"
-    property var addTextboxColor : "black"
-    property var addTextboxPlusFactor : 1.1
-    property var standardFont : Theme.fontFamily
+    property string addTextColor : "white"
+    property string addTextboxColor : "black"
+    property string addTextboxPlusFactor : 1.1
+    property string standardFont : Theme.fontFamily
     property var customFontFilePath
     property var customFontName
     property bool fontFileLoaded : false
     property var drawRectangleColor : "black"
     property var drawRectangleThickness
-    property var baseFrameThickness : Theme.paddingSmall
+    property real baseFrameThickness : Theme.paddingSmall
     property var colorToAlpha : "black"
 
     // media variables
-    property var fromPosMillisecond : 0
-    property var toPosMillisecond : 0
+    property int fromPosMillisecond : 0
+    property int toPosMillisecond : 0
     property var fromTimestampPy : new Date(fromPosMillisecond).toISOString().substr(11,12)
     property var toTimestampPy : new Date(toPosMillisecond).toISOString().substr(11,12)
 
-    property var sourceVideoWidth : 0
-    property var sourceVideoHeight : 0
+    property int sourceVideoWidth : 0
+    property int sourceVideoHeight : 0
     property var sourceSampleAspectRatio : "1:1"
     property var sourceDisplayAspectRatio : "0:0"
     property var origVideoRatio : (sourceVideoWidth / sourceVideoHeight)
 
-    property var cubeFilePath : ""
+    property string cubeFilePath : ""
     property var cubeFileName
     property var cubeFileNamePure
     property bool cubeFileLoaded : false
 
-    property var overlayFilePath : ""
+    property string overlayFilePath : ""
     property var overlayFileName
     property var overlayFileNamePure
     property bool overlayFileLoaded : false
 
-    property var addFilePath : ""
+    property string addFilePath : ""
     property var addFileName
     property var addFileNamePure
     property bool addFileLoaded : false
 
-    property var addAudioPath : ""
+    property string addAudioPath : ""
     property var addAudioName
     property var addAudioNamePure
     property bool addAudioLoaded : false
 
-    property var addSubtitlePath : ""
+    property string addSubtitlePath : ""
     property var addSubtitleName
     property var addSubtitleNamePure
     property bool addSubtitleLoaded : false
@@ -189,14 +190,14 @@ Page {
     property var recordingOverlayStart : 0
 
     // overlayPreviewVariables
-    property var previewImageWidth : idPreviewOverlayImage.sourceSize.width
-    property var previewImageHeight : idPreviewOverlayImage.sourceSize.height
+    property int previewImageWidth : idPreviewOverlayImage.sourceSize.width
+    property int previewImageHeight : idPreviewOverlayImage.sourceSize.height
     property var previewRatioFileImage : previewImageWidth / previewImageHeight
-    property var previewVideoWidth : 1
-    property var previewVideoHeight : 1
+    property int previewVideoWidth : 1
+    property int previewVideoHeight : 1
     property var previewRatioFileVideo: previewVideoWidth / previewVideoHeight
     property var previewAlphaType
-    property var filePreviewDuration : 0
+    property int filePreviewDuration : 0
     property var resultingFilePreviewWidth : (page.width - 2*(Theme.paddingLarge + addThemeSliderPaddingSides )) / idMediaPlayer.duration * filePreviewDuration
 
     // collage variables
@@ -222,8 +223,8 @@ Page {
     property bool showHintSavingSubtitles : false
 
     // Patch: when Theme changes: adjust slider markings, since slider has different width on
-    property var mainColor : Theme.primaryColor
-    property var addThemeSliderPaddingSides : 0
+    property color mainColor : Theme.primaryColor
+    property int addThemeSliderPaddingSides : 0
     onMainColorChanged: {
         checkThemechangeAdjustMarkerPadding()
     }
@@ -638,8 +639,8 @@ Page {
 
             // Handlers do something to QML with received infos from Pythonfile (=pyotherside.send)
             setHandler('homePathFolder', function( homeDir ) {
-                tempMediaFolderPath = homeDir + "/.clipper_tmp/"
-                saveMediaFolderPath = homeDir + "/Videos" + "/Clipper/"
+                tempMediaFolderPath = homeDir + "/.cache/harbour-clipper/"
+                saveMediaFolderPath = homeDir + "/Videos/"
                 homeDirectory = homeDir
                 py.createTmpAndSaveFolder()
                 py.deleteAllTMPFunction()
@@ -1349,7 +1350,7 @@ Page {
             idMediaPlayer.stop()
             finishedLoading = false
             var newFileName = "slideshow_" + new Date().toLocaleString(Qt.locale("de_DE"), "yyyy-MM-dd_HH-mm-ss") + "." + tempMediaType
-            outputPathPy = homeDirectory + "/Videos" + "/Clipper/" + newFileName
+            outputPathPy = homeDirectory + "/Videos/" + newFileName
             allSelectedPathsSlideshow = ""
             allSelectedDurationsSlideshow = ""
             allSelectedTransitionsSlideshow = ""
@@ -1376,7 +1377,7 @@ Page {
             idMediaPlayer.stop()
             finishedLoading = false
             var newFileName = "story_" + new Date().toLocaleString(Qt.locale("de_DE"), "yyyy-MM-dd_HH-mm-ss") + "." + tempMediaType
-            outputPathPy = homeDirectory + "/Videos" + "/Clipper/" + newFileName
+            outputPathPy = homeDirectory + "/Videos/"  + newFileName
             allSelectedPathsStoryline = ""
             allSelectedTransitionsStoryline = ""
             allSelectedTransitionDurationsStoryline = ""
