@@ -32,6 +32,7 @@ DISTFILES += qml/harbour-clipper.qml \
     qml/pages/AboutPage.qml \
     qml/filters/*.png \
     qml/filters/*.cube \
+    qml/overlays/* \
     qml/symbols/*.svg \
     qml/py/videox.py \
     rpm/harbour-clipper.changes.in \
