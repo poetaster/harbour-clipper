@@ -14,4 +14,4 @@ Name=Videoworks
 [X-Sailjail]
 OrganizationName=de.poetaster
 ApplicationName=harbour-clipper
-Permissions=Internet;MediaIndexing;RemovableMedia;UserDirs;Microphone
+Permissions=Camera;Audio;Microphone;Internet;MediaIndexing;RemovableMedia;UserDirs

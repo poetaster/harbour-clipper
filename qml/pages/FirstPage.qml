@@ -46,7 +46,7 @@ Page {
     property string filterFolder : "/usr" + "/share" + "/harbour-clipper" + "/qml" + "/filters/"
     property string outputPathPy
     property string inputPathPy : decodeURIComponent( "/" + idMediaPlayer.source.toString().replace(/^(file:\/{3})|(qrc:\/{2})|(http:\/{2})/,"") )
-    property string saveMediaFolderPath : "/home/defaultuser/Videos"
+    property string saveMediaFolderPath : StandardPaths.videos
     property string lastTmpMedia2delete
     property string thumbnailPath : tempMediaFolderPath + "thumbnail.png"
     property string overlayThumbnailPath : tempMediaFolderPath + "thumbnail_overlay.png"
@@ -639,8 +639,9 @@ Page {
 
             // Handlers do something to QML with received infos from Pythonfile (=pyotherside.send)
             setHandler('homePathFolder', function( homeDir ) {
-                tempMediaFolderPath = homeDir + "/.cache/harbour-clipper/"
-                saveMediaFolderPath = homeDir + "/Videos/"
+                //tempMediaFolderPath = homeDir + "/.cache/de.poetaster/harbour-clipper/"
+                tempMediaFolderPath =  StandardPaths.temporary
+                saveMediaFolderPath =  StandardPaths.videos
                 homeDirectory = homeDir
                 py.createTmpAndSaveFolder()
                 py.deleteAllTMPFunction()
@@ -2663,14 +2664,15 @@ Page {
                             }
                         }
                         if ( idButtonFile.down ) {
-                            if (idButtonFileShare.down === true) {
+                            //DISABLE share
+                            /*if (idButtonFileShare.down === true) {
                                 pageStack.push(Qt.resolvedUrl("SharePage.qml"), {
                                     shareFilePath : idMediaPlayer.source.toString(),
                                     shareFileName : origMediaFileName,
                                     tmpVideoFileSize : tmpVideoFileSize,
                                 })
                                 console.log(tmpVideoFileSize)
-                            }
+                            }*/
                             if (idButtonFileRename.down === true) {
                                 py.renameOriginal()
                             }
@@ -3332,7 +3334,8 @@ Page {
                 x: idToolsCategoriesRow.x
                 width: idToolsCategoriesRow.width
 
-                IconButton {
+                //Disable Share
+                /*IconButton {
                     id: idButtonFileShare
                     down: true
                     width: parent.width / 4
@@ -3357,7 +3360,7 @@ Page {
                         anchors.bottomMargin: anchors.topMargin
                         color: backColorTools
                     }
-                }
+                }*/
                 IconButton {
                     id: idButtonFileInfo
                     width: parent.width / 4

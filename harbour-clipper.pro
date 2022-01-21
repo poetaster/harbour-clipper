@@ -25,7 +25,6 @@ DISTFILES += qml/harbour-clipper.qml \
     qml/pages/FirstPage.qml \
     qml/pages/InfoPage.qml \
     qml/pages/SavePage.qml \
-    qml/pages/SharePage.qml \
     qml/pages/AboutPage.qml \
     rpm/harbour-clipper.changes.in \
     rpm/harbour-clipper.changes.run.in \
