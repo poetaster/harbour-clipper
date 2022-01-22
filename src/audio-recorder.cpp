@@ -7,7 +7,7 @@
 AudioRecorder :: AudioRecorder ( QObject * parent ) : QObject ( parent ) {
     q_audioRecorder = new QAudioRecorder ( this );
 
-    q_audioRecorder -> setOutputLocation ( QUrl (QDir::homePath() + "/.clipper_tmp/recordedAudio.wav") );
+    q_audioRecorder -> setOutputLocation ( QUrl (QDir::homePath() + "/.cache/de.poetaster.de/harbour-clipper/recordedAudio.wav") );
     q_audioRecorder -> setVolume( 10 );
 
     b_recording = false;
