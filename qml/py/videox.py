@@ -930,9 +930,6 @@ def recordAudioFunction ( ffmpeg_staticPath, inputPathPy, outputPathPy, audioFil
         pyotherside.send('progressPercentage', progress)
     if "true" in success :
         pyotherside.send('loadTempMedia', outputPathPy )
-    if (i.find(".wav") != -1): # delete temp recording file
-        os.remove ( "/"+tempMediaFolderPath+i )
-        pyotherside.send('tempFilesDeleted', i )
 
 
 def audioEffectsFilters ( ffmpeg_staticPath, inputPathPy, outputPathPy, fromSec, toSec, effectTypeValue, origCodecAudio, filterType ):
