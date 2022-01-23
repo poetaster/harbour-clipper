@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     //
     // To display the view, call "show()" (will show fullscreen on device).
 
-    QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));
+    QGuiApplication *app = SailfishApp::application(argc, argv);
 
     migrateLocalStorage();
 
@@ -46,12 +46,11 @@ int main(int argc, char *argv[])
     appTranslator->load("harbour-clipper-" + QLocale::system().name(), SailfishApp::pathTo("translations").path());
     app->installTranslator(appTranslator);
 
-    qmlRegisterType<AudioRecorder>("AudioRecorder", 1, 0, "AudioRecorder"); // needed for AudioRecorder to register as QML component
 
+    qmlRegisterType<AudioRecorder>("AudioRecorder", 1, 0, "AudioRecorder"); // needed for AudioRecorder to register as QML component
     QScopedPointer<QQuickView> view(SailfishApp::createView());
     view->setSource(SailfishApp::pathTo("qml/harbour-clipper.qml"));
     view->setTitle("Videoworks");
     view->showFullScreen();
-
     return app->exec();
 }
