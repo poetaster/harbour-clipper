@@ -2504,19 +2504,23 @@ Page {
                         onEntered: {
                             startRecordingHandlePosX = idSliderHandle1.x + idSliderHandle1.width/2
                             idMediaPlayer.pause() // in case it did not pause yet
+
+                            // this makes no sense since we have to mute to record
                             //recordingBeepStart.play()
                             //idTimerDelayRecording.start() // records, commands are issued when beep sound has finished
-                        recordingOverlayStart = (idMediaPlayer.position/1000).toString()
-                        recordingAudioState = true
-                        audioRecorder_Sample.record()
-                        idMediaPlayer.play()
-                        thumbnailVisible = false
+
+                            recordingOverlayStart = (idMediaPlayer.position/1000).toString()
+                            recordingAudioState = true
+                            audioRecorder_Sample.record()
+                            idMediaPlayer.play()
+                            thumbnailVisible = false
                         }
                         onReleased: {
                             audioRecorder_Sample.stop()
                             recordingAudioState = false
                             idMediaPlayer.pause()
                             //thumbnailVisible = false
+                            // this makes no sense since we have to mute to record
                             //recordingBeepStop.play()
                             py.recordAudioFunction()
                         }
