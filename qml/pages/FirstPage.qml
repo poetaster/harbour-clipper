@@ -598,8 +598,10 @@ Page {
     AudioRecorder {
         id: audioRecorder_Sample //(( audioRecorder_Sample.recording ) ? audioRecorder_Sample.stop() : audioRecorder_Sample.record() )
         onRecordingChanged: {
-            //console.log("recording changed")
+            console.log("recording changed")
+
         }
+
     }
 
     /*
@@ -2502,15 +2504,20 @@ Page {
                         onEntered: {
                             startRecordingHandlePosX = idSliderHandle1.x + idSliderHandle1.width/2
                             idMediaPlayer.pause() // in case it did not pause yet
-                            recordingBeepStart.play()
-                            idTimerDelayRecording.start() // records, commands are issued when beep sound has finished
+                            //recordingBeepStart.play()
+                            //idTimerDelayRecording.start() // records, commands are issued when beep sound has finished
+                        recordingOverlayStart = (idMediaPlayer.position/1000).toString()
+                        recordingAudioState = true
+                        audioRecorder_Sample.record()
+                        idMediaPlayer.play()
+                        thumbnailVisible = false
                         }
                         onReleased: {
                             audioRecorder_Sample.stop()
                             recordingAudioState = false
                             idMediaPlayer.pause()
                             //thumbnailVisible = false
-                            recordingBeepStop.play()
+                            //recordingBeepStop.play()
                             py.recordAudioFunction()
                         }
                     }
@@ -5971,6 +5978,7 @@ Page {
         finishedLoading = false
         undoNr = undoNr + 1
         outputPathPy = tempMediaFolderPath + "video" + ".tmp" + undoNr + "." + tempMediaType
+        console.debug("pyPath: "+ outputPathPy)
     }
 
     function undoBackwards() {
