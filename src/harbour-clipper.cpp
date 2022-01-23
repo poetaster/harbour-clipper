@@ -2,6 +2,11 @@
 #include <QtQuick>
 #endif
 #include <QtQml> // needed for registering AudioRecorder
+#include <QGuiApplication>
+#include <QLocale>
+#include <QQuickView>
+#include <QScopedPointer>
+#include <QStandardPaths>
 #include <sailfishapp.h>
 #include <src/audio-recorder.h>
 
