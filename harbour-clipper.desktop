@@ -13,4 +13,7 @@ Name=Videoworks
 #Name[de_DE]=harbour-clipper.desktop
 
 [X-Sailjail]
-Sandboxing=disabled
+Sandboxing=Disabled
+#OrganizationName=de.poetaster
+#ApplicationName=harbour-clipper
+#Permissions=Camera;Audio;Microphone;MediaIndexing;RemovableMedia;UserDirs;Compatibility
