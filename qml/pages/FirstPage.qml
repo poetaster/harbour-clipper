@@ -19,7 +19,7 @@ Page {
     }
 
     // file and folder variables
-    property bool debug: false
+    property bool debug: true
     property string origMediaFilePath
     property string origMediaFileName : "none"
     property string origMediaFolderPath
