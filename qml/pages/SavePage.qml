@@ -206,7 +206,7 @@ Page {
                             font.pixelSize: Theme.fontSizeExtraSmall
                         }
                         MenuItem {
-                            text: ".flv"
+                            text: ".gif"
                             font.pixelSize: Theme.fontSizeExtraSmall
                         }
                         MenuItem {
