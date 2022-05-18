@@ -3,6 +3,7 @@ Type=Application
 X-Nemo-Application-Type=silica-qt5
 Icon=harbour-clipper
 Exec=harbour-clipper %u
+
 Name=Videoworks
 # translation example:
 # your app name in German locale (de)
@@ -13,7 +14,6 @@ Name=Videoworks
 #Name[de_DE]=harbour-clipper.desktop
 
 [X-Sailjail]
-Sandboxing=Disabled
-#OrganizationName=de.poetaster
-#ApplicationName=harbour-clipper
-#Permissions=Camera;Audio;Microphone;MediaIndexing;RemovableMedia;UserDirs;Compatibility
+OrganizationName=de.poetaster
+ApplicationName=harbour-clipper
+Permissions=Compatibility;Camera;Audio;Microphone;MediaIndexing;RemovableMedia;UserDirs
