@@ -20,11 +20,9 @@ Please file your bug reports here and not in the Jolla or openrepos comments!
 
 ## Authors
 
-2020 - Tobias Planitzer <tobias.planitzer@protonmail.com>
+(c) 2020 - Tobias Planitzer <tobias.planitzer@protonmail.com>
 
 Tobias wrote Videoworks and poetaster is developing and maintaining it in future.
 
-2021 - Mark Washeim <blueprint@poetaster.de>
-
-
+(c) 2021-202 - Mark Washeim <blueprint@poetaster.de>
 
