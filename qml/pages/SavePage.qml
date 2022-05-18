@@ -5,7 +5,7 @@ import io.thp.pyotherside 1.5
 Page {
     id: page
     allowedOrientations: Orientation.All
-
+    property bool debug: false
     // values transmitted from FirstPage.qml
     property string homeDirectory
     property string origMediaFilePath
@@ -339,6 +339,11 @@ Page {
                     }
                     MenuItem {
                         text: "mpeg2video"
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                    }
+                    MenuItem {
+                        enabled: idComboBoxFileExtension.currentIndex !== 0
+                        text: "gif"
                         font.pixelSize: Theme.fontSizeExtraSmall
                     }
                     MenuItem {
