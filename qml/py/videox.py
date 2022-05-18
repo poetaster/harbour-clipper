@@ -17,11 +17,6 @@ from typing import Iterator
 currentFunctionErrorName = ""
 success = "false"
 
-
-
-
-
-
 # Functions for file operations
 # #######################################################################################
 
@@ -38,8 +33,8 @@ def createTmpAndSaveFolder ( tempMediaFolderPath, saveAudioFolderPath ):
         pyotherside.send('folderExistence', )
 
 def deleteAllTMPFunction ( tempMediaFolderPath ):
-    #subprocess.run([ "killall", "-r", "ffmpeg" ])
-    subprocess.run([ "pkill", "-f", "ffmpeg" ])
+    # pkill not allowed
+    #subprocess.run([ "pkill", "-f", "ffmpeg" ])
     for i in os.listdir( "/"+tempMediaFolderPath ) :
         if (i.find(".tmp") != -1):
             os.remove ( "/"+tempMediaFolderPath+i )
@@ -1108,23 +1103,10 @@ def parseSubtitleFile ( ffmpeg_staticPath, subtitlePath ):
     pyotherside.send('subtitleFileParsed', subtitleText)
 
 
-
-
-
-
-
-
-
 # other useful commands
 #pyotherside.send('debugPythonLogs', i)
 #subprocess.Popen([ "parec", "-d", inputDevice, "--file-format=wav", "/"+recordAudioPath ], shell = False )
 #subprocess.run([ "killall", "-r", "parec" ])
-
-
-
-
-
-
 
 
 # PARSE FFMPEG OUTPUT FUNCTIONS
@@ -1174,8 +1156,10 @@ def run_ffmpeg_command(cmd: "list[str]") -> Iterator[int]:
                 yield int(elapsed_time / total_dur * 100)
     if p.returncode != 0:
         success = "false"
-        #subprocess.run([ "killall", "-r", "ffmpeg" ])
-        subprocess.run([ "pkill", "-f", "ffmpeg" ])
+
+        # pkill not allowed
+        #subprocess.run([ "pkill", "-f", "ffmpeg" ])
+
         if "imageLUT3DFunction" in currentFunctionErrorName:
             pyotherside.send('errorOccured', "PNG not compatible.\nConversion failed." )
         elif "overlayOldMovieFunction" in currentFunctionErrorName:
@@ -1186,8 +1170,8 @@ def run_ffmpeg_command(cmd: "list[str]") -> Iterator[int]:
             pyotherside.send('errorOccured', "An error occured with this function.\n"  + currentFunctionErrorName + "\nKindly report this bug on email." )
     else:
         success = "true"
-        #subprocess.run([ "killall", "-r", "ffmpeg" ])
-        subprocess.run([ "pkill", "-f", "ffmpeg" ])
+        # not allowed
+        #subprocess.run([ "pkill", "-f", "ffmpeg" ])
     yield 100
 
 
