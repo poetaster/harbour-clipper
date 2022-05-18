@@ -1440,11 +1440,14 @@ Page {
         }
         onError: {
             // when an exception is raised, this error handler will be called
-            console.log('python error: ' + traceback);
+            if (debug) {
+                console.log('python error: ' + traceback);
+                banner.notify( qsTr("Pthon Error") + "\n" + " " + traceback + " ", Theme.highlightDimmerColor, 100000 )
+            }
         }
         onReceived: {
             // asychronous messages from Python arrive here via pyotherside.send()
-            console.log('got message from python: ' + data);
+            if (debug) console.log('got message from python: ' + data);
         }
     } // end python
 
@@ -2660,6 +2663,7 @@ Page {
                                 if ( idComboBoxAudioFilters.currentIndex === 3 ) { py.audioEffectsFilters( "lowpass" ) }
                             }
                         }
+
                         if ( idButtonCollage.down ) {
                             if (idButtonCollageSlideshow.down && slideshowModel.count > 0 ) {
                                 py.createSlideshowFunction()
