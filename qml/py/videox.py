@@ -634,16 +634,16 @@ def createSlideshowFunction ( ffmpeg_staticPath, outputPathPy, allSelectedPaths,
     for i in range (0, len(allSelectedPathsList)) :
         if "still_images" in panZoom:
             if i == 0:
-                inputFilesList.extend([ "-loop", "1", "-t", str( float(allSelectedDurationsList[i]) + float(allSelectedTransitionDurationsList[i]) ), "-i", "/" + str(allSelectedPathsList[i]) ])
+                inputFilesList.extend([ "-loop", "1", "-t", str( float(allSelectedDurationsList[i]) + float(allSelectedTransitionDurationsList[i]) ), "-i", str(allSelectedPathsList[i]) ])
             else: # Patch: length + fade before and fade after are needed, otherwise too short
-                inputFilesList.extend([ "-loop", "1", "-t", str( float(allSelectedDurationsList[i]) + float(allSelectedTransitionDurationsList[i]) + float(allSelectedTransitionDurationsList[i-1])  ), "-i", "/" + str(allSelectedPathsList[i]) ])
+                inputFilesList.extend([ "-loop", "1", "-t", str( float(allSelectedDurationsList[i]) + float(allSelectedTransitionDurationsList[i]) + float(allSelectedTransitionDurationsList[i-1])  ), "-i", str(allSelectedPathsList[i]) ])
             applyZoomPan = ""
         elif "pan_and_zoom" in panZoom: # Patch: pan/zoom does not work with "loop 1" input, would loop endlessly
             if i  == 0:
-                inputFilesList.extend([ "-t", str( float(allSelectedDurationsList[i]) + float(allSelectedTransitionDurationsList[i]) ), "-i", "/" + str(allSelectedPathsList[i]) ])
+                inputFilesList.extend([ "-t", str( float(allSelectedDurationsList[i]) + float(allSelectedTransitionDurationsList[i]) ), "-i", str(allSelectedPathsList[i]) ])
                 panZoomDuration = str( (float(allSelectedDurationsList[i]) + float(allSelectedTransitionDurationsList[i])) * 25 ) # fps * sec
             else: # Patch: length + fade before and fade after are needed, otherwise too short
-                inputFilesList.extend([ "-t", str( float(allSelectedDurationsList[i]) + float(allSelectedTransitionDurationsList[i]) + float(allSelectedTransitionDurationsList[i-1])  ), "-i", "/" + str(allSelectedPathsList[i]) ])
+                inputFilesList.extend([ "-t", str( float(allSelectedDurationsList[i]) + float(allSelectedTransitionDurationsList[i]) + float(allSelectedTransitionDurationsList[i-1])  ), "-i", str(allSelectedPathsList[i]) ])
                 panZoomDuration = str( (float(allSelectedDurationsList[i]) + float(allSelectedTransitionDurationsList[i]) + float(allSelectedTransitionDurationsList[i-1])) * 25 ) # fps * sec
             randomPanZoom = random.randint(-4,4)
             if randomPanZoom is lastRandom :
@@ -670,6 +670,23 @@ def createSlideshowFunction ( ffmpeg_staticPath, outputPathPy, allSelectedPaths,
                 applyZoomPan = ",zoompan=z='if(eq(on,1),1.5,zoom-0.0015)':d="+panZoomDuration+":y='ih-ih/zoom':s="+targetWidth+"x"+targetHeight
 
         lastRandom = randomPanZoom
+
+        # generic fade
+        #-filter_complex \
+        #"[1]fade=d=1:t=in:alpha=1,setpts=PTS-STARTPTS+2/TB[f0]; \
+        # [2]fade=d=1:t=in:alpha=1,setpts=PTS-STARTPTS+4/TB[f1]; \
+        # [3]fade=d=1:t=in:alpha=1,setpts=PTS-STARTPTS+6/TB[f2]; \
+        # [4]fade=d=1:t=in:alpha=1,setpts=PTS-STARTPTS+8/TB[f3]; \
+        # [0][f0]overlay[bg1];[bg1][f1]overlay[bg2];[bg2][f2]overlay[bg3]; \
+        # [bg3][f3]overlay,format=yuv420p[v]" -map "[v]"
+
+        # generic xFade -filter_complex \
+        #"[0][1]xfade=transition=slideleft:duration=0.5:offset=2.5[f0]; \
+        #[f0][2]xfade=transition=slideleft:duration=0.5:offset=5[f1]; \
+        #[f1][3]xfade=transition=slideleft:duration=0.5:offset=7.5[f2]; \
+        #[f2][4]xfade=transition=slideleft:duration=0.5:offset=10[f3]" \
+        #-map "[f3]"
+        #
         currentTransition = allSelectedTransitionsList[i]
         if "none" in currentTransition:
             if i == 0:
@@ -697,15 +714,23 @@ def createSlideshowFunction ( ffmpeg_staticPath, outputPathPy, allSelectedPaths,
                 lastOutputVX = str("[vx"+str(i+1)+"]")
         if i == len(allSelectedPathsList)-1 :
             xFadeInfos = xFadeInfos[:-1] # remove last simicolon since it is not needed
-        #pyotherside.send('debugPythonLogs', xFadeInfos)
+
+        #pyotherside.send('xFadeInfos', xFadeInfos)
         complexFilter += ( "["+str(i)+":v]" + "scale="+targetWidth+":"+targetHeight+":force_original_aspect_ratio=decrease,pad="+targetWidth+":"+targetHeight+":(ow-iw)/2:(oh-ih)/2,setsar=1"+applyZoomPan+",settb=AVTB[v"+str(i)+"];" )
         durationCounter += float(allSelectedDurationsList[i]) + float(allSelectedTransitionDurationsList[i])
 
     # add info on how to chain these videos one after another and add a zero audio input for whole length
     complexFilter += xFadeInfos
-    inputFilesList.extend ([ "-f", "lavfi", "-t", str(durationCounter), "-i", "anullsrc=channel_layout=stereo:sample_rate=48000" ])
+    #inputFilesList.extend ([ "-f", "lavfi", "-t", str(durationCounter), "-i", "anullsrc=channel_layout=stereo:sample_rate=48000" ])
+    # the last file needs to be added again because of some bug in ffmpeg
+    inputFilesList.extend([ "-i", str(allSelectedPathsList[len(allSelectedPathsList)-1]) ])
+    inputFilesList.extend ([ "-t", str(durationCounter) ])
+
+    pyotherside.send('complexfilter', complexFilter)
+    pyotherside.send('fileList', inputFilesList)
+
     #subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y", "-framerate", "25" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-map", str(len(allSelectedPathsList))+":a", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ])
-    for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-framerate", "25" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-map", str(len(allSelectedPathsList))+":a", "-c:v", "libx264", "-preset", "veryfast", "-r", "25", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ]):
+    for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-framerate", "25" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-c:v", "mjpeg", "-preset", "veryfast", "-r", "25", "-pix_fmt", "yuv420p", "-c:a", "aac", outputPathPy ]):
         pyotherside.send('progressPercentage', progress)
     if "true" in success :
         pyotherside.send('newClipCreated', outputPathPy, newFileName )
@@ -1135,12 +1160,18 @@ def run_ffmpeg_command(cmd: "list[str]") -> Iterator[int]:
     global success
     total_dur = None
     cmd_with_progress = [cmd[0]] + ["-progress", "-", "-nostats"] + cmd[1:]
+
+    pyotherside.send('cmd_wth:', cmd_with_progress)
+
     stderr = []
     stderr.clear()
     success = "false"
     p = subprocess.Popen( cmd_with_progress, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=False, )
     while True:
         line = p.stdout.readline().decode("utf8", errors="replace").strip()
+
+        pyotherside.send('runDebug_', line)
+
         if line == "" and p.poll() is not None:
             break
         stderr.append(line.strip())
@@ -1167,7 +1198,7 @@ def run_ffmpeg_command(cmd: "list[str]") -> Iterator[int]:
         elif "padAreaFunction" in currentFunctionErrorName:
             pyotherside.send('errorOccured', "Sorry, this file might be too large." )
         else:
-            pyotherside.send('errorOccured', "An error occured with this function.\n"  + currentFunctionErrorName + "\nKindly report this bug on email." )
+            pyotherside.send('errorOccured', "An error occured with this function.\n"  + currentFunctionErrorName + "\nKindly report this bug on github." )
     else:
         success = "true"
         # not allowed
