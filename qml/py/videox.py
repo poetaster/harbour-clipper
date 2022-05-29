@@ -70,15 +70,15 @@ def getVideoInfo ( inputPathPy, isOriginal, thumbnailPath, thumbnailSec ):
         videoRotation = subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream_tags=rotate", "-of", "default=noprint_wrappers=1:nokey=1", "/"+inputPathPy ])
     else:
         videoRotation = 0
-    videoResolution = subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "stream=width,height", "-of", "csv=p=0:s=x", "/"+inputPathPy ])
-    playbackDuration = subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0:s=x", "/"+inputPathPy ])
-    videoInfos = ( subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=codec_name,sample_aspect_ratio,display_aspect_ratio,pix_fmt,avg_frame_rate", "-of", "default=noprint_wrappers=1:nokey=1", "/"+inputPathPy ]) ).splitlines()
+    videoResolution = subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "stream=width,height", "-of", "csv=p=0:s=x", inputPathPy ])
+    playbackDuration = subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0:s=x", inputPathPy ])
+    videoInfos = ( subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=codec_name,sample_aspect_ratio,display_aspect_ratio,pix_fmt,avg_frame_rate", "-of", "default=noprint_wrappers=1:nokey=1", inputPathPy ]) ).splitlines()
     videoCodec = videoInfos[0]
     sampleAspectRatio = videoInfos[1]
     displayAspectRatio = videoInfos[2]
     pixelFormat = videoInfos[3]
     frameRate = videoInfos[4]
-    audioInfos = ( subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries", "stream=codec_name,sample_rate,channel_layout", "-of", "default=noprint_wrappers=1:nokey=1", "/"+inputPathPy ]) ).splitlines()
+    audioInfos = ( subprocess.check_output(["ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries", "stream=codec_name,sample_rate,channel_layout", "-of", "default=noprint_wrappers=1:nokey=1", inputPathPy ]) ).splitlines()
     try: #Patch: if there is audio track after all
         audioCodec = audioInfos[0]
     except:
@@ -130,7 +130,7 @@ def createPreviewImage ( inputPathPy, thumbnailPath, thumbnailSec ):
     pyotherside.send( 'previewImageCreated', )
 
 def getPlaybackDuration ( inputPathPy, targetName ):
-    playbackDuration = subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0:s=x", "/"+inputPathPy ])
+    playbackDuration = subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0:s=x", inputPathPy ])
     pyotherside.send( 'playbackDurationParsed', playbackDuration, targetName)
 
 
@@ -726,11 +726,11 @@ def createSlideshowFunction ( ffmpeg_staticPath, outputPathPy, allSelectedPaths,
     inputFilesList.extend([ "-i", str(allSelectedPathsList[len(allSelectedPathsList)-1]) ])
     inputFilesList.extend ([ "-t", str(durationCounter) ])
 
-    pyotherside.send('complexfilter', complexFilter)
-    pyotherside.send('fileList', inputFilesList)
+    #pyotherside.send('complexfilter', complexFilter)
+    #pyotherside.send('fileList', inputFilesList)
 
     #subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y", "-framerate", "25" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-map", str(len(allSelectedPathsList))+":a", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ])
-    for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-framerate", "25" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-c:v", "mjpeg", "-preset", "veryfast", "-r", "25", "-pix_fmt", "yuv420p", "-c:a", "aac", outputPathPy ]):
+    for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-framerate", "25" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-c:v", "mjped", "-preset", "veryfast", "-r", "25", "-pix_fmt", "yuv420p", "-c:a", "aac", outputPathPy ]):
         pyotherside.send('progressPercentage', progress)
     if "true" in success :
         pyotherside.send('newClipCreated', outputPathPy, newFileName )
@@ -796,8 +796,8 @@ def createStorylineFunction ( ffmpeg_staticPath, outputPathPy, allSelectedPaths,
     offsetXfadeStart = 0
 
     for i in range (0, len(allSelectedPathsList)) :
-        currentFileDuration = subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0:s=x", "/"+str(allSelectedPathsList[i]) ])
-        inputFilesList.extend([ "-i", "/" + str(allSelectedPathsList[i]) ])
+        currentFileDuration = subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0:s=x", str(allSelectedPathsList[i]) ])
+        inputFilesList.extend([ "-i", str(allSelectedPathsList[i]) ])
         currentTransition = allSelectedTransitionsList[i]
         if "none" in currentTransition:
             if i == 0:
@@ -839,7 +839,7 @@ def createStorylineFunction ( ffmpeg_staticPath, outputPathPy, allSelectedPaths,
     # add info on how to chain these videos one after another
     complexFilter += xFadeInfos
     #subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-map", lastOutputAX, "-threads", "0", "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ])
-    for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-map", lastOutputAX, "-threads", "0", "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ]):
+    for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-map", lastOutputAX, "-threads", "0", "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", outputPathPy ]):
         pyotherside.send('progressPercentage', progress)
     if "true" in success :
         pyotherside.send('newClipCreated', outputPathPy, newFileName )

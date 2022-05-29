@@ -11,7 +11,7 @@ Name:       harbour-clipper
 # << macros
 
 Summary:    Videoworks
-Version:    0.4.3
+Version:    0.4.4
 Release:    1
 Group:      Qt/Qt
 License:    GPLv3

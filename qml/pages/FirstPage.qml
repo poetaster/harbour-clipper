@@ -234,7 +234,7 @@ Page {
 
     // autostart items
     Component.onCompleted: {
-        console.debug(StandardPaths.home)
+        if (debug) console.debug(StandardPaths.home)
         py.getHomePath() // get home path for multiuser environments
         standardDetailItemHeight = idToolsRowCutAdd.height * 4 / 3  // Patch: 1 px sometimes needed???
         openWithPath()
@@ -1367,6 +1367,7 @@ Page {
                 var addDuration = (slideshowModel.get(i).duration).toString()
                 var addTransition = (slideshowModel.get(i).transition).toString()
                 var addTransitionDuration = (slideshowModel.get(i).transitionDuration).toString()
+
                 allSelectedPathsSlideshow = allSelectedPathsSlideshow + addPath + ";;"
                 allSelectedDurationsSlideshow = allSelectedDurationsSlideshow + addDuration + ";;"
                 allSelectedTransitionsSlideshow = allSelectedTransitionsSlideshow + addTransition + ";;"
