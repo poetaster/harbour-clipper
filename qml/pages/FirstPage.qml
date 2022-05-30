@@ -574,14 +574,16 @@ Page {
 
     Component {
         id: storylineVideoPicker
-        FilePickerPage {
+       VideoPickerPage {
             title: qsTr("Select video")
-            nameFilters: [ '*.mp4', '*.mkv', '*.flv', '*.mpeg', '*.avi', '*.mov', '*.m4v' ]
+            // these are filepicker filters. we need video here.
+            //nameFilters: [ '*.mp4', '*.mkv', '*.flv', '*.mpeg', '*.avi', '*.mov', '*.m4v' ]
             onSelectedContentPropertiesChanged: {
                 storylineAddFilePath = selectedContentProperties.filePath
                 storylineAddFileName = selectedContentProperties.fileName
+                //console.debug(storylineAddFilePath)
                 storylineAddFileLoaded = true
-                py.getPlaybackDuration( decodeURIComponent( "/" + storylineAddFilePath.toString().replace(/^(file:\/{3})|(qrc:\/{2})|(http:\/{2})/,"") ), "addStorylineModel" )
+                py.getPlaybackDuration( decodeURIComponent( storylineAddFilePath.toString().replace(/^(file:\/{3})|(qrc:\/{2})|(http:\/{2})/,"") ), "addStorylineModel" )
             }
         }
     }
@@ -5084,13 +5086,13 @@ Page {
                     width: parent.width / 6 * 1.5
                     height: Theme.itemSizeMedium
                     textTopMargin: Theme.paddingMedium
-                    text: "1024"
+                    text: "960"
                     color: Theme.highlightColor
                     inputMethodHints: Qt.ImhDigitsOnly
                     validator: IntValidator { bottom: 0; top: 9999 }
                     EnterKey.onClicked: {
                         if (idToolsCollageTargetWidth.text.length < 1  || idToolsCollageTargetWidth.text === "" ) {
-                            idToolsCollageTargetWidth.text = "1024"
+                            idToolsCollageTargetWidth.text = "960"
                         }
                         idToolsCollageTargetWidth.focus = false
                     }
@@ -5106,13 +5108,13 @@ Page {
                     width: parent.width / 6 * 1.5
                     height: Theme.itemSizeMedium
                     textTopMargin: Theme.paddingMedium
-                    text: "576"
+                    text: "540"
                     color: Theme.highlightColor
                     inputMethodHints: Qt.ImhDigitsOnly
                     validator: IntValidator { bottom: 0; top: 9999 }
                     EnterKey.onClicked: {
                         if (idToolsCollageTargetHeight.text.length < 1  || idToolsCollageTargetHeight.text === "" ) {
-                            idToolsCollageTargetHeight.text = "576"
+                            idToolsCollageTargetHeight.text = "540"
                         }
                         idToolsCollageTargetHeight.focus = false
                     }
@@ -6112,7 +6114,7 @@ Page {
         else if (idComboBoxCollageStoryTransition.currentIndex === 12) { transitionType = "slidedown" }
 
         else if (idComboBoxCollageStoryTransition.currentIndex === 13) { transitionType = "smoothleft" }
-        else if (idComboBoxCollageStoryTransition.currentIndex === 14) { transitionType = "smoothtight" }
+        else if (idComboBoxCollageStoryTransition.currentIndex === 14) { transitionType = "smoothright" }
         else if (idComboBoxCollageStoryTransition.currentIndex === 15) { transitionType = "smoothup" }
         else if (idComboBoxCollageStoryTransition.currentIndex === 16) { transitionType = "smoothdown" }
 

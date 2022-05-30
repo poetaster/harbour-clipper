@@ -281,7 +281,8 @@ def addTimeFunction ( ffmpeg_staticPath, inputPathPy, outputPathPy, tempMediaFol
     global currentFunctionErrorName
     currentFunctionErrorName = "addTimeFunction"
     if "blank_clip" in addClipType:
-        subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y", "-f", "lavfi", "-i", "color=c="+addColor+":s="+origVideoWidth+"x"+origVideoHeight+":r="+origFrameRate, "-t", addLength, "-f", "lavfi", "-i", "anullsrc=channel_layout="+origAudioLayout+":sample_rate="+origAudioSamplerate, "-t", addLength, "-c:v", origCodecVideo, "-tune", "stillimage", "-pix_fmt", origPixelFormat, "-c:a", origCodecAudio, "/"+tempMediaFolderPath+"new_part."+origContainer ] )
+        #subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y", "-f", "lavfi", "-i", "color=c="+addColor+":s="+origVideoWidth+"x"+origVideoHeight+":r="+origFrameRate, "-t", addLength, "-f", "lavfi", "-i", "anullsrc=channel_layout="+origAudioLayout+":sample_rate="+origAudioSamplerate, "-t", addLength, "-c:v", origCodecVideo, "-tune", "stillimage", "-pix_fmt", origPixelFormat, "-c:a", origCodecAudio, "/"+tempMediaFolderPath+"new_part."+origContainer ] )
+        subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "color=c="+addColor+":s="+origVideoWidth+"x"+origVideoHeight+":r="+origFrameRate, "-t", addLength, "-i", "anullsrc=channel_layout="+origAudioLayout+":sample_rate="+origAudioSamplerate, "-t", addLength, "-c:v", origCodecVideo, "-tune", "stillimage", "-pix_fmt", origPixelFormat, "-c:a", origCodecAudio, "/"+tempMediaFolderPath+"new_part."+origContainer ] )
         if "start" in whereInVideo:
             first_path = "/"+tempMediaFolderPath+"new_part."+origContainer
             second_path = "/"+inputPathPy
@@ -310,7 +311,7 @@ def addTimeFunction ( ffmpeg_staticPath, inputPathPy, outputPathPy, tempMediaFol
 
     if "freeze_frame" in addClipType:
         subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-ss", atTimestamp, "-frames:v", "1", "/"+tempMediaFolderPath+"freeze_frame.png" ], shell = False ) # at marker
-        subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y", "-loop", "1", "-t", addLength, "-framerate", origFrameRate, "-i", "/"+tempMediaFolderPath+"freeze_frame.png", "-f", "lavfi", "-i", "anullsrc=channel_layout="+origAudioLayout+":sample_rate="+origAudioSamplerate, "-t", addLength, "-c:v", origCodecVideo, "-tune", "stillimage", "-pix_fmt", origPixelFormat, "-c:a", origCodecAudio, "/"+tempMediaFolderPath+"freeze_part."+origContainer  ], shell = False )
+        subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y", "-loop", "1", "-t", addLength, "-framerate", origFrameRate, "-i", "/"+tempMediaFolderPath+"freeze_frame.png", "-i", "anullsrc=channel_layout="+origAudioLayout+":sample_rate="+origAudioSamplerate, "-t", addLength, "-c:v", origCodecVideo, "-tune", "stillimage", "-pix_fmt", origPixelFormat, "-c:a", origCodecAudio, "/"+tempMediaFolderPath+"freeze_part."+origContainer  ], shell = False )
         if "start" in whereInVideo:
             first_path = "/"+tempMediaFolderPath+"freeze_part."+origContainer
             second_path = "/"+inputPathPy
@@ -547,7 +548,7 @@ def imageGeneralEffectFunction ( ffmpeg_staticPath, inputPathPy, outputPathPy, e
         for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-filter:v", effectName+"=5:5:"+someValue1+":5:5:"+someValue2+":enable='between(t,"+fromSec+","+toSec+")'", "-c:a", "copy", "/"+outputPathPy ]):
             pyotherside.send('progressPercentage', progress)
     elif ("photosensitivity" in effectName) or ("stereo3d" in effectName):
-        for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-filter:v", effectName+"=5:5:"+someValue1+":5:5:"+someValue2+":enable='between(t,"+fromSec+","+toSec+")'", "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ]):
+        for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-filter:v", effectName+"=5:5:"+someValue1+":5:5:"+someValue2+":enable='between(t,"+fromSec+","+toSec+")'", "-c:v", "mpeg4", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ]):
             pyotherside.send('progressPercentage', progress)
     else:
         for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-filter:v", effectName+"=enable='between(t,"+fromSec+","+toSec+")'", "-c:a", "copy", "/"+outputPathPy ]):
@@ -566,7 +567,7 @@ def imageDeshakeFunction ( ffmpeg_staticPath, inputPathPy, outputPathPy, tempMed
     for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-filter:v", "vidstabdetect=stepsize=32:shakiness=10:accuracy=10:result=/"+tempMediaFolderPath+"transforms.trf", "-f", "null", "-" ]):
         pyotherside.send('progressPercentage', (progress / 2) )
         step2finished = "false"
-    for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-filter:v", "vidstabtransform=input=/"+tempMediaFolderPath+"transforms.trf:optzoom=2:smoothing=10,unsharp=5:5:0.8:3:3:0.4", "-c:v", "libx264", "-preset", "veryfast", "-tune", "film", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ]):
+    for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-filter:v", "vidstabtransform=input=/"+tempMediaFolderPath+"transforms.trf:optzoom=2:smoothing=10,unsharp=5:5:0.8:3:3:0.4", "-c:v", "mpeg4", "-preset", "veryfast", "-tune", "film", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ]):
         pyotherside.send('progressPercentage', (progress / 2 + 50) )
         step2finished = "true"
     for i in os.listdir( "/"+tempMediaFolderPath ) :
@@ -596,10 +597,10 @@ def imageFrei0rFunction ( ffmpeg_staticPath, inputPathPy, outputPathPy, applyEff
     currentFunctionErrorName = "imageFrei0rFunction"
     if "true" in useParams:
         #subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-filter:v", "frei0r=filter_name="+applyEffect+":filter_params="+applyParams, "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ], shell = False )
-        for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-filter:v", "frei0r=filter_name="+applyEffect+":"+applyParams, "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ]):
+        for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-filter:v", "frei0r=filter_name="+applyEffect+":"+applyParams, "-c:v", "mpeg4", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ]):
             pyotherside.send('progressPercentage', progress)
     else: # "false"
-        for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-filter:v", "frei0r=filter_name="+applyEffect, "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ]):
+        for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-filter:v", "frei0r=filter_name="+applyEffect, "-c:v", "mpeg4", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ]):
             pyotherside.send('progressPercentage', progress)
     if "true" in success :
         pyotherside.send('loadTempMedia', outputPathPy )
@@ -725,12 +726,13 @@ def createSlideshowFunction ( ffmpeg_staticPath, outputPathPy, allSelectedPaths,
     # the last file needs to be added again because of some bug in ffmpeg
     inputFilesList.extend([ "-i", str(allSelectedPathsList[len(allSelectedPathsList)-1]) ])
     inputFilesList.extend ([ "-t", str(durationCounter) ])
+    #inputFilesList.extend ([ "-i", "anullsrc=channel_layout=stereo:sample_rate=48000" ])
 
     #pyotherside.send('complexfilter', complexFilter)
     #pyotherside.send('fileList', inputFilesList)
 
     #subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y", "-framerate", "25" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-map", str(len(allSelectedPathsList))+":a", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ])
-    for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-framerate", "25" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-c:v", "mjped", "-preset", "veryfast", "-r", "25", "-pix_fmt", "yuv420p", "-c:a", "aac", outputPathPy ]):
+    for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-framerate", "25" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-c:v", "mjpeg", "-preset", "veryfast", "-r", "25", "-pix_fmt", "yuv420p", "-c:a", "aac", outputPathPy ]):
         pyotherside.send('progressPercentage', progress)
     if "true" in success :
         pyotherside.send('newClipCreated', outputPathPy, newFileName )
@@ -747,7 +749,8 @@ def splitscreenFunction ( ffmpeg_staticPath, inputPathPy, outputPathPy, origVide
     totalDuration = max( float(lengthClip1), float(lengthClip2) )
     inputFilesList = []
     inputFilesList.clear()
-    inputFilesList.extend([ "-i", "/"+inputPathPy, "-i", "/"+pathSecondVideo, "-f", "lavfi", "-t", str(totalDuration), "-i", "anullsrc=channel_layout=stereo:sample_rate=48000" ])
+    inputFilesList.extend([ "-i", "/"+inputPathPy, "-i", "/"+pathSecondVideo,  "-t", str(totalDuration), "-i", "anullsrc=channel_layout=stereo:sample_rate=48000" ])
+    #inputFilesList.extend([ "-i", "/"+inputPathPy, "-i", "/"+pathSecondVideo,  "-t", str(totalDuration) ])
 
     if "first" in useAudioFrom:
         audioMix = ";[0:a][2:a]amix=inputs=2[outa]" #amerge
@@ -772,7 +775,7 @@ def splitscreenFunction ( ffmpeg_staticPath, inputPathPy, outputPathPy, origVide
         stackOrder = "[orig][new]hstack"
 
     #subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y" ] + inputFilesList + [ "-filter_complex", "[0]scale="+scaleBy+",setsar=1:1[orig];[1]scale="+scaleBy+",setsar=1:1[new];"+stackOrder+",format=yuv420p[outv]"+audioMix, "-map", "[outv]", "-map", "[outa]", "-c:v", "libx264", "-c:a", "aac", "/"+outputPathPy ], shell = False)
-    for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y" ] + inputFilesList + [ "-filter_complex", "[0]scale="+scaleBy+",setsar=1:1[orig];[1]scale="+scaleBy+",setsar=1:1[new];"+stackOrder+",format=yuv420p[outv]"+audioMix, "-map", "[outv]", "-map", "[outa]", "-c:v", "libx264", "-c:a", "aac", "/"+outputPathPy ]):
+    for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y" ] + inputFilesList + [ "-filter_complex", "[0]scale="+scaleBy+",setsar=1:1[orig];[1]scale="+scaleBy+",setsar=1:1[new];"+stackOrder+",format=yuv420p[outv]"+audioMix, "-map", "[outv]", "-map", "[outa]", "-c:v", "mpeg4", "-c:a", "aac", "/"+outputPathPy ]):
         pyotherside.send('progressPercentage', progress)
     if "true" in success :
         pyotherside.send('loadTempMedia', outputPathPy )
@@ -839,7 +842,7 @@ def createStorylineFunction ( ffmpeg_staticPath, outputPathPy, allSelectedPaths,
     # add info on how to chain these videos one after another
     complexFilter += xFadeInfos
     #subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-map", lastOutputAX, "-threads", "0", "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ])
-    for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-map", lastOutputAX, "-threads", "0", "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", outputPathPy ]):
+    for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-map", lastOutputAX, "-threads", "0", "-c:v", "mpeg4", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", outputPathPy ]):
         pyotherside.send('progressPercentage', progress)
     if "true" in success :
         pyotherside.send('newClipCreated', outputPathPy, newFileName )
@@ -1161,7 +1164,7 @@ def run_ffmpeg_command(cmd: "list[str]") -> Iterator[int]:
     total_dur = None
     cmd_with_progress = [cmd[0]] + ["-progress", "-", "-nostats"] + cmd[1:]
 
-    pyotherside.send('cmd_wth:', cmd_with_progress)
+    #pyotherside.send('cmd_wth:', cmd_with_progress)
 
     stderr = []
     stderr.clear()
@@ -1170,7 +1173,7 @@ def run_ffmpeg_command(cmd: "list[str]") -> Iterator[int]:
     while True:
         line = p.stdout.readline().decode("utf8", errors="replace").strip()
 
-        pyotherside.send('runDebug_', line)
+        #pyotherside.send('runDebug_', line)
 
         if line == "" and p.poll() is not None:
             break
