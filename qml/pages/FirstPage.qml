@@ -581,7 +581,7 @@ Page {
             onSelectedContentPropertiesChanged: {
                 storylineAddFilePath = selectedContentProperties.filePath
                 storylineAddFileName = selectedContentProperties.fileName
-                //console.debug(storylineAddFilePath)
+                console.debug(storylineAddFilePath)
                 storylineAddFileLoaded = true
                 py.getPlaybackDuration( decodeURIComponent( storylineAddFilePath.toString().replace(/^(file:\/{3})|(qrc:\/{2})|(http:\/{2})/,"") ), "addStorylineModel" )
             }

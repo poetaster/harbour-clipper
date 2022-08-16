@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
-
 import pyotherside
-import time
 import os
-import subprocess, signal
+import sys
+import subprocess
 import random
 from pathlib import Path
-
 # other for progressbar
 import re
-#from collections.abc import Iterator
+# from collections.abc import Iterator
 from typing import Iterator
-
+sys.path.append('/usr/share/harbour-clipper/lib/')
+import ffmpeg
 
 # global variables
 currentFunctionErrorName = ""
@@ -20,19 +19,20 @@ success = "false"
 # Functions for file operations
 # #######################################################################################
 
-def getHomePath ():
+
+def getHomePath():
     homeDir = str(Path.home())
-    pyotherside.send('homePathFolder', homeDir )
+    pyotherside.send('homePathFolder', homeDir)
 
-def createTmpAndSaveFolder ( tempMediaFolderPath, saveAudioFolderPath ):
-    if not os.path.exists( "/"+tempMediaFolderPath ):
-        os.makedirs( "/"+tempMediaFolderPath )
-        pyotherside.send('folderExistence', )
-    if not os.path.exists( "/"+saveAudioFolderPath ):
-        os.makedirs( "/"+saveAudioFolderPath )
-        pyotherside.send('folderExistence', )
+def createTmpAndSaveFolder(tempMediaFolderPath, saveAudioFolderPath):
+    if not os.path.exists("/"+tempMediaFolderPath):
+        os.makedirs("/"+tempMediaFolderPath)
+        pyotherside.send('folderExistence', tempMediaFolderPath)
+    if not os.path.exists( "/"+saveAudioFolderPath):
+        os.makedirs("/"+saveAudioFolderPath)
+        pyotherside.send('folderExistence',saveAudioFolderPath)
 
-def deleteAllTMPFunction ( tempMediaFolderPath ):
+def deleteAllTMPFunction( tempMediaFolderPath ):
     # pkill not allowed
     #subprocess.run([ "pkill", "-f", "ffmpeg" ])
     for i in os.listdir( "/"+tempMediaFolderPath ) :
@@ -397,9 +397,6 @@ def removeBWframesFunction ( ffmpeg_staticPath, inputPathPy, outputPathPy, color
     pyotherside.send('loadTempMedia', outputPathPy )
 
 
-
-
-    # IMAGE FUNCTIONS
 # IMAGE FUNCTIONS
 # ##############################################################################################################################################################################
 
@@ -607,8 +604,6 @@ def imageFrei0rFunction ( ffmpeg_staticPath, inputPathPy, outputPathPy, applyEff
 
 
 
-
-
 # COLLAGE FUNCTIONS
 # ##############################################################################################################################################################################
 
@@ -673,8 +668,8 @@ def createSlideshowFunction ( ffmpeg_staticPath, outputPathPy, allSelectedPaths,
         lastRandom = randomPanZoom
 
         # generic fade
-        #-filter_complex \
-        #"[1]fade=d=1:t=in:alpha=1,setpts=PTS-STARTPTS+2/TB[f0]; \
+        # -filter_complex \
+        # "[1]fade=d=1:t=in:alpha=1,setpts=PTS-STARTPTS+2/TB[f0]; \
         # [2]fade=d=1:t=in:alpha=1,setpts=PTS-STARTPTS+4/TB[f1]; \
         # [3]fade=d=1:t=in:alpha=1,setpts=PTS-STARTPTS+6/TB[f2]; \
         # [4]fade=d=1:t=in:alpha=1,setpts=PTS-STARTPTS+8/TB[f3]; \
@@ -682,12 +677,12 @@ def createSlideshowFunction ( ffmpeg_staticPath, outputPathPy, allSelectedPaths,
         # [bg3][f3]overlay,format=yuv420p[v]" -map "[v]"
 
         # generic xFade -filter_complex \
-        #"[0][1]xfade=transition=slideleft:duration=0.5:offset=2.5[f0]; \
-        #[f0][2]xfade=transition=slideleft:duration=0.5:offset=5[f1]; \
-        #[f1][3]xfade=transition=slideleft:duration=0.5:offset=7.5[f2]; \
-        #[f2][4]xfade=transition=slideleft:duration=0.5:offset=10[f3]" \
-        #-map "[f3]"
-        #
+        # "[0][1]xfade=transition=slideleft:duration=0.5:offset=2.5[f0]; \
+        # [f0][2]xfade=transition=slideleft:duration=0.5:offset=5[f1]; \
+        # [f1][3]xfade=transition=slideleft:duration=0.5:offset=7.5[f2]; \
+        # [f2][4]xfade=transition=slideleft:duration=0.5:offset=10[f3]" \
+        # -map "[f3]"
+
         currentTransition = allSelectedTransitionsList[i]
         if "none" in currentTransition:
             if i == 0:
@@ -836,11 +831,37 @@ def createStorylineFunction ( ffmpeg_staticPath, outputPathPy, allSelectedPaths,
                 lastOutputAX = str("[ax"+str(i+1)+"]")
         if i == len(allSelectedPathsList)-1 :
             xFadeInfos = xFadeInfos[:-1] # remove last simicolon since it is not needed
-        #pyotherside.send('debugPythonLogs', xFadeInfos)
-        complexFilter += ( "["+str(i)+":v]" + "scale="+targetWidth+":"+targetHeight+":force_original_aspect_ratio=decrease,pad="+targetWidth+":"+targetHeight+":(ow-iw)/2:(oh-ih)/2,setsar=1,settb=AVTB[v"+str(i)+"];" )
+
+        # pyotherside.send('debugPythonLogs', xFadeInfos)
+
+        #complexFilter += ( "["+str(i)+":v]" + "scale="+targetWidth+":"+targetHeight+":force_original_aspect_ratio=decrease,pad="+targetWidth+":"+targetHeight+":(ow-iw)/2:(oh-ih)/2,setsar=1,settb=AVTB[v"+str(i)+"];" )
         previousXfadeOffset += float(offsetXfadeStart)
     # add info on how to chain these videos one after another
     complexFilter += xFadeInfos
+    pyotherside.send('debug filter:', complexFilter)
+    pyotherside.send('debug pypath: ', outputPathPy)
+    # ffmpeg-python example
+    in1 = ffmpeg.input(allSelectedPathsList[0])
+    in2 = ffmpeg.input(allSelectedPathsList[1])
+    #v1 = in1.video.hflip()
+    v1 = in1.video
+    a1 = in1.audio
+    v2 = in2.video
+    a2 = in2.audio
+    #v2 = in2.video.filter('reverse').filter('hue', s=0)
+    #a2 = in2.audio.filter('areverse').filter('aphaser')
+    joined = ffmpeg.concat(v1, a1, v2, a2, v=1, a=1).node
+    v3 = joined[0]
+    a3 = joined[1].filter('volume', 0.8)
+    out = ffmpeg.output(v3, a3, outputPathPy)
+    success = out.run(capture_stderr=True)
+    pyotherside.send('debug lib: ', success)
+
+    # simple case of 2
+    # /usr/bin/ffmpeg -progress - -nostats -hide_banner -y -i /home/defaultuser/Videos/Max-1.mp4 -i /home/defaultuser/Videos/Oscar-rerik-1.mp4 \
+    # -filter_complex "[0:v] [1:v]  concat=n=2:v=1[v]"  \
+    # -map [v]   -c:v mpeg4 -preset veryfast -pix_fmt yuv420p -c:a aac /home/defaultuser/Videos/story_2022-08-11_14-53-32.mkv
+
     #subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-map", lastOutputAX, "-threads", "0", "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", "/"+outputPathPy ])
     for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y" ] + inputFilesList + [ "-filter_complex", str(complexFilter), "-map", lastOutputVX, "-map", lastOutputAX, "-threads", "0", "-c:v", "mpeg4", "-preset", "veryfast", "-pix_fmt", "yuv420p", "-c:a", "aac", outputPathPy ]):
         pyotherside.send('progressPercentage', progress)
@@ -1164,7 +1185,7 @@ def run_ffmpeg_command(cmd: "list[str]") -> Iterator[int]:
     total_dur = None
     cmd_with_progress = [cmd[0]] + ["-progress", "-", "-nostats"] + cmd[1:]
 
-    #pyotherside.send('cmd_wth:', cmd_with_progress)
+    pyotherside.send('cmd_wth:', cmd_with_progress)
 
     stderr = []
     stderr.clear()
@@ -1173,7 +1194,7 @@ def run_ffmpeg_command(cmd: "list[str]") -> Iterator[int]:
     while True:
         line = p.stdout.readline().decode("utf8", errors="replace").strip()
 
-        #pyotherside.send('runDebug_', line)
+        pyotherside.send('runDebug_', line)
 
         if line == "" and p.poll() is not None:
             break

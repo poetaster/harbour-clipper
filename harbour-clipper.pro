@@ -41,6 +41,12 @@ DISTFILES += qml/harbour-clipper.qml \
     translations/*.ts \
     harbour-clipper.desktop
 
+python.files = lib/*
+DISTFILES += lib/ffmpeg/*
+
+python.path = "/usr/share/harbour-clipper/lib"
+INSTALLS += python
+
 SAILFISHAPP_ICONS = 86x86 108x108 128x128 172x172
 
 # to disable building translations every time, comment out the
