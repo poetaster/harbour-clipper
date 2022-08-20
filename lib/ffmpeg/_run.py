@@ -173,7 +173,7 @@ def get_args(stream_spec, overwrite_output=False):
 
 
 @output_operator()
-def compile(stream_spec, cmd='ffmpeg', overwrite_output=False):
+def compile(stream_spec, cmd='ffmpeg -progress - -nostats -hide_banner', overwrite_output=False):
     """Build command-line for invoking ffmpeg.
 
     The :meth:`run` function uses this to build the command line
@@ -279,6 +279,9 @@ def run_async(
 
     .. _subprocess Popen: https://docs.python.org/3/library/subprocess.html#popen-objects
     """
+    """
+    videoworks stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=False,
+    """
     args = compile(stream_spec, cmd, overwrite_output=overwrite_output)
     stdin_stream = subprocess.PIPE if pipe_stdin else None
     stdout_stream = subprocess.PIPE if pipe_stdout else None
@@ -289,10 +292,20 @@ def run_async(
     return subprocess.Popen(
         args,
         stdin=stdin_stream,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        universal_newlines=False,
+        cwd=cwd,
+    )
+    """
+    return subprocess.Popen(
+        args,
+        stdin=stdin_stream,
         stdout=stdout_stream,
         stderr=stderr_stream,
         cwd=cwd,
     )
+    """
 
 
 @output_operator()
