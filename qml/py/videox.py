@@ -836,8 +836,8 @@ def createStorylineFunction ( ffmpeg_staticPath, outputPathPy, allSelectedPaths,
                 lastOutputAX = str("[ax"+str(i+1)+"]")
         if i == len(allSelectedPathsList)-1 :
             xFadeInfos = xFadeInfos[:-1] # remove last simicolon since it is not needed
-        #pyotherside.send('debugPythonLogs', xFadeInfos)
         complexFilter += ( "["+str(i)+":v]" + "scale="+targetWidth+":"+targetHeight+":force_original_aspect_ratio=decrease,pad="+targetWidth+":"+targetHeight+":(ow-iw)/2:(oh-ih)/2,setsar=1,settb=AVTB[v"+str(i)+"];" )
+        pyotherside.send('complex: ', complexFilter)
         previousXfadeOffset += float(offsetXfadeStart)
     # add info on how to chain these videos one after another
     complexFilter += xFadeInfos
@@ -1164,7 +1164,7 @@ def run_ffmpeg_command(cmd: "list[str]") -> Iterator[int]:
     total_dur = None
     cmd_with_progress = [cmd[0]] + ["-progress", "-", "-nostats"] + cmd[1:]
 
-    #pyotherside.send('cmd_wth:', cmd_with_progress)
+    pyotherside.send('cmd_wth:', cmd_with_progress)
 
     stderr = []
     stderr.clear()
@@ -1208,6 +1208,83 @@ def run_ffmpeg_command(cmd: "list[str]") -> Iterator[int]:
         #subprocess.run([ "pkill", "-f", "ffmpeg" ])
     yield 100
 
+# Run ffmpeg command with ffmpeg-python
+def runFF(video,audio,outputpath):
+    global currentFunctionErrorName
+    global success
+    total_dur = None
+    stderr = []
+    stderr.clear()
+    success = "false"
+    out = ffmpeg.output( video, audio, outputpath)
+    out.global_args('-progress - -nostats -hide_banner')
+    #pyotherside.send('debug out: ', str(out.compile()))
+    proc = out.run_async()
+
+#    pyotherside.send('debug out: ', proc)
+
+    while True:
+        line = proc.stdout.readline().decode("utf8", errors="replace").strip()
+        # pyotherside.send('runDebug_', line)
+
+        if line == "" and proc.poll() is not None:
+            break
+        stderr.append(line.strip())
+
+        if not total_dur and DUR_REGEX.search(line):
+            total_dur = DUR_REGEX.search(line).groupdict()
+            total_dur = to_ms(**total_dur)
+            continue
+        if total_dur:
+            result = TIME_REGEX.search(line)
+            if result:
+                elapsed_time = to_ms(**result.groupdict())
+                yield int(elapsed_time / total_dur * 100)
+
+    if proc.returncode != 0:
+        success = "false"
+    else:
+        success = "true"
+    yield 100
+
+'''
+    output_kwargs.update ({"c:v": "libx264",
+                           "b:v": "%dM" %(bitrate),
+                           "pix_fmt": "yuv420p",
+                          })
+
+if include_audio and ref_in_a is not None:
+    output_kwargs.update ({"c:a": "aac",
+                           "b:a": "192k",
+                           "ar" : "48000",
+                           "strict": "experimental"
+                           })
+ffmpeg-python example
+
+in1 = ffmpeg.input(allSelectedPathsList[0])
+in2 = ffmpeg.input(allSelectedPathsList[1])
+#v1 = in1.video.hflip()
+v1 = in1.video
+a1 = in1.audio
+v2 = in2.video
+a2 = in2.audio
+#v2 = in2.video.filter('reverse').filter('hue', s=0)
+#a2 = in2.audio.filter('areverse').filter('aphaser')
+joined = ffmpeg.concat(v1, a1, v2, a2, v=1, a=1).node
+v3 = joined[0]
+a3 = joined[1]
+#.filter('volume', 0.8)
+#out = ffmpeg.output(v3, a3, outputPathPy)
+
+filter audio and video
+video = ffmpeg.filter([in1, in2], 'xfade', transition='dissolve',duration=1, offset=8)
+audio = ffmpeg.filter([in1, in2], 'acrossfade', d=1)
+
+out = ffmpeg.concat(video, audio, v=1, a=1).output(outputPathPy)
+
+HACKS
+https://github.com/kkroening/ffmpeg-python/issues/561
+'''
 
 
 
