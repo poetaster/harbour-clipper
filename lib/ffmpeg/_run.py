@@ -173,7 +173,7 @@ def get_args(stream_spec, overwrite_output=False):
 
 
 @output_operator()
-def compile(stream_spec, cmd='ffmpeg -progress - -nostats -hide_banner', overwrite_output=False):
+def compile(stream_spec, cmd='ffmpeg', overwrite_output=False):
     """Build command-line for invoking ffmpeg.
 
     The :meth:`run` function uses this to build the command line
@@ -286,11 +286,16 @@ def run_async(
     stdin_stream = subprocess.PIPE if pipe_stdin else None
     stdout_stream = subprocess.PIPE if pipe_stdout else None
     stderr_stream = subprocess.PIPE if pipe_stderr else None
+    """
+    modify the original args to get to videoworks
+    """
+    c_w_prog = [args[0]] + ["-progress", "-", "-nostats"] + args[1:]
+
     if quiet:
         stderr_stream = subprocess.STDOUT
         stdout_stream = subprocess.DEVNULL
     return subprocess.Popen(
-        args,
+        c_w_prog,
         stdin=stdin_stream,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
