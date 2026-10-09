@@ -334,7 +334,7 @@ Page {
                         font.pixelSize: Theme.fontSizeExtraSmall
                     }
                     MenuItem {
-                        text: "h264"
+                        text: "vp9"
                         font.pixelSize: Theme.fontSizeExtraSmall
                     }
                     MenuItem {
