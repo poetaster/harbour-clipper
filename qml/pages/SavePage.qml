@@ -133,8 +133,14 @@ Page {
             if ( (idComboBoxCodexAutoManual.currentIndex === 0) || (idComboBoxCodexAutoManual.currentIndex === 1 && (newFileType === "mpeg" || newFileType === "avi" || newFileType === "mov")) ) { var ignoreAllCodecs = "true" }
             else { ignoreAllCodecs = "false" }
 
-            console.log(needFrameChange)
-            call("videox.saveFile", [ ffmpeg_staticPath, inputPathPy, savePath, tempMediaFolderPath, newFileName, newFileType, ignoreAllCodecs, newAudioCodec, newVideoCodec, newVideoFrameRate, needFrameChange ])
+            var setScale
+            if (idScale.currentIndex === 1) {
+                setScale = ",scale=iw/2:ih/2"
+            } else if (idScale.currentIndex === 2) {
+                setScale = ",scale=iw/4:ih/4"
+            } else { setScale = "" }
+
+            call("videox.saveFile", [ ffmpeg_staticPath, inputPathPy, savePath, tempMediaFolderPath, newFileName, newFileType, ignoreAllCodecs, newAudioCodec, newVideoCodec, newVideoFrameRate, needFrameChange, setScale ])
         }
 
         onError: {
@@ -249,6 +255,26 @@ Page {
             }
 
             ComboBox {
+                id:idScale
+                width: parent.width
+                label: qsTr("Scale")
+                menu:ContextMenu {
+                    MenuItem {
+                        text: qsTr("Original")
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                    }
+                    MenuItem {
+                        text: "50%"
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                    }
+                    MenuItem {
+                        text: "25%"
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                    }
+                }
+            }
+
+            ComboBox {
                 id: idComboBoxTargetFolder
                 width: parent.width
                 label: qsTr("Folder")
@@ -331,6 +357,10 @@ Page {
                 menu: ContextMenu {
                     MenuItem {
                         text: qsTr("COPY") + " (" + origCodecVideo + ")"
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                    }
+                    MenuItem {
+                        text: "mpeg4"
                         font.pixelSize: Theme.fontSizeExtraSmall
                     }
                     MenuItem {
