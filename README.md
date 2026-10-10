@@ -24,5 +24,5 @@ Please file your bug reports here and not in the Jolla or openrepos comments!
 
 Tobias wrote Videoworks and poetaster is developing and maintaining it in future.
 
-(c) 2021-202 - Mark Washeim <blueprint@poetaster.de>
+(c) 2021-2026 - Mark Washeim <blueprint@poetaster.de>
 
