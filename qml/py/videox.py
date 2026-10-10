@@ -102,19 +102,16 @@ def getOverlayVideoInfo ( inputPathPy, thumbnailPath, thumbnailSec ):
     subprocess.run([ "ffmpeg", "-hide_banner", "-y", "-ss", thumbnailSec, "-i", "/"+inputPathPy, "-frames:v", "1", "/"+thumbnailPath ], shell = False )
     pyotherside.send( 'overlayVideoInfo', videoResolution )
 
-def saveFile ( ffmpeg_staticPath, inputPathPy, savePath, tempMediaFolderPath, newFileName, newFileType, ignoreAllCodecs, newAudioCodec, newVideoCodec, newVideoFrameRate, needFrameChange ):
+def saveFile ( ffmpeg_staticPath, inputPathPy, savePath, tempMediaFolderPath, newFileName, newFileType, ignoreAllCodecs, newAudioCodec, newVideoCodec, newVideoFrameRate, needFrameChange , setScale):
     if "true" in ignoreAllCodecs:
-        #subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "/"+savePath ])
         for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "/"+savePath ]):
             pyotherside.send('progressPercentageSave', progress)
     else:
         if "true" in needFrameChange:
-            #subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-c:v", newVideoCodec, "-c:a", newAudioCodec, "-r", newVideoFrameRate, "/"+savePath ])
-            for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-c:v", newVideoCodec, "-c:a", newAudioCodec, "-r", newVideoFrameRate, "/"+savePath ]):
+            for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-c:v", newVideoCodec, "-filter:v",  "tblend" + setScale, "-c:a", newAudioCodec, "-r", newVideoFrameRate, "/"+savePath ]):
                 pyotherside.send('progressPercentageSave', progress)
         else:
-            #subprocess.run([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-c:v", newVideoCodec, "-c:a", newAudioCodec, "/"+savePath ])
-            for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-c:v", newVideoCodec, "-c:a", newAudioCodec, "/"+savePath ]):
+            for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-c:v", newVideoCodec, "-filter:v",  "tblend" + setScale, "-c:a", newAudioCodec, "/"+savePath ]):
                 pyotherside.send('progressPercentageSave', progress)
     # clear tmp files
     for i in os.listdir( "/" + tempMediaFolderPath ) :
