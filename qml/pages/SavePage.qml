@@ -233,8 +233,14 @@ Page {
                     }
                         onCurrentItemChanged: {
                             if (currentIndex ===2) {
-                              idComboBoxCodexAutoManual.currentIndex = 1
-                              idComboBoxTargetCodecVideo.currentIndex = 4
+                                idComboBoxCodexAutoManual.currentIndex = 1
+                                idComboBoxTargetCodecVideo.visible = true
+                                idComboBoxTargetCodecVideo.currentIndex = 4
+                            }
+                            if (currentIndex ===1) {
+                                idComboBoxCodexAutoManual.currentIndex = 1
+                                idComboBoxTargetCodecVideo.visible = true
+                                idComboBoxTargetCodecVideo.currentIndex = 2
                             }
                         }
 
