@@ -57,7 +57,6 @@ Page {
         else if (origMediaType.indexOf('mov') !== -1) {
             idComboBoxFileExtension.currentIndex = 5
         }
-
         else if (origMediaType.indexOf('m4v') !== -1) {
             idComboBoxFileExtension.currentIndex = 6
         }
@@ -232,6 +231,13 @@ Page {
                             font.pixelSize: Theme.fontSizeExtraSmall
                         }
                     }
+                        onCurrentItemChanged: {
+                            if (currentIndex ===2) {
+                              idComboBoxCodexAutoManual.currentIndex = 1
+                              idComboBoxTargetCodecVideo.currentIndex = 4
+                            }
+                        }
+
                 }
                 IconButton {
                     id: idSaveButton
@@ -412,6 +418,19 @@ Page {
                 font.pixelSize: Theme.fontSizeExtraSmall
                 wrapMode: Text.Wrap
                 text: qsTr("Subtitles will be lost in case of saving in different container.") + "\n"
+            }
+
+
+            Item {
+                width: parent.width
+                height: 2*Theme.paddingLarge
+            }
+            Label {
+                x: Theme.paddingLarge * 1.2
+                width: parent.width - 2*x
+                font.pixelSize: Theme.fontSizeSmall
+                wrapMode: Text.Wrap
+                text: qsTr("When scaling, choose mp4 as extension and mpeg4 as codec for quick results. Or mkv as extension and vp9 for smaller sizes but long compression times..") + "\n"
             }
 
 

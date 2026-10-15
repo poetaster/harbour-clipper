@@ -102,16 +102,47 @@ def getOverlayVideoInfo ( inputPathPy, thumbnailPath, thumbnailSec ):
     subprocess.run([ "ffmpeg", "-hide_banner", "-y", "-ss", thumbnailSec, "-i", "/"+inputPathPy, "-frames:v", "1", "/"+thumbnailPath ], shell = False )
     pyotherside.send( 'overlayVideoInfo', videoResolution )
 
+'''
+these are the settings in screenrecorder
+287                              m_avi->fileName(),
+288                              QStringLiteral("-y"),
+289                              QStringLiteral("-q:v"),
+290                              QStringLiteral("2"),
+291                              QStringLiteral("-pix_fmt"),
+292                              QStringLiteral("yuv420p"),
+293                              QStringLiteral("-preset"),
+294                              QStringLiteral("slow"),
+295                              QStringLiteral("-movflags"),
+296                              QStringLiteral("+faststart"),
+297                              fileout};
+275                              QStringLiteral("vp9"),
+276                              QStringLiteral("-crf"),
+277                              QStringLiteral("28"),
+278                              QStringLiteral("-b:v"),
+279                              QStringLiteral("0"),
+280                              QStringLiteral("-row-mt"),
+281                              QStringLiteral("1"),
+282                              QStringLiteral("-an"),
+
+'''
+
 def saveFile ( ffmpeg_staticPath, inputPathPy, savePath, tempMediaFolderPath, newFileName, newFileType, ignoreAllCodecs, newAudioCodec, newVideoCodec, newVideoFrameRate, needFrameChange , setScale):
     if "true" in ignoreAllCodecs:
-        for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "/"+savePath ]):
+        for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-q:v", "4", "/"+savePath ]):
             pyotherside.send('progressPercentageSave', progress)
     else:
         if "true" in needFrameChange:
-            for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-c:v", newVideoCodec, "-filter:v",  "tblend" + setScale, "-c:a", newAudioCodec, "-r", newVideoFrameRate, "/"+savePath ]):
-                pyotherside.send('progressPercentageSave', progress)
+            if newVideoCodec == "mpeg4":
+                for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-c:v", newVideoCodec, "-filter:v",   "tblend" + setScale, "-q:v", "3", "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-c:a", newAudioCodec, "/"+savePath ]):
+                    pyotherside.send('progressPercentageSave', progress)
+            elif newVideoCodec == "vp9":
+                for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-c:v", newVideoCodec, "-filter:v",   "tblend" + setScale, "-crf", "28", "-b:v", "0", "-row-mt", "1", "-c:a", newAudioCodec, "/"+savePath ]):
+                    pyotherside.send('progressPercentageSave', progress)
+            else:
+                for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-c:v", newVideoCodec, "-filter:v",  "tblend" + setScale, "-c:a", newAudioCodec, "-r", newVideoFrameRate, "/"+savePath ]):
+                    pyotherside.send('progressPercentageSave', progress)
         else:
-            for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-c:v", newVideoCodec, "-filter:v",  "tblend" + setScale, "-c:a", newAudioCodec, "/"+savePath ]):
+            for progress in run_ffmpeg_command([ ffmpeg_staticPath, "-hide_banner", "-y", "-i", "/"+inputPathPy, "-c:v", newVideoCodec, "-filter:v",  setScale, "-q:v", "2", "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-c:a", newAudioCodec, "/"+savePath ]):
                 pyotherside.send('progressPercentageSave', progress)
     # clear tmp files
     for i in os.listdir( "/" + tempMediaFolderPath ) :
