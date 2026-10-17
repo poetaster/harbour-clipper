@@ -8,14 +8,20 @@ import AudioRecorder 1.0 // custom qt audio recorder
 
 Page {
     id: page
+
     allowedOrientations: Orientation.All
+
     onOrientationTransitionRunningChanged: {
         delayShowCropMarkers = true
         idTimerDelaySetCropmarkers.start()
     }
+
     onOrientationChanged: {
-        if ( page.orientation === Orientation.Landscape ) { spacerLandscapeLowerToolRow = page.width / 14 }
-        else if ( page.orientation === Orientation.Portrait ) { spacerLandscapeLowerToolRow = 0 }
+        if (page.orientation & Orientation.LandscapeMask) {
+            spacerLandscapeLowerToolRow = page.width / 14
+        } else if (page.orientation & Orientation.PortraitMask) {
+            spacerLandscapeLowerToolRow = 0
+        }
     }
 
     // file and folder variables
