@@ -24,6 +24,7 @@ SOURCES += src/harbour-clipper.cpp \
     src/audio-recorder.cpp
 
 DISTFILES += qml/harbour-clipper.qml \
+    .gitignore \
     qml/cover/CoverPage.qml \
     qml/cover/harbour_clipper.svg \
     qml/pages/FirstPage.qml \
