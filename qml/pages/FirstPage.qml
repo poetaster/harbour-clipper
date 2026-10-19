@@ -76,30 +76,30 @@ Page {
     property var plusMinusInfo : ""
     property var itemsToolbar : 5
     property var fontSizePreview : Theme.fontSizeExtraLarge
-    property bool trimAreaVisible : (idButtonCut.selected && idButtonCutTrim.down) ? true : false
-    property bool cropAreaVisible : ( (idButtonCut.selected && idButtonCutCrop.down)
-                                     || (idButtonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) // blur
-                                     || (idButtonImage.selected && idButtonImageOverlays.down && overlayFilePath !== "" && (idComboBoxImageOverlayType.currentIndex === 0 ||  idComboBoxImageOverlayType.currentIndex === 1 || (idComboBoxImageOverlayType.currentIndex === 4 && idComboBoxImageOverlayAlphaStretch.currentIndex === 1 )) )
-                                     || (idButtonImage.selected && idButtonImageOverlays.down && ( idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) )
+    property bool trimAreaVisible : (mainToolbar.buttonCut.selected && idButtonCutTrim.down) ? true : false
+    property bool cropAreaVisible : ( (mainToolbar.buttonCut.selected && idButtonCutCrop.down)
+                                     || (mainToolbar.buttonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) // blur
+                                     || (mainToolbar.buttonImage.selected && idButtonImageOverlays.down && overlayFilePath !== "" && (idComboBoxImageOverlayType.currentIndex === 0 ||  idComboBoxImageOverlayType.currentIndex === 1 || (idComboBoxImageOverlayType.currentIndex === 4 && idComboBoxImageOverlayAlphaStretch.currentIndex === 1 )) )
+                                     || (mainToolbar.buttonImage.selected && idButtonImageOverlays.down && ( idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) )
                                      ) ? true : false
-    property bool textAreaVisible : ( idButtonImage.selected && idButtonImageText.down ) ? true : false
-    property bool hideUpperTimeMarkers : ( cropAreaVisible === true || dragAreaText.pressed || idButtonFile.selected || idMediaPlayer.height <= idTimeInfoRow.height ) ? true : false
+    property bool textAreaVisible : ( mainToolbar.buttonImage.selected && idButtonImageText.down ) ? true : false
+    property bool hideUpperTimeMarkers : ( cropAreaVisible === true || dragAreaText.pressed || mainToolbar.buttonFile.selected || idMediaPlayer.height <= idTimeInfoRow.height ) ? true : false
     property bool hideLowerTimeMarkers : ( dragAreaText.pressed
                                           || idMediaPlayer.height <= idTimeInfoRow.height
                                           || dragArea1.pressed
                                           || dragArea2.pressed
-                                          || (idButtonCut.selected && ( idButtonCutTrim.down === false ) )
-                                          || (idButtonImage.selected && ( (idButtonImageEffects.down && ((idComboBoxImageEffects.currentIndex === 0 && ( (idComboBoxImageEffectsBasics.currentIndex === 0 && ( idComboBoxImageEffectsFade.currentIndex === 0 || idComboBoxImageEffectsFade.currentIndex === 1 )) || idComboBoxImageEffectsBasics.currentIndex === 5) ) // fade || reverse ||
+                                          || (mainToolbar.buttonCut.selected && ( idButtonCutTrim.down === false ) )
+                                          || (mainToolbar.buttonImage.selected && ( (idButtonImageEffects.down && ((idComboBoxImageEffects.currentIndex === 0 && ( (idComboBoxImageEffectsBasics.currentIndex === 0 && ( idComboBoxImageEffectsFade.currentIndex === 0 || idComboBoxImageEffectsFade.currentIndex === 1 )) || idComboBoxImageEffectsBasics.currentIndex === 5) ) // fade || reverse ||
                                                                                                  || (idComboBoxImageEffects.currentIndex === 2 && (idComboBoxImageEffectsRepair.currentIndex === 3 || idComboBoxImageEffectsRepair.currentIndex === 4 || idComboBoxImageEffectsRepair.currentIndex === 5) )  // deshake || repairFrames || stabilize ||
                                                                                                  || (idComboBoxImageEffects.currentIndex === 3 && ( idComboBoxImageEffectsFinders.currentIndex === 2 || idComboBoxImageEffectsFinders.currentIndex === 3 ) ) // blackFrame || whiteFrame
                                                                                                  || idComboBoxImageEffects.currentIndex === 4 // all frei0r effects
                                                                                                  )) //reverse only works for whole clip
                                                                      || idButtonImageGeometry.down) )
-                                          || (idButtonAudio.selected && (idButtonAudioFade.down || idButtonAudioRecord.down) )
-                                          || (idButtonAudio.selected && idButtonAudioMixer.down && idComboBoxAudioNewLength.currentIndex === 0 )
-                                          || (idButtonAudio.selected && idButtonAudioFilters.down && idComboBoxAudioFilters.currentIndex === 1 ) // echo effects do not support yet timeline editing
-                                          || (idButtonCollage.selected && ( idButtonCollageSubtitle.down === false || (idButtonCollageSubtitle.down === true && idComboBoxCollageSubtitleAdd.currentIndex === 0) ) )
-                                          || idButtonFile.selected
+                                          || (mainToolbar.buttonAudio.selected && (idButtonAudioFade.down || idButtonAudioRecord.down) )
+                                          || (mainToolbar.buttonAudio.selected && idButtonAudioMixer.down && idComboBoxAudioNewLength.currentIndex === 0 )
+                                          || (mainToolbar.buttonAudio.selected && idButtonAudioFilters.down && idComboBoxAudioFilters.currentIndex === 1 ) // echo effects do not support yet timeline editing
+                                          || (mainToolbar.buttonCollage.selected && ( idButtonCollageSubtitle.down === false || (idButtonCollageSubtitle.down === true && idComboBoxCollageSubtitleAdd.currentIndex === 0) ) )
+                                          || mainToolbar.buttonFile.selected
                                          ) ? true : false
     property var lastToolsButtonPressed : "Cut"
     property var backColorTools : Theme.rgba(Theme.primaryColor, 0.1) // "transparent" // Theme.rgba(Theme.highlightDimmerColor, 0.5)
@@ -254,9 +254,9 @@ Page {
     // watchdogs: when entering or leaving certain tools
     Item {
         id: idWatchdog_ratioChangeOverlay
-        enabled: ( idButtonImage.selected && idButtonImageOverlays.down&& ( overlayFilePath !== "" || idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) ) ? true : false
+        enabled: ( mainToolbar.buttonImage.selected && idButtonImageOverlays.down&& ( overlayFilePath !== "" || idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) ) ? true : false
         onEnabledChanged: {
-            if ( idButtonImage.selected && idButtonImageOverlays.down && ( overlayFilePath !== "" || idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) ) { // on_enter
+            if ( mainToolbar.buttonImage.selected && idButtonImageOverlays.down && ( overlayFilePath !== "" || idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) ) { // on_enter
                 if ( idComboBoxImageOverlayType.currentIndex === 0 ) { croppingRatio = previewRatioFileImage }
                 else if ( idComboBoxImageOverlayType.currentIndex === 1 ) { croppingRatio = previewRatioFileVideo }
                 else if ( idComboBoxImageOverlayType.currentIndex === 4 ) { croppingRatio = previewRatioFileVideo } //ToDo: give its own ratio
@@ -267,9 +267,9 @@ Page {
     }
     Item {
         id: idWatchdog_ratioChangeBlur
-        enabled: ( idButtonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) ? true : false
+        enabled: ( mainToolbar.buttonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) ? true : false
         onEnabledChanged: {
-            if ( idButtonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) { // on_enter
+            if ( mainToolbar.buttonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) { // on_enter
                 croppingRatio = 0
                 setCropmarkersRatio()
             }
@@ -277,9 +277,9 @@ Page {
     }
     Item {
         id: idWatchdog_ratioChangeCrop
-        enabled: ( idButtonCut.selected && idButtonCutCrop.down ) ? true : false
+        enabled: ( mainToolbar.buttonCut.selected && idButtonCutCrop.down ) ? true : false
         onEnabledChanged: {
-            if ( idButtonCut.selected && idButtonCutCrop.down ) { // on_enter
+            if ( mainToolbar.buttonCut.selected && idButtonCutCrop.down ) { // on_enter
                 croppingRatio = oldRatioCrop
                 setCropmarkersRatio()
             }
@@ -1753,7 +1753,7 @@ Page {
                         }
                         Image {
                             id: idPreviewOverlayImage
-                            visible: ( idButtonImage.selected && idButtonImageOverlays.down && overlayFilePath !== "" && ( idComboBoxImageOverlayType.currentIndex === 0 || idComboBoxImageOverlayType.currentIndex === 1 || idComboBoxImageOverlayType.currentIndex === 4 ) )
+                            visible: ( mainToolbar.buttonImage.selected && idButtonImageOverlays.down && overlayFilePath !== "" && ( idComboBoxImageOverlayType.currentIndex === 0 || idComboBoxImageOverlayType.currentIndex === 1 || idComboBoxImageOverlayType.currentIndex === 4 ) )
                             cache: false
                             autoTransform: true
                             opacity: (idComboBoxImageOverlayType.currentIndex === 4) ? 0.6 : idToolsRowImageOverlayOpacitySlider.value
@@ -1762,7 +1762,7 @@ Page {
                         }
                         Rectangle {
                             id: idPreviewOverlayRectangle
-                            visible: ( idButtonImage.selected && idButtonImageOverlays.down && ( idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) )
+                            visible: ( mainToolbar.buttonImage.selected && idButtonImageOverlays.down && ( idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) )
                             anchors.fill: parent
                             opacity: ( idComboBoxImageOverlayType.currentIndex === 2 ) ? idToolsRowImageOverlayOpacitySlider.value : 1
                             color: ( idComboBoxImageOverlayType.currentIndex === 2 ) ? drawRectangleColor : "transparent"
@@ -2084,7 +2084,7 @@ Page {
 
                 Rectangle {
                     id: idLabelFromToLeft
-                    visible: ( (finishedLoading === true && noFile === false) && ( (idButtonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 0) || (idButtonAudio.selected && idButtonAudioFade.down &&  idComboBoxAudioFade.currentIndex === 0 ) ) )
+                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 0) || (mainToolbar.buttonAudio.selected && idButtonAudioFade.down &&  idComboBoxAudioFade.currentIndex === 0 ) ) )
                     z: -1
                     y: Theme.paddingMedium
                     height: parent.height - 2 * y
@@ -2106,7 +2106,7 @@ Page {
 
                 Rectangle {
                     id: idLabelFromToRight
-                    visible: ( (finishedLoading === true && noFile === false) && ( (idButtonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 1) || (idButtonAudio.selected && idButtonAudioFade.down &&  idComboBoxAudioFade.currentIndex === 1 ) ) )
+                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 1) || (mainToolbar.buttonAudio.selected && idButtonAudioFade.down &&  idComboBoxAudioFade.currentIndex === 1 ) ) )
                     z: -1
                     y: Theme.paddingMedium
                     height: parent.height - 2 * y
@@ -2128,7 +2128,7 @@ Page {
 
                 Rectangle {
                     id: idRectangleMixer
-                    visible: ( finishedLoading === true && noFile === false && idButtonAudio.selected && idButtonAudioMixer.down && idComboBoxAudioNewLength.currentIndex === 0 && addAudioLoaded === true )
+                    visible: ( finishedLoading === true && noFile === false && mainToolbar.buttonAudio.selected && idButtonAudioMixer.down && idComboBoxAudioNewLength.currentIndex === 0 && addAudioLoaded === true )
                     z: -1
                     y: Theme.paddingMedium
                     height: parent.height - 2 * y
@@ -2150,7 +2150,7 @@ Page {
 
                 Rectangle {
                     id: idRectangleAudioRecording
-                    visible: ( idButtonAudio.selected && idButtonAudioRecord.down && recordingAudioState === true )
+                    visible: ( mainToolbar.buttonAudio.selected && idButtonAudioRecord.down && recordingAudioState === true )
                     z: -1
                     y: Theme.paddingMedium
                     x: startRecordingHandlePosX
@@ -2328,112 +2328,16 @@ Page {
                 }
             }
 
-            Item {
-                width: parent.width
-                height: Theme.paddingLarge
-            }
-
-            ToolbarBase {
-                id: idToolsCategoriesRow
-
-                width: parent.width
-
-                ToolbarItem {
-                    id: idButtonCut
-
-                    icon: "../symbols/icon-m-cut.svg"
-                    selected: true
-
-                    onClicked: {
-                        idButtonCut.selected = true
-                        idButtonImage.selected = false
-                        idButtonAudio.selected = false
-                        idButtonFile.selected = false
-                        idButtonCollage.selected = false
-                    }
-                }
-
-                ToolbarItem {
-                    id: idButtonImage
-
-                    icon: "image://theme/icon-m-ambience"
-
-                    onClicked: {
-                        idButtonCut.selected = false
-                        idButtonImage.selected = true
-                        idButtonAudio.selected = false
-                        idButtonFile.selected = false
-                        idButtonCollage.selected = false
-                    }
-                }
-
-                ToolbarItem {
-                    id: idButtonAudio
-
-                    icon: "image://theme/icon-m-sounds" // speaker
-
-                    onClicked: {
-                        idButtonCut.selected = false
-                        idButtonImage.selected = false
-                        idButtonAudio.selected = true
-                        idButtonFile.selected = false
-                        idButtonCollage.selected = false
-                    }
-                }
-
-                ToolbarItem {
-                    id: idButtonCollage
-
-                    icon: "../symbols/icon-m-timeline.svg"
-
-                    onClicked: {
-                        idButtonCut.selected = false
-                        idButtonImage.selected = false
-                        idButtonAudio.selected = false
-                        idButtonFile.selected = false
-                        idButtonCollage.selected = true
-                    }
-                }
-
-                ToolbarItem {
-                    id: idButtonFile
-
-                    icon: "image://theme/icon-m-file-document-light?"
-
-                    onClicked: {
-                        idButtonCut.selected = false
-                        idButtonImage.selected = false
-                        idButtonAudio.selected = false
-                        idButtonFile.selected = true
-                        idButtonCollage.selected = false
-                    }
-                }
-            }
-
-            // Hacky solution to reduce nesting of elements
-            // An item with 1px height will reserve minimal space inside of the column,
-            // hence the rectangle will be on top of the toolbar, event though it is outside of its hierarchy.
-            // In the future the toolbar should be remade into separate components,
-            // allowing for easier complex composition of visual elements
-            Item {
-                width: parent.width
-                height: 1
-
-                Rectangle {
-                    y: -height
-                    width: parent.width
-                    height: Theme.dp(1)
-                    color: Theme.highlightColor
-                    opacity: Theme.opacityOverlay
-                }
+            MainToolbar {
+                id: mainToolbar
             }
 
             // tool-details CUT
             Row {
                 id: idToolsRowCut
-                visible: idButtonCut.selected
-                x: idToolsCategoriesRow.x
-                width: idToolsCategoriesRow.width
+                visible: mainToolbar.buttonCut.selected
+                x: mainToolbar.x
+                width: mainToolbar.width
 
                 IconButton {
                     id: idButtonCutTrim
@@ -2597,9 +2501,9 @@ Page {
             // tool-details IMAGE
             Row {
                 id: idToolsRowImage
-                visible: idButtonImage.selected
-                x: idToolsCategoriesRow.x
-                width: idToolsCategoriesRow.width
+                visible: mainToolbar.buttonImage.selected
+                x: mainToolbar.x
+                width: mainToolbar.width
 
                 IconButton {
                     id: idButtonImageEffects
@@ -2764,9 +2668,9 @@ Page {
             // tool-details AUDIO
             Row {
                 id: idToolsRowAudio
-                visible: idButtonAudio.selected
-                x: idToolsCategoriesRow.x
-                width: idToolsCategoriesRow.width
+                visible: mainToolbar.buttonAudio.selected
+                x: mainToolbar.x
+                width: mainToolbar.width
 
                 IconButton {
                     id: idButtonAudioVolume
@@ -2933,9 +2837,9 @@ Page {
             // tool-details COLLAGE
             Row {
                 id: idToolsRowCollage
-                visible: idButtonCollage.selected
-                x: idToolsCategoriesRow.x
-                width: idToolsCategoriesRow.width
+                visible: mainToolbar.buttonCollage.selected
+                x: mainToolbar.x
+                width: mainToolbar.width
 
                 IconButton {
                     id: idButtonCollageStoryline
@@ -3070,9 +2974,9 @@ Page {
             // tool-details FILE
             Row {
                 id: idToolsRowFile
-                visible: idButtonFile.selected
-                x: idToolsCategoriesRow.x
-                width: idToolsCategoriesRow.width
+                visible: mainToolbar.buttonFile.selected
+                x: mainToolbar.x
+                width: mainToolbar.width
 
                 //Disable Share
                 IconButton {
@@ -3188,12 +3092,12 @@ Page {
             // more details CUT
             Row {
                 id: idToolsRowCutTrim
-                visible: (idButtonCut.selected && idButtonCutTrim.down )
+                visible: (mainToolbar.buttonCut.selected && idButtonCutTrim.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -3231,12 +3135,12 @@ Page {
             }
             Row {
                 id: idToolsRowCutAdd
-                visible: (idButtonCut.selected && idButtonCutAdd.down )
+                visible: (mainToolbar.buttonCut.selected && idButtonCutAdd.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -3286,12 +3190,12 @@ Page {
             }
             Row {
                 id: idToolsRowCutCrop
-                visible: (idButtonCut.selected && idButtonCutCrop.down )
+                visible: (mainToolbar.buttonCut.selected && idButtonCutCrop.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -3326,12 +3230,12 @@ Page {
             }
             Row {
                 id: idToolsRowCutPad
-                visible: (idButtonCut.selected && idButtonCutPad.down )
+                visible: (mainToolbar.buttonCut.selected && idButtonCutPad.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -3391,12 +3295,12 @@ Page {
             }
             Row {
                 id: idToolsRowCutResize
-                visible: (idButtonCut.selected && idButtonCutResize.down )
+                visible: (mainToolbar.buttonCut.selected && idButtonCutResize.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -3490,12 +3394,12 @@ Page {
             }
             Row {
                 id: idToolsRowCutSpeed
-                visible: (idButtonCut.selected && idButtonCutSpeed.down )
+                visible: (mainToolbar.buttonCut.selected && idButtonCutSpeed.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Slider {
@@ -3526,12 +3430,12 @@ Page {
             // more details IMAGE
             Row {
                 id: idToolsRowImageFilters
-                visible: (idButtonImage.selected && idButtonImageFilters.down )
+                visible: (mainToolbar.buttonImage.selected && idButtonImageFilters.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -3574,12 +3478,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageEffects
-                visible: (idButtonImage.selected && idButtonImageEffects.down )
+                visible: (mainToolbar.buttonImage.selected && idButtonImageEffects.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -3694,12 +3598,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageEffectsBasics
-                visible: (idButtonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && (idComboBoxImageEffectsBasics.currentIndex === 1 || idComboBoxImageEffectsBasics.currentIndex === 2) )
+                visible: (mainToolbar.buttonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && (idComboBoxImageEffectsBasics.currentIndex === 1 || idComboBoxImageEffectsBasics.currentIndex === 2) )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Slider {
@@ -3750,12 +3654,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageEffectsFrameDetectionBW
-                visible: (idButtonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 3 && (idComboBoxImageEffectsFinders.currentIndex === 2 || idComboBoxImageEffectsFinders.currentIndex === 3) )
+                visible: (mainToolbar.buttonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 3 && (idComboBoxImageEffectsFinders.currentIndex === 2 || idComboBoxImageEffectsFinders.currentIndex === 3) )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Slider {
@@ -3805,12 +3709,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageColors
-                visible: (idButtonImage.selected && idButtonImageColors.down )
+                visible: (mainToolbar.buttonImage.selected && idButtonImageColors.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -3942,12 +3846,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageGeometry
-                visible: (idButtonImage.selected && idButtonImageGeometry.down )
+                visible: (mainToolbar.buttonImage.selected && idButtonImageGeometry.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -3982,12 +3886,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageText
-                visible: (idButtonImage.selected && idButtonImageText.down )
+                visible: (mainToolbar.buttonImage.selected && idButtonImageText.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4088,13 +3992,13 @@ Page {
             }
             Row {
                 id: idToolsRowImageTextInput
-                visible: (idButtonImage.selected && idButtonImageText.down )
+                visible: (mainToolbar.buttonImage.selected && idButtonImageText.down )
                 enabled: ( finishedLoading === true )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Item {
@@ -4159,12 +4063,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageOverlays
-                visible: (idButtonImage.selected && idButtonImageOverlays.down )
+                visible: (mainToolbar.buttonImage.selected && idButtonImageOverlays.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4287,12 +4191,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageOverlaysAlpha
-                visible: (idButtonImage.selected && idButtonImageOverlays.down && idComboBoxImageOverlayType.currentIndex === 4)
+                visible: (mainToolbar.buttonImage.selected && idButtonImageOverlays.down && idComboBoxImageOverlayType.currentIndex === 4)
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4361,12 +4265,12 @@ Page {
             // more details AUDIO
             Row {
                 id: idToolsRowAudioFade
-                visible: (idButtonAudio.selected && idButtonAudioFade.down )
+                visible: (mainToolbar.buttonAudio.selected && idButtonAudioFade.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4381,12 +4285,12 @@ Page {
             }
             Row {
                 id: idToolsRowAudioVolume
-                visible: (idButtonAudio.selected && idButtonAudioVolume.down )
+                visible: (mainToolbar.buttonAudio.selected && idButtonAudioVolume.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4424,12 +4328,12 @@ Page {
             }
             Row {
                 id: idToolsRowAudioExtract
-                visible: (idButtonAudio.selected && idButtonAudioExtract.down )
+                visible: (mainToolbar.buttonAudio.selected && idButtonAudioExtract.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4447,12 +4351,12 @@ Page {
             }
             Row {
                 id: idToolsRowAudioMixer1a
-                visible: (idButtonAudio.selected && idButtonAudioMixer.down )
+                visible: (mainToolbar.buttonAudio.selected && idButtonAudioMixer.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4527,12 +4431,12 @@ Page {
             }
             Row {
                 id: idToolsRowAudioMixer1bRecorder
-                visible: ( idButtonAudio.selected && idButtonAudioRecord.down )
+                visible: ( mainToolbar.buttonAudio.selected && idButtonAudioRecord.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
 
@@ -4549,12 +4453,12 @@ Page {
             }
             Row {
                 id: idToolsRowAudioMixer2
-                visible: (idButtonAudio.selected && (idButtonAudioMixer.down || idButtonAudioRecord.down) )
+                visible: (mainToolbar.buttonAudio.selected && (idButtonAudioMixer.down || idButtonAudioRecord.down) )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ValueButton {
@@ -4598,12 +4502,12 @@ Page {
             }
             Row {
                 id: idToolsRowAudioMixer3
-                visible: (idButtonAudio.selected && (idButtonAudioMixer.down || idButtonAudioRecord.down) )
+                visible: (mainToolbar.buttonAudio.selected && (idButtonAudioMixer.down || idButtonAudioRecord.down) )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ValueButton {
@@ -4637,12 +4541,12 @@ Page {
             }
             Row {
                 id: idToolsRowAudioFilters
-                visible: (idButtonAudio.selected && idButtonAudioFilters.down )
+                visible: (mainToolbar.buttonAudio.selected && idButtonAudioFilters.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4730,12 +4634,12 @@ Page {
             // more details COLLAGE
             Row {
                 id: idToolsRowCollageSplitscreen
-                visible: (idButtonCollage.selected && idButtonCollageSplitscreen.down )
+                visible: (mainToolbar.buttonCollage.selected && idButtonCollageSplitscreen.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4773,12 +4677,12 @@ Page {
             }
             Row {
                 id: idToolsRowCollage1
-                visible: (idButtonCollage.selected && ( idButtonCollageSlideshow.down || idButtonCollageStoryline.down ) )
+                visible: (mainToolbar.buttonCollage.selected && ( idButtonCollageSlideshow.down || idButtonCollageStoryline.down ) )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4847,18 +4751,18 @@ Page {
             }
             Separator {
                 width: parent.width
-                visible: (idButtonCollage.selected && ( idButtonCollageSlideshow.down || idButtonCollageStoryline.down ) )
+                visible: (mainToolbar.buttonCollage.selected && ( idButtonCollageSlideshow.down || idButtonCollageStoryline.down ) )
                 horizontalAlignment: Qt.AlignHCenter
                 color: Theme.primaryColor
             }
             Row {
                 id: idToolsRowCollage2TransitionDuration
-                visible: (idButtonCollage.selected && ( idButtonCollageSlideshow.down || idButtonCollageStoryline.down ) )
+                visible: (mainToolbar.buttonCollage.selected && ( idButtonCollageSlideshow.down || idButtonCollageStoryline.down ) )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ValueButton {
@@ -5022,13 +4926,13 @@ Page {
             }
             Row {
                 id: idToolsRowCollage3AddButton
-                visible: (idButtonCollage.selected && (idButtonCollageSlideshow.down || idButtonCollageStoryline.down) )
+                visible: (mainToolbar.buttonCollage.selected && (idButtonCollageSlideshow.down || idButtonCollageStoryline.down) )
                 x: spacerLandscapeLowerToolRow
                 topPadding: -Theme.paddingMedium
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Item {
@@ -5057,12 +4961,12 @@ Page {
             }
             Row {
                 id: idToolsRowCollage4Slideshow
-                visible: (idButtonCollage.selected && idButtonCollageSlideshow.down )
+                visible: (mainToolbar.buttonCollage.selected && idButtonCollageSlideshow.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: 1 // standardDetailItemHeight
                 }
                 Rectangle {
@@ -5150,12 +5054,12 @@ Page {
             }
             Row {
                 id: idToolsRowCollage4Storyline
-                visible: (idButtonCollage.selected && idButtonCollageStoryline.down )
+                visible: (mainToolbar.buttonCollage.selected && idButtonCollageStoryline.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: 1 // standardDetailItemHeight
                 }
                 Rectangle {
@@ -5244,12 +5148,12 @@ Page {
 
             Row {
                 id: idToolsRowCollageSubtitles
-                visible: (idButtonCollage.selected && idButtonCollageSubtitle.down )
+                visible: (mainToolbar.buttonCollage.selected && idButtonCollageSubtitle.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -5293,12 +5197,12 @@ Page {
             }
             Row {
                 id: idToolsRowCollageSubtitlesInput
-                visible: (idButtonCollage.selected && idButtonCollageSubtitle.down && idComboBoxCollageSubtitleAdd.currentIndex === 1)
+                visible: (mainToolbar.buttonCollage.selected && idButtonCollageSubtitle.down && idComboBoxCollageSubtitleAdd.currentIndex === 1)
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Item {
@@ -5334,12 +5238,12 @@ Page {
             }
             Row {
                 id: idToolsRowCollageSubtitlesOutput
-                visible: (idButtonCollage.selected && idButtonCollageSubtitle.down && idComboBoxCollageSubtitleAdd.currentIndex === 1)
+                visible: (mainToolbar.buttonCollage.selected && idButtonCollageSubtitle.down && idComboBoxCollageSubtitleAdd.currentIndex === 1)
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Rectangle {
@@ -5406,12 +5310,12 @@ Page {
 
             Row {
                 id: idToolsRowCollageImageExtract
-                visible: (idButtonCollage.selected && idButtonCollageImageExtract.down )
+                visible: (mainToolbar.buttonCollage.selected && idButtonCollageImageExtract.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -5451,13 +5355,13 @@ Page {
             // more details FILE
             Item {
                 id: idToolsRowFileShare
-                visible: (idButtonFile.selected && idButtonFileShare.down )
+                visible: (mainToolbar.buttonFile.selected && idButtonFileShare.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
                 height: idFileShareColumn.height
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Column {
@@ -5479,13 +5383,13 @@ Page {
             }
             Item {
                 id: idToolsRowFileInfo
-                visible: (idButtonFile.selected && idButtonFileInfo.down )
+                visible: (mainToolbar.buttonFile.selected && idButtonFileInfo.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
                 height: idFileInfoColumn.height
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Column {
@@ -5555,13 +5459,13 @@ Page {
             }
             Row {
                 id: idToolsRowFileRename
-                visible: (idButtonFile.selected && idButtonFileRename.down )
+                visible: (mainToolbar.buttonFile.selected && idButtonFileRename.down )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
                 height: idToolsRowFileRenameText.height
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Item {
@@ -5571,7 +5475,7 @@ Page {
                     TextField {
                         id: idToolsRowFileRenameText
                         enabled: ( finishedLoading === true )
-                        visible: ( idButtonFile.selected && idButtonFileRename.down )
+                        visible: ( mainToolbar.buttonFile.selected && idButtonFileRename.down )
                         width: parent.width
                         textTopMargin: Theme.paddingLarge
                         inputMethodHints: Qt.ImhNoPredictiveText
@@ -5609,7 +5513,7 @@ Page {
                 }
             }
             Item {
-                visible: (idButtonFile.selected && idButtonFileDelete.down )
+                visible: (mainToolbar.buttonFile.selected && idButtonFileDelete.down )
                 width: parent.width
                 height: standardDetailItemHeight
             }
@@ -5655,8 +5559,8 @@ Page {
             Button {
                 id: idButtonRecord
 
-                visible: idButtonAudio.selected && idButtonAudioRecord.down
-                enabled: !noFile && finishedLoading && idButtonAudio.selected && idButtonAudioRecord.down
+                visible: mainToolbar.buttonAudio.selected && idButtonAudioRecord.down
+                enabled: !noFile && finishedLoading && mainToolbar.buttonAudio.selected && idButtonAudioRecord.down
                 icon.source: "image://theme/icon-m-mic?"
 
                 Rectangle {
@@ -5698,8 +5602,8 @@ Page {
                 id: idButtonConfirm
 
                 enabled: (noFile === false && finishedLoading === true && idButtonRecord.down === false && idMediaPlayer.height > idTimeInfoRow.height)
-                         || (idButtonCollage.selected && idButtonCollageSlideshow.down && slideshowModel.count !== 0)
-                         || (idButtonCollage.selected && idButtonCollageStoryline.down && storylineModel.count !== 0)
+                         || (mainToolbar.buttonCollage.selected && idButtonCollageSlideshow.down && slideshowModel.count !== 0)
+                         || (mainToolbar.buttonCollage.selected && idButtonCollageStoryline.down && storylineModel.count !== 0)
 
                 height: Theme.itemSizeSmall
                 width: parent.width / 7
@@ -5724,7 +5628,7 @@ Page {
                     // This way each toolbox can be incapsulated into a separate component file
 
                     idSilicaFlickable.scrollToTop()
-                    if ( idButtonCut.selected ) {
+                    if ( mainToolbar.buttonCut.selected ) {
                         if ( idButtonCutTrim.down ) { py.trimFunction() }
                         if ( idButtonCutAdd.down ) { py.addTimeFunction() }
                         if ( idButtonCutCrop.down ) { py.cropAreaFunction() }
@@ -5732,7 +5636,7 @@ Page {
                         if ( idButtonCutResize.down ) { py.resizeFunction() }
                         if ( idButtonCutSpeed.down ) { py.speedFunction() }
                     }
-                    if ( idButtonImage.selected ) {
+                    if ( mainToolbar.buttonImage.selected ) {
                         if ( idButtonImageFilters.down ) {
                             if ( idComboBoxImageFilters.currentIndex === 0 && cubeFileLoaded === true ) { py.imageLUT3dFunction( "extern" ) }
                             if ( idComboBoxImageFilters.currentIndex === 1 ) { py.imageLUT3dFunction ( "cineAnime.png" ) }
@@ -5816,7 +5720,7 @@ Page {
 
                         if ( idButtonImageOverlays.down && idComboBoxImageOverlayType.currentIndex === 4 && overlayFileLoaded === true )  { py.overlayAlphaClipFunction( "file", "part", "manual") }
                     }
-                    if ( idButtonAudio.selected ) {
+                    if ( mainToolbar.buttonAudio.selected ) {
                         if (idButtonAudioFade.down === true) {
                             py.audioFadeFunction()
                         }
@@ -5837,7 +5741,7 @@ Page {
                         }
                     }
 
-                    if ( idButtonCollage.selected ) {
+                    if ( mainToolbar.buttonCollage.selected ) {
                         if (idButtonCollageSlideshow.down && slideshowModel.count > 0 ) {
                             py.createSlideshowFunction()
                         }
@@ -5854,7 +5758,7 @@ Page {
                             py.extractImagesFunction()
                         }
                     }
-                    if ( idButtonFile.selected ) {
+                    if ( mainToolbar.buttonFile.selected ) {
                         //DISABLE share
                         if (idButtonFileShare.down === true) {
                             /*pageStack.push(Qt.resolvedUrl("SharePage.qml"), {

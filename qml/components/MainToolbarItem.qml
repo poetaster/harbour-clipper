@@ -6,15 +6,14 @@ MouseArea {
     id: root
 
     readonly property color elementColor: pressed || selected ? Theme.highlightColor : Theme.primaryColor
-    readonly property real radius: Theme.paddingMedium
 
     property bool selected: false
     property alias icon: icon.source
 
     width: implicitWidth
     height: implicitHeight
-    implicitWidth: icon.width + radius * 2
-    implicitHeight: Theme.itemSizeSmall
+    implicitWidth: icon.width + Theme.paddingMedium * 2
+    implicitHeight: icon.height + Theme.paddingMedium * 2
 
     Rectangle {
         anchors.fill: parent
@@ -28,7 +27,7 @@ MouseArea {
 
             GradientStop {
                 position: 1
-                color: Theme.rgba(Theme.highlightColor, Theme.opacityHigh)
+                color: Theme.rgba(Theme.highlightColor, Theme.opacityLow)
             }
         }
 
@@ -54,7 +53,7 @@ MouseArea {
 
         anchors.centerIn: parent
         width: height
-        height: parent.height
+        height: Theme.iconSizeMedium
         color: root.elementColor
     }
 }
