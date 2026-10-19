@@ -1,4 +1,6 @@
 import QtQuick 2.6
+import QtQuick.Layouts 1.1
+import QtGraphicalEffects 1.0
 import Sailfish.Silica 1.0
 import Sailfish.Pickers 1.0 // File-Loader
 import QtMultimedia 5.6 // Audio + Video Support
@@ -2159,149 +2161,169 @@ Page {
                 }
             }
 
-            Row {
+            RowLayout {
                 id: idPlayPauseMarkerRow
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: Theme.paddingLarge * 2
-                anchors.rightMargin: Theme.paddingLarge * 2
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: Theme.horizontalPageMargin
+                    rightMargin: Theme.horizontalPageMargin
+                }
+
                 height: Theme.itemSizeLarge
 
                 IconButton {
-                    enabled: (noFile === false && finishedLoading === true && hideLowerTimeMarkers === false )
-                    height: parent.height
-                    width: parent.width / 5
+                    enabled: !noFile && finishedLoading && !hideLowerTimeMarkers
                     icon.source : "../symbols/icon-m-marker.svg"
-                    icon.height: Theme.iconSizeMedium * 1.05
-                    icon.width: Theme.iconSizeMedium * 1.05
+
                     onClicked: {
                         if (idMediaPlayer.position > toPosMillisecond) {
                             fromPosMillisecond = toPosMillisecond
                             toPosMillisecond = idMediaPlayer.position
-                        }
-                        else {
+                        } else {
                             fromPosMillisecond = idMediaPlayer.position
                         }
                     }
-                    onPressAndHold: {
-                        idMediaPlayer.seek(fromPosMillisecond)
-                    }
+
+                    onPressAndHold: idMediaPlayer.seek(fromPosMillisecond)
                 }
+
                 IconButton {
-                    enabled: (noFile === false && finishedLoading === true && (idMediaPlayer.height > idTimeInfoRow.height) )
-                    height: parent.height
-                    width: parent.width / 5
+                    enabled: !noFile && finishedLoading && idMediaPlayer.height > idTimeInfoRow.height
                     icon.source : "image://theme/icon-m-media-rewind?"
-                    icon.height: Theme.iconSizeMedium * 1.33
-                    icon.width: Theme.iconSizeMedium * 1.33
+
                     onClicked: {
                         if ( (idMediaPlayer.position - 1000) >= 0 ) {
                             idMediaPlayer.seek(idMediaPlayer.position - 1000)
                             plusMinusInfo = "-1 sec"
                             idTimerShowInfoPlusMinus.start()
+
                             if ( thumbnailVisible === true ) {
                                 py.createPreviewImage()
                             }
+
                             thumbnailVisible = false
                         }
                     }
+
                     onPressAndHold: {
                         if ( (idMediaPlayer.position - 10000) >= 0 ) {
                             idMediaPlayer.seek(idMediaPlayer.position - 10000)
                             plusMinusInfo = "-10 sec"
                             idTimerShowInfoPlusMinus.start()
+
                             if ( thumbnailVisible === true ) {
                                 py.createPreviewImage()
                             }
+
                             thumbnailVisible = false
                         }
                     }
                 }
-                IconButton {
+
+                MainPlayerButton {
                     id: idButtonPlayPauseStop
-                    enabled: (noFile === false && finishedLoading === true && (idMediaPlayer.height > idTimeInfoRow.height) )
-                    height: parent.height
-                    width: parent.width / 5
-                    icon.source: ( idMediaPlayer.playbackState !== MediaPlayer.PlayingState) ? "image://theme/icon-m-play?" : "image://theme/icon-m-pause?"
-                    icon.width: Theme.iconSizeMedium * 1.1
-                    icon.height: Theme.iconSizeMedium * 1.1
+                
+                    enabled: !noFile && finishedLoading && idMediaPlayer.height > idTimeInfoRow.height
+
+                    icon: {
+                        if (idMediaPlayer.playbackState !== MediaPlayer.PlayingState) { 
+                            return "image://theme/icon-m-play"
+                        } else { 
+                            return "image://theme/icon-m-pause"
+                        }
+                    }
+
+                    color: {
+                        if (idMediaPlayer.playbackState !== MediaPlayer.PlayingState) {
+                            return Theme.rgba(Theme.presenceColor(Theme.PresenceAvailable), 0.7)
+                        } else if (recordingAudioState) {
+                            return Theme.errorColor
+                        } else {
+                            return Theme.rgba(Theme.presenceColor(Theme.PresenceAway), 0.7)
+                        }
+                    }
+
                     onClicked: {
                         if (idMediaPlayer.playbackState === MediaPlayer.PlayingState ) {
                             idMediaPlayer.pause()
-                        }
-                        else {
+                        } else {
                             idMediaPlayer.play()
                         }
+                        
                         thumbnailVisible = false
                     }
+
                     onPressAndHold: {
                         idMediaPlayer.seek(0)
                         idMediaPlayer.stop()
-                        //thumbnailVisible = true
-                    }
-                    Rectangle {
-                        //visible: (noFile === false && finishedLoading === true)
-                        anchors.centerIn: parent
-                        width: Theme.iconSizeMedium * 1.1 - border.width /2 + border.width * 1.9
-                        height: width
-                        radius: width/2
-                        color: "transparent"
-                        border.color: ( idMediaPlayer.playbackState !== MediaPlayer.PlayingState ) ? ( Theme.rgba(Theme.presenceColor(Theme.PresenceAvailable),0.7) ) : ( ( recordingAudioState === true ) ? ( Theme.errorColor ) : ( Theme.rgba(Theme.presenceColor(Theme.PresenceAway),0.7) ) )
-                        border.width: Theme.paddingMedium * 0.6
                     }
                 }
+                
                 IconButton {
-                    enabled: (noFile === false && finishedLoading === true && (idMediaPlayer.height > idTimeInfoRow.height) )
-                    height: parent.height
-                    width: parent.width / 5
+                    enabled: !noFile && finishedLoading && idMediaPlayer.height > idTimeInfoRow.height
                     icon.source : "image://theme/icon-m-media-forward?"
-                    icon.height: Theme.iconSizeMedium * 1.33
-                    icon.width: Theme.iconSizeMedium * 1.33
-                    //icon.color: Theme.highlightColor
+
                     onClicked: {
                         if ( (idMediaPlayer.position + 1000) <= idMediaPlayer.duration ) {
                             idMediaPlayer.seek(idMediaPlayer.position + 1000)
                             plusMinusInfo = "+1 sec"
                             idTimerShowInfoPlusMinus.start()
+
                             if ( thumbnailVisible === true ) {
                                 py.createPreviewImage()
                             }
+
                             thumbnailVisible = false
                         }
                     }
+
                     onPressAndHold: {
                         if ( (idMediaPlayer.position + 10000) <= idMediaPlayer.duration ) {
                             idMediaPlayer.seek(idMediaPlayer.position + 10000)
                             plusMinusInfo = "+10 sec"
                             idTimerShowInfoPlusMinus.start()
+
                             if ( thumbnailVisible === true ) {
                                 py.createPreviewImage()
                             }
+
                             thumbnailVisible = false
                         }
                     }
                 }
+
                 IconButton {
-                    enabled: (noFile === false && finishedLoading === true && hideLowerTimeMarkers === false )
-                    height: parent.height
-                    width: parent.width / 5
-                    icon.source : "../symbols/icon-m-marker.svg"
-                    icon.height: Theme.iconSizeMedium * 1.05
-                    icon.width: Theme.iconSizeMedium * 1.05
+                    enabled: !noFile && finishedLoading && !hideLowerTimeMarkers
+                    icon.source: "../symbols/icon-m-marker.svg"
+
                     onClicked: {
                         if (idMediaPlayer.position < fromPosMillisecond) {
                             toPosMillisecond = fromPosMillisecond
                             fromPosMillisecond = idMediaPlayer.position
-                        }
-                        else {
+                        } else {
                             toPosMillisecond = idMediaPlayer.position
                         }
                     }
+
                     onPressAndHold: {
                         idMediaPlayer.seek(toPosMillisecond)
                         if ( idMediaPlayer.position === idMediaPlayer.duration ) {
                             idMediaPlayer.pause()
                         }
+                    }
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                // This will be used to open-close the sidebar or bottom sheet
+                SecondaryButton {
+                    icon {
+                        source: "image://theme/icon-m-enter-close"
+                        rotation: 180
                     }
                 }
             }
