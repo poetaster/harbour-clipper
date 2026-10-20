@@ -2173,6 +2173,10 @@ Page {
 
                 height: Theme.itemSizeLarge
 
+                Item {
+                    Layout.fillWidth: true
+                }
+
                 IconButton {
                     enabled: !noFile && finishedLoading && !hideLowerTimeMarkers
                     icon.source : "../symbols/icon-m-marker.svg"
@@ -2320,12 +2324,12 @@ Page {
                 }
 
                 // This will be used to open-close the sidebar or bottom sheet
-                SecondaryButton {
-                    icon {
-                        source: "image://theme/icon-m-enter-close"
-                        rotation: 180
-                    }
-                }
+                // SecondaryButton {
+                //     icon {
+                //         source: "image://theme/icon-m-enter-close"
+                //         rotation: 180
+                //     }
+                // }
             }
 
             Item {
