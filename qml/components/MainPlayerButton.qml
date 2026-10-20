@@ -2,7 +2,7 @@ import QtQuick 2.6
 import QtGraphicalEffects 1.0
 import Sailfish.Silica 1.0
 
-BackgroundItem {
+MouseArea {
     id: root
 
     property var icon
@@ -10,7 +10,12 @@ BackgroundItem {
 
     width: Theme.itemSizeExtraSmall + Theme.paddingMedium * 2
     height: Theme.itemSizeExtraSmall
-    _backgroundRadius: height / 2
+
+    Rectangle {
+        anchors.fill: parent
+        color: root.pressed ? Theme.rgba(Theme.highlightColor, Theme.highlightBackgroundOpacity) : "transparent"
+        radius: root.height / 2
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -32,7 +37,7 @@ BackgroundItem {
 
         color: !root.enabled
                ? Theme.rgba(Theme.secondaryColor, Theme.opacityHigh)
-               : root.pressed || root.highlighted 
+               : root.pressed
                  ? Theme.highlightColor
                  : Theme.primaryColor
     }
