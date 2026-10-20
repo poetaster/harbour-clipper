@@ -95,9 +95,9 @@ Page {
                                                                                                  || idComboBoxImageEffects.currentIndex === 4 // all frei0r effects
                                                                                                  )) //reverse only works for whole clip
                                                                      || imageToolbar.buttonGeometry.selected) )
-                                          || (mainToolbar.buttonAudio.selected && (idButtonAudioFade.down || idButtonAudioRecord.down) )
-                                          || (mainToolbar.buttonAudio.selected && idButtonAudioMixer.down && idComboBoxAudioNewLength.currentIndex === 0 )
-                                          || (mainToolbar.buttonAudio.selected && idButtonAudioFilters.down && idComboBoxAudioFilters.currentIndex === 1 ) // echo effects do not support yet timeline editing
+                                          || (mainToolbar.buttonAudio.selected && (audioToolbar.buttonFade.selected || audioToolbar.buttonRecorder.selected) )
+                                          || (mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected && idComboBoxAudioNewLength.currentIndex === 0 )
+                                          || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFilters.selected && idComboBoxAudioFilters.currentIndex === 1 ) // echo effects do not support yet timeline editing
                                           || (mainToolbar.buttonCollage.selected && ( idButtonCollageSubtitle.down === false || (idButtonCollageSubtitle.down === true && idComboBoxCollageSubtitleAdd.currentIndex === 0) ) )
                                           || mainToolbar.buttonFile.selected
                                          ) ? true : false
@@ -2084,7 +2084,7 @@ Page {
 
                 Rectangle {
                     id: idLabelFromToLeft
-                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 0) || (mainToolbar.buttonAudio.selected && idButtonAudioFade.down &&  idComboBoxAudioFade.currentIndex === 0 ) ) )
+                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 0) || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFade.selected &&  idComboBoxAudioFade.currentIndex === 0 ) ) )
                     z: -1
                     y: Theme.paddingMedium
                     height: parent.height - 2 * y
@@ -2106,7 +2106,7 @@ Page {
 
                 Rectangle {
                     id: idLabelFromToRight
-                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 1) || (mainToolbar.buttonAudio.selected && idButtonAudioFade.down &&  idComboBoxAudioFade.currentIndex === 1 ) ) )
+                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 1) || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFade.selected &&  idComboBoxAudioFade.currentIndex === 1 ) ) )
                     z: -1
                     y: Theme.paddingMedium
                     height: parent.height - 2 * y
@@ -2128,7 +2128,7 @@ Page {
 
                 Rectangle {
                     id: idRectangleMixer
-                    visible: ( finishedLoading === true && noFile === false && mainToolbar.buttonAudio.selected && idButtonAudioMixer.down && idComboBoxAudioNewLength.currentIndex === 0 && addAudioLoaded === true )
+                    visible: ( finishedLoading === true && noFile === false && mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected && idComboBoxAudioNewLength.currentIndex === 0 && addAudioLoaded === true )
                     z: -1
                     y: Theme.paddingMedium
                     height: parent.height - 2 * y
@@ -2150,7 +2150,7 @@ Page {
 
                 Rectangle {
                     id: idRectangleAudioRecording
-                    visible: ( mainToolbar.buttonAudio.selected && idButtonAudioRecord.down && recordingAudioState === true )
+                    visible: ( mainToolbar.buttonAudio.selected && audioToolbar.buttonRecorder.selected && recordingAudioState === true )
                     z: -1
                     y: Theme.paddingMedium
                     x: startRecordingHandlePosX
@@ -3676,179 +3676,16 @@ Page {
                 }
             }
 
-            // tool-details AUDIO
-            Row {
-                id: idToolsRowAudio
+            SecondaryToolbarAudio {
+                id: audioToolbar
+
                 visible: mainToolbar.buttonAudio.selected
-                x: mainToolbar.x
-                width: mainToolbar.width
-
-                IconButton {
-                    id: idButtonAudioVolume
-                    down: true
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = false
-                        idButtonAudioFilters.down = false
-                        idButtonAudioExtract.down = false
-                        idButtonAudioVolume.down = true
-                        idButtonAudioMixer.down = false
-                        idButtonAudioRecord.down = false
-                    }
-                    Label {
-                        text: qsTr("volume")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonAudioFilters
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = false
-                        idButtonAudioFilters.down = true
-                        idButtonAudioExtract.down = false
-                        idButtonAudioVolume.down = false
-                        idButtonAudioMixer.down = false
-                        idButtonAudioRecord.down = false
-                    }
-                    Label {
-                        text: qsTr("filters")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonAudioFade
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = true
-                        idButtonAudioFilters.down = false
-                        idButtonAudioExtract.down = false
-                        idButtonAudioVolume.down = false
-                        idButtonAudioMixer.down = false
-                        idButtonAudioRecord.down = false
-                    }
-                    Label {
-                        text: qsTr("fade")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonAudioExtract
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = false
-                        idButtonAudioFilters.down = false
-                        idButtonAudioExtract.down = true
-                        idButtonAudioVolume.down = false
-                        idButtonAudioMixer.down = false
-                        idButtonAudioRecord.down = false
-                    }
-                    Label {
-                        text: qsTr("extract")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonAudioMixer
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = false
-                        idButtonAudioFilters.down = false
-                        idButtonAudioExtract.down = false
-                        idButtonAudioVolume.down = false
-                        idButtonAudioMixer.down = true
-                        idButtonAudioRecord.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("mixer")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonAudioRecord
-
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = false
-                        idButtonAudioFilters.down = false
-                        idButtonAudioExtract.down = false
-                        idButtonAudioVolume.down = false
-                        idButtonAudioMixer.down = false
-                        idButtonAudioRecord.down = true
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("recorder")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
             }
 
             // more details AUDIO
             Row {
                 id: idToolsRowAudioFade
-                visible: (mainToolbar.buttonAudio.selected && idButtonAudioFade.down )
+                visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonFade.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -3868,7 +3705,7 @@ Page {
             }
             Row {
                 id: idToolsRowAudioVolume
-                visible: (mainToolbar.buttonAudio.selected && idButtonAudioVolume.down )
+                visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonVolume.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -3911,7 +3748,7 @@ Page {
             }
             Row {
                 id: idToolsRowAudioExtract
-                visible: (mainToolbar.buttonAudio.selected && idButtonAudioExtract.down )
+                visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonExtract.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -3934,7 +3771,7 @@ Page {
             }
             Row {
                 id: idToolsRowAudioMixer1a
-                visible: (mainToolbar.buttonAudio.selected && idButtonAudioMixer.down )
+                visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -4014,7 +3851,7 @@ Page {
             }
             Row {
                 id: idToolsRowAudioMixer1bRecorder
-                visible: ( mainToolbar.buttonAudio.selected && idButtonAudioRecord.down )
+                visible: ( mainToolbar.buttonAudio.selected && audioToolbar.buttonRecorder.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -4036,7 +3873,7 @@ Page {
             }
             Row {
                 id: idToolsRowAudioMixer2
-                visible: (mainToolbar.buttonAudio.selected && (idButtonAudioMixer.down || idButtonAudioRecord.down) )
+                visible: (mainToolbar.buttonAudio.selected && (audioToolbar.buttonMixer.selected || audioToolbar.buttonRecorder.selected) )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -4045,7 +3882,7 @@ Page {
                     height: standardDetailItemHeight
                 }
                 ValueButton {
-                    visible: idButtonAudioRecord.down
+                    visible: audioToolbar.buttonRecorder.selected
                     width: parent.width / 6 * 2
                     height: standardDetailItemHeight
                     value: qsTr("recording")
@@ -4053,7 +3890,7 @@ Page {
                     description: qsTr("overlay audio")
                 }
                 ValueButton {
-                    visible: idButtonAudioMixer.down
+                    visible: audioToolbar.buttonMixer.selected
                     width: parent.width / 6 * 2
                     enabled: ( noFile === false && finishedLoading === true )
                     height: standardDetailItemHeight
@@ -4085,7 +3922,7 @@ Page {
             }
             Row {
                 id: idToolsRowAudioMixer3
-                visible: (mainToolbar.buttonAudio.selected && (idButtonAudioMixer.down || idButtonAudioRecord.down) )
+                visible: (mainToolbar.buttonAudio.selected && (audioToolbar.buttonMixer.selected || audioToolbar.buttonRecorder.selected) )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -4124,7 +3961,7 @@ Page {
             }
             Row {
                 id: idToolsRowAudioFilters
-                visible: (mainToolbar.buttonAudio.selected && idButtonAudioFilters.down )
+                visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonFilters.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -5387,8 +5224,8 @@ Page {
             Button {
                 id: idButtonRecord
 
-                visible: mainToolbar.buttonAudio.selected && idButtonAudioRecord.down
-                enabled: !noFile && finishedLoading && mainToolbar.buttonAudio.selected && idButtonAudioRecord.down
+                visible: mainToolbar.buttonAudio.selected && audioToolbar.buttonRecorder.selected
+                enabled: !noFile && finishedLoading && mainToolbar.buttonAudio.selected && audioToolbar.buttonRecorder.selected
                 icon.source: "image://theme/icon-m-mic?"
 
                 Rectangle {
@@ -5549,19 +5386,19 @@ Page {
                         if ( imageToolbar.buttonOverlay.selected && idComboBoxImageOverlayType.currentIndex === 4 && overlayFileLoaded === true )  { py.overlayAlphaClipFunction( "file", "part", "manual") }
                     }
                     if ( mainToolbar.buttonAudio.selected ) {
-                        if (idButtonAudioFade.down === true) {
+                        if (audioToolbar.buttonFade.selected === true) {
                             py.audioFadeFunction()
                         }
-                        if (idButtonAudioVolume.down === true) {
+                        if (audioToolbar.buttonVolume.selected === true) {
                             py.audioVolumeFunction()
                         }
-                        if (idButtonAudioExtract.down === true) {
+                        if (audioToolbar.buttonExtract.selected === true) {
                             py.audioExtractFunction()
                         }
-                        if (idButtonAudioMixer.down === true && addAudioLoaded === true) {
+                        if (audioToolbar.buttonMixer.selected === true && addAudioLoaded === true) {
                             py.audioMixerFunction()
                         }
-                        if (idButtonAudioFilters.down === true) {
+                        if (audioToolbar.buttonFilters.selected === true) {
                             if ( idComboBoxAudioFilters.currentIndex === 0 ) { py.audioEffectsFilters( "denoise" ) }
                             if ( idComboBoxAudioFilters.currentIndex === 1 ) { py.audioEffectsFilters( "echo" ) }
                             if ( idComboBoxAudioFilters.currentIndex === 2 ) { py.audioEffectsFilters( "highpass" ) }
