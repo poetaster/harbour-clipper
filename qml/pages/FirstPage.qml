@@ -76,8 +76,8 @@ Page {
     property var plusMinusInfo : ""
     property var itemsToolbar : 5
     property var fontSizePreview : Theme.fontSizeExtraLarge
-    property bool trimAreaVisible : (mainToolbar.buttonCut.selected && idButtonCutTrim.down) ? true : false
-    property bool cropAreaVisible : ( (mainToolbar.buttonCut.selected && idButtonCutCrop.down)
+    property bool trimAreaVisible : (mainToolbar.buttonCut.selected && cutToolbar.buttonTrim.selected) ? true : false
+    property bool cropAreaVisible : ( (mainToolbar.buttonCut.selected && cutToolbar.buttonCrop.selected)
                                      || (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) // blur
                                      || (mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected && overlayFilePath !== "" && (idComboBoxImageOverlayType.currentIndex === 0 ||  idComboBoxImageOverlayType.currentIndex === 1 || (idComboBoxImageOverlayType.currentIndex === 4 && idComboBoxImageOverlayAlphaStretch.currentIndex === 1 )) )
                                      || (mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected && ( idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) )
@@ -88,7 +88,7 @@ Page {
                                           || idMediaPlayer.height <= idTimeInfoRow.height
                                           || dragArea1.pressed
                                           || dragArea2.pressed
-                                          || (mainToolbar.buttonCut.selected && ( idButtonCutTrim.down === false ) )
+                                          || (mainToolbar.buttonCut.selected && ( cutToolbar.buttonTrim.selected === false ) )
                                           || (mainToolbar.buttonImage.selected && ( (imageToolbar.buttonEffects.selected && ((idComboBoxImageEffects.currentIndex === 0 && ( (idComboBoxImageEffectsBasics.currentIndex === 0 && ( idComboBoxImageEffectsFade.currentIndex === 0 || idComboBoxImageEffectsFade.currentIndex === 1 )) || idComboBoxImageEffectsBasics.currentIndex === 5) ) // fade || reverse ||
                                                                                                  || (idComboBoxImageEffects.currentIndex === 2 && (idComboBoxImageEffectsRepair.currentIndex === 3 || idComboBoxImageEffectsRepair.currentIndex === 4 || idComboBoxImageEffectsRepair.currentIndex === 5) )  // deshake || repairFrames || stabilize ||
                                                                                                  || (idComboBoxImageEffects.currentIndex === 3 && ( idComboBoxImageEffectsFinders.currentIndex === 2 || idComboBoxImageEffectsFinders.currentIndex === 3 ) ) // blackFrame || whiteFrame
@@ -277,9 +277,9 @@ Page {
     }
     Item {
         id: idWatchdog_ratioChangeCrop
-        enabled: ( mainToolbar.buttonCut.selected && idButtonCutCrop.down ) ? true : false
+        enabled: ( mainToolbar.buttonCut.selected && cutToolbar.buttonCrop.selected ) ? true : false
         onEnabledChanged: {
-            if ( mainToolbar.buttonCut.selected && idButtonCutCrop.down ) { // on_enter
+            if ( mainToolbar.buttonCut.selected && cutToolbar.buttonCrop.selected ) { // on_enter
                 croppingRatio = oldRatioCrop
                 setCropmarkersRatio()
             }
@@ -2332,177 +2332,16 @@ Page {
                 id: mainToolbar
             }
 
-            // tool-details CUT
-            Row {
-                id: idToolsRowCut
+            SecondaryToolbarCut {
+                id: cutToolbar
+
                 visible: mainToolbar.buttonCut.selected
-                x: mainToolbar.x
-                width: mainToolbar.width
-
-                IconButton {
-                    id: idButtonCutTrim
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    down: true
-                    onClicked: {
-                        idButtonCutTrim.down = true
-                        idButtonCutAdd.down = false
-                        idButtonCutCrop.down = false
-                        idButtonCutPad.down = false
-                        idButtonCutResize.down = false
-                        idButtonCutSpeed.down = false
-                    }
-                    Label {
-                        text: qsTr("trim")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCutAdd
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCutTrim.down = false
-                        idButtonCutAdd.down = true
-                        idButtonCutCrop.down = false
-                        idButtonCutPad.down = false
-                        idButtonCutResize.down = false
-                        idButtonCutSpeed.down = false
-                    }
-                    Label {
-                        text: qsTr("insert")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCutCrop
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCutTrim.down = false
-                        idButtonCutAdd.down = false
-                        idButtonCutCrop.down = true
-                        idButtonCutPad.down = false
-                        idButtonCutResize.down = false
-                        idButtonCutSpeed.down = false
-                    }
-                    Label {
-                        text: qsTr("crop")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCutPad
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCutTrim.down = false
-                        idButtonCutAdd.down = false
-                        idButtonCutCrop.down = false
-                        idButtonCutPad.down = true
-                        idButtonCutResize.down = false
-                        idButtonCutSpeed.down = false
-                    }
-                    Label {
-                        text: qsTr("pad")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCutResize
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCutTrim.down = false
-                        idButtonCutAdd.down = false
-                        idButtonCutCrop.down = false
-                        idButtonCutPad.down = false
-                        idButtonCutResize.down = true
-                        idButtonCutSpeed.down = false
-                    }
-                    Label {
-                        text: qsTr("resize")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCutSpeed
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCutTrim.down = false
-                        idButtonCutAdd.down = false
-                        idButtonCutCrop.down = false
-                        idButtonCutPad.down = false
-                        idButtonCutResize.down = false
-                        idButtonCutSpeed.down = true
-                    }
-                    Label {
-                        text: qsTr("speed")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
             }
-
 
             // more details CUT
             Row {
                 id: idToolsRowCutTrim
-                visible: (mainToolbar.buttonCut.selected && idButtonCutTrim.down )
+                visible: (mainToolbar.buttonCut.selected && cutToolbar.buttonTrim.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -2545,7 +2384,7 @@ Page {
             }
             Row {
                 id: idToolsRowCutAdd
-                visible: (mainToolbar.buttonCut.selected && idButtonCutAdd.down )
+                visible: (mainToolbar.buttonCut.selected && cutToolbar.buttonInsert.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -2600,7 +2439,7 @@ Page {
             }
             Row {
                 id: idToolsRowCutCrop
-                visible: (mainToolbar.buttonCut.selected && idButtonCutCrop.down )
+                visible: (mainToolbar.buttonCut.selected && cutToolbar.buttonCrop.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -2640,7 +2479,7 @@ Page {
             }
             Row {
                 id: idToolsRowCutPad
-                visible: (mainToolbar.buttonCut.selected && idButtonCutPad.down )
+                visible: (mainToolbar.buttonCut.selected && cutToolbar.buttonPad.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -2705,7 +2544,7 @@ Page {
             }
             Row {
                 id: idToolsRowCutResize
-                visible: (mainToolbar.buttonCut.selected && idButtonCutResize.down )
+                visible: (mainToolbar.buttonCut.selected && cutToolbar.buttonResize.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -2804,7 +2643,7 @@ Page {
             }
             Row {
                 id: idToolsRowCutSpeed
-                visible: (mainToolbar.buttonCut.selected && idButtonCutSpeed.down )
+                visible: (mainToolbar.buttonCut.selected && cutToolbar.buttonSpeed.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -5294,12 +5133,12 @@ Page {
 
                     idSilicaFlickable.scrollToTop()
                     if ( mainToolbar.buttonCut.selected ) {
-                        if ( idButtonCutTrim.down ) { py.trimFunction() }
-                        if ( idButtonCutAdd.down ) { py.addTimeFunction() }
-                        if ( idButtonCutCrop.down ) { py.cropAreaFunction() }
-                        if ( idButtonCutPad.down ) { py.padAreaFunction() }
-                        if ( idButtonCutResize.down ) { py.resizeFunction() }
-                        if ( idButtonCutSpeed.down ) { py.speedFunction() }
+                        if ( cutToolbar.buttonTrim.selected ) { py.trimFunction() }
+                        if ( cutToolbar.buttonInsert.selected ) { py.addTimeFunction() }
+                        if ( cutToolbar.buttonCrop.selected ) { py.cropAreaFunction() }
+                        if ( cutToolbar.buttonPad.selected ) { py.padAreaFunction() }
+                        if ( cutToolbar.buttonResize.selected ) { py.resizeFunction() }
+                        if ( cutToolbar.buttonSpeed.selected ) { py.speedFunction() }
                     }
                     if ( mainToolbar.buttonImage.selected ) {
                         if ( imageToolbar.buttonFilters.selected ) {
