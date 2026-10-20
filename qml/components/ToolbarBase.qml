@@ -2,100 +2,124 @@ import QtQuick 2.6
 import QtGraphicalEffects 1.0
 import Sailfish.Silica 1.0
 
-SilicaFlickable {
-    id: toolbarFlickable
+Item {
+    id: root
 
-    readonly property bool leftFade: contentX >= 0
-    readonly property bool rightFade: contentX + width < contentWidth
+    readonly property bool leftFade: flickable.contentX >= 0
+    readonly property bool rightFade: flickable.contentX + flickable.width < flickable.contentWidth
 
     readonly property alias itemWidth: toolbar.itemWidth
     readonly property alias itemHeight: toolbar.itemHeight
 
     default property alias toolbarChildren: toolbar.children
 
-    implicitHeight: toolbar.height
-    contentWidth: toolbar.width
-    leftMargin: Theme.horizontalPageMargin
-    rightMargin: Theme.horizontalPageMargin
-    boundsBehavior: Flickable.DragAndOvershootBounds
+    property bool lineOnTop: true
+
+    width: implicitWidth
+    height: implicitHeight
+    implicitWidth: parent.width
+    implicitHeight: flickable.height
+
+    SilicaFlickable {
+        id: flickable
+
+        width: parent.width
+        height: toolbar.height
+        contentWidth: toolbar.width
+        leftMargin: Theme.horizontalPageMargin
+        rightMargin: Theme.horizontalPageMargin
+        boundsBehavior: Flickable.DragAndOvershootBounds
 
 
-    layer.enabled: true
-    layer.effect: OpacityMask {
-        maskSource: LinearGradient {
-            id: maskRectangle
+        layer.enabled: true
+        layer.effect: OpacityMask {
+            maskSource: LinearGradient {
+                id: maskRectangle
 
-            property real leftFadeOpacity: toolbarFlickable.leftFade ? 0 : 1
-            property real rightFadeOpacity: toolbarFlickable.rightFade ? 0 : 1
+                property real leftFadeOpacity: root.leftFade ? 0 : 1
+                property real rightFadeOpacity: root.rightFade ? 0 : 1
 
-            // Here we assume flickable's left and right margins are the same
-            readonly property real fraction: toolbarFlickable.leftMargin / toolbarFlickable.width
+                // Here we assume flickable's left and right margins are the same
+                readonly property real fraction: flickable.leftMargin / flickable.width
 
-            width: toolbarFlickable.width
-            height: toolbarFlickable.height
-            start: Qt.point(0, 0)
-            end: Qt.point(width, 0)
+                width: flickable.width
+                height: flickable.height
+                start: Qt.point(0, 0)
+                end: Qt.point(width, 0)
 
-            gradient: Gradient {
-                GradientStop {
-                    position: 0.0
-                    color: Qt.rgba(1.0, 1.0, 1.0, maskRectangle.leftFadeOpacity)
+                gradient: Gradient {
+                    GradientStop {
+                        position: 0.0
+                        color: Qt.rgba(1.0, 1.0, 1.0, maskRectangle.leftFadeOpacity)
+                    }
+
+                    GradientStop {
+                        position: maskRectangle.fraction
+                        color: "white"
+                    }
+
+                    GradientStop {
+                        position: 1.0 - maskRectangle.fraction
+                        color: "white"
+                    }
+
+                    GradientStop {
+                        position: 1.0
+                        color: Qt.rgba(1.0, 1.0, 1.0, maskRectangle.rightFadeOpacity)
+                    }
                 }
 
-                GradientStop {
-                    position: maskRectangle.fraction
-                    color: "white"
+                Behavior on leftFadeOpacity {
+                    NumberAnimation {
+                        duration: 100
+                    }
                 }
 
-                GradientStop {
-                    position: 1.0 - maskRectangle.fraction
-                    color: "white"
-                }
-
-                GradientStop {
-                    position: 1.0
-                    color: Qt.rgba(1.0, 1.0, 1.0, maskRectangle.rightFadeOpacity)
+                Behavior on rightFadeOpacity {
+                    NumberAnimation {
+                        duration: 100
+                    }
                 }
             }
+        }
 
-            Behavior on leftFadeOpacity {
-                NumberAnimation {
-                    duration: 100
+        Row {
+            id: toolbar
+
+            readonly property real itemWidth: {
+                var maxWidth = 0
+
+                for (var i = 0; i < children.length; i++) {
+                    maxWidth = Math.max(maxWidth, children[i].implicitWidth)
                 }
+
+                return Math.max(flickable.width / children.length, maxWidth)
             }
 
-            Behavior on rightFadeOpacity {
-                NumberAnimation {
-                    duration: 100
+            readonly property real itemHeight: {
+                var maxHeight = 0
+
+                for (var i = 0; i < children.length; i++) {
+                    maxHeight = Math.max(maxHeight, children[i].implicitHeight)
                 }
+
+                return maxHeight
             }
+
+            height: implicitHeight
+            width: implicitWidth
         }
     }
 
-    Row {
-        id: toolbar
-
-        readonly property real itemWidth: {
-            var maxWidth = 0
-
-            for (var i = 0; i < children.length; i++) {
-                maxWidth = Math.max(maxWidth, children[i].implicitWidth)
-            }
-
-            return Math.max(toolbarFlickable.width / children.length, maxWidth)
+    Rectangle {
+        anchors {
+            top: root.lineOnTop ? parent.top : undefined
+            bottom: root.lineOnTop ? undefined : parent.bottom
         }
 
-        readonly property real itemHeight: {
-            var maxHeight = 0
-
-            for (var i = 0; i < children.length; i++) {
-                maxHeight = Math.max(maxHeight, children[i].implicitHeight)
-            }
-
-            return maxHeight
-        }
-
-        height: implicitHeight
-        width: implicitWidth
+        width: parent.width
+        height: Theme.dp(1)
+        color: Theme.highlightColor
+        opacity: Theme.opacityOverlay
     }
 }
