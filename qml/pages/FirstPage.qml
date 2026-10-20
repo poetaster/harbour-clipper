@@ -78,23 +78,23 @@ Page {
     property var fontSizePreview : Theme.fontSizeExtraLarge
     property bool trimAreaVisible : (mainToolbar.buttonCut.selected && idButtonCutTrim.down) ? true : false
     property bool cropAreaVisible : ( (mainToolbar.buttonCut.selected && idButtonCutCrop.down)
-                                     || (mainToolbar.buttonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) // blur
-                                     || (mainToolbar.buttonImage.selected && idButtonImageOverlays.down && overlayFilePath !== "" && (idComboBoxImageOverlayType.currentIndex === 0 ||  idComboBoxImageOverlayType.currentIndex === 1 || (idComboBoxImageOverlayType.currentIndex === 4 && idComboBoxImageOverlayAlphaStretch.currentIndex === 1 )) )
-                                     || (mainToolbar.buttonImage.selected && idButtonImageOverlays.down && ( idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) )
+                                     || (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) // blur
+                                     || (mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected && overlayFilePath !== "" && (idComboBoxImageOverlayType.currentIndex === 0 ||  idComboBoxImageOverlayType.currentIndex === 1 || (idComboBoxImageOverlayType.currentIndex === 4 && idComboBoxImageOverlayAlphaStretch.currentIndex === 1 )) )
+                                     || (mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected && ( idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) )
                                      ) ? true : false
-    property bool textAreaVisible : ( mainToolbar.buttonImage.selected && idButtonImageText.down ) ? true : false
+    property bool textAreaVisible : ( mainToolbar.buttonImage.selected && imageToolbar.buttonText.selected ) ? true : false
     property bool hideUpperTimeMarkers : ( cropAreaVisible === true || dragAreaText.pressed || mainToolbar.buttonFile.selected || idMediaPlayer.height <= idTimeInfoRow.height ) ? true : false
     property bool hideLowerTimeMarkers : ( dragAreaText.pressed
                                           || idMediaPlayer.height <= idTimeInfoRow.height
                                           || dragArea1.pressed
                                           || dragArea2.pressed
                                           || (mainToolbar.buttonCut.selected && ( idButtonCutTrim.down === false ) )
-                                          || (mainToolbar.buttonImage.selected && ( (idButtonImageEffects.down && ((idComboBoxImageEffects.currentIndex === 0 && ( (idComboBoxImageEffectsBasics.currentIndex === 0 && ( idComboBoxImageEffectsFade.currentIndex === 0 || idComboBoxImageEffectsFade.currentIndex === 1 )) || idComboBoxImageEffectsBasics.currentIndex === 5) ) // fade || reverse ||
+                                          || (mainToolbar.buttonImage.selected && ( (imageToolbar.buttonEffects.selected && ((idComboBoxImageEffects.currentIndex === 0 && ( (idComboBoxImageEffectsBasics.currentIndex === 0 && ( idComboBoxImageEffectsFade.currentIndex === 0 || idComboBoxImageEffectsFade.currentIndex === 1 )) || idComboBoxImageEffectsBasics.currentIndex === 5) ) // fade || reverse ||
                                                                                                  || (idComboBoxImageEffects.currentIndex === 2 && (idComboBoxImageEffectsRepair.currentIndex === 3 || idComboBoxImageEffectsRepair.currentIndex === 4 || idComboBoxImageEffectsRepair.currentIndex === 5) )  // deshake || repairFrames || stabilize ||
                                                                                                  || (idComboBoxImageEffects.currentIndex === 3 && ( idComboBoxImageEffectsFinders.currentIndex === 2 || idComboBoxImageEffectsFinders.currentIndex === 3 ) ) // blackFrame || whiteFrame
                                                                                                  || idComboBoxImageEffects.currentIndex === 4 // all frei0r effects
                                                                                                  )) //reverse only works for whole clip
-                                                                     || idButtonImageGeometry.down) )
+                                                                     || imageToolbar.buttonGeometry.selected) )
                                           || (mainToolbar.buttonAudio.selected && (idButtonAudioFade.down || idButtonAudioRecord.down) )
                                           || (mainToolbar.buttonAudio.selected && idButtonAudioMixer.down && idComboBoxAudioNewLength.currentIndex === 0 )
                                           || (mainToolbar.buttonAudio.selected && idButtonAudioFilters.down && idComboBoxAudioFilters.currentIndex === 1 ) // echo effects do not support yet timeline editing
@@ -254,9 +254,9 @@ Page {
     // watchdogs: when entering or leaving certain tools
     Item {
         id: idWatchdog_ratioChangeOverlay
-        enabled: ( mainToolbar.buttonImage.selected && idButtonImageOverlays.down&& ( overlayFilePath !== "" || idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) ) ? true : false
+        enabled: ( mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected&& ( overlayFilePath !== "" || idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) ) ? true : false
         onEnabledChanged: {
-            if ( mainToolbar.buttonImage.selected && idButtonImageOverlays.down && ( overlayFilePath !== "" || idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) ) { // on_enter
+            if ( mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected && ( overlayFilePath !== "" || idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) ) { // on_enter
                 if ( idComboBoxImageOverlayType.currentIndex === 0 ) { croppingRatio = previewRatioFileImage }
                 else if ( idComboBoxImageOverlayType.currentIndex === 1 ) { croppingRatio = previewRatioFileVideo }
                 else if ( idComboBoxImageOverlayType.currentIndex === 4 ) { croppingRatio = previewRatioFileVideo } //ToDo: give its own ratio
@@ -267,9 +267,9 @@ Page {
     }
     Item {
         id: idWatchdog_ratioChangeBlur
-        enabled: ( mainToolbar.buttonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) ? true : false
+        enabled: ( mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) ? true : false
         onEnabledChanged: {
-            if ( mainToolbar.buttonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) { // on_enter
+            if ( mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) { // on_enter
                 croppingRatio = 0
                 setCropmarkersRatio()
             }
@@ -1753,7 +1753,7 @@ Page {
                         }
                         Image {
                             id: idPreviewOverlayImage
-                            visible: ( mainToolbar.buttonImage.selected && idButtonImageOverlays.down && overlayFilePath !== "" && ( idComboBoxImageOverlayType.currentIndex === 0 || idComboBoxImageOverlayType.currentIndex === 1 || idComboBoxImageOverlayType.currentIndex === 4 ) )
+                            visible: ( mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected && overlayFilePath !== "" && ( idComboBoxImageOverlayType.currentIndex === 0 || idComboBoxImageOverlayType.currentIndex === 1 || idComboBoxImageOverlayType.currentIndex === 4 ) )
                             cache: false
                             autoTransform: true
                             opacity: (idComboBoxImageOverlayType.currentIndex === 4) ? 0.6 : idToolsRowImageOverlayOpacitySlider.value
@@ -1762,7 +1762,7 @@ Page {
                         }
                         Rectangle {
                             id: idPreviewOverlayRectangle
-                            visible: ( mainToolbar.buttonImage.selected && idButtonImageOverlays.down && ( idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) )
+                            visible: ( mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected && ( idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) )
                             anchors.fill: parent
                             opacity: ( idComboBoxImageOverlayType.currentIndex === 2 ) ? idToolsRowImageOverlayOpacitySlider.value : 1
                             color: ( idComboBoxImageOverlayType.currentIndex === 2 ) ? drawRectangleColor : "transparent"
@@ -2084,7 +2084,7 @@ Page {
 
                 Rectangle {
                     id: idLabelFromToLeft
-                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 0) || (mainToolbar.buttonAudio.selected && idButtonAudioFade.down &&  idComboBoxAudioFade.currentIndex === 0 ) ) )
+                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 0) || (mainToolbar.buttonAudio.selected && idButtonAudioFade.down &&  idComboBoxAudioFade.currentIndex === 0 ) ) )
                     z: -1
                     y: Theme.paddingMedium
                     height: parent.height - 2 * y
@@ -2106,7 +2106,7 @@ Page {
 
                 Rectangle {
                     id: idLabelFromToRight
-                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 1) || (mainToolbar.buttonAudio.selected && idButtonAudioFade.down &&  idComboBoxAudioFade.currentIndex === 1 ) ) )
+                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 1) || (mainToolbar.buttonAudio.selected && idButtonAudioFade.down &&  idComboBoxAudioFade.currentIndex === 1 ) ) )
                     z: -1
                     y: Theme.paddingMedium
                     height: parent.height - 2 * y
@@ -2836,177 +2836,16 @@ Page {
                 }
             }
 
-            // tool-details IMAGE
-            Row {
-                id: idToolsRowImage
-                visible: mainToolbar.buttonImage.selected
-                x: mainToolbar.x
-                width: mainToolbar.width
+            SecondaryToolbarImage {
+                id: imageToolbar
 
-                IconButton {
-                    id: idButtonImageEffects
-                    down: true
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = false
-                        idButtonImageEffects.down = true
-                        idButtonImageGeometry.down = false
-                        idButtonImageColors.down = false
-                        idButtonImageText.down = false
-                        idButtonImageOverlays.down = false
-                    }
-                    Label {
-                        text: qsTr("effects")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonImageFilters
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = true
-                        idButtonImageEffects.down = false
-                        idButtonImageGeometry.down = false
-                        idButtonImageColors.down = false
-                        idButtonImageText.down = false
-                        idButtonImageOverlays.down = false
-                    }
-                    Label {
-                        text: qsTr("filters")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonImageColors
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = false
-                        idButtonImageEffects.down = false
-                        idButtonImageGeometry.down = false
-                        idButtonImageColors.down = true
-                        idButtonImageText.down = false
-                        idButtonImageOverlays.down = false
-                    }
-                    Label {
-                        text: qsTr("colors")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonImageGeometry
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = false
-                        idButtonImageEffects.down = false
-                        idButtonImageGeometry.down = true
-                        idButtonImageColors.down = false
-                        idButtonImageText.down = false
-                        idButtonImageOverlays.down = false
-                    }
-                    Label {
-                        text: qsTr("geometry")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonImageText
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = false
-                        idButtonImageEffects.down = false
-                        idButtonImageGeometry.down = false
-                        idButtonImageColors.down = false
-                        idButtonImageText.down = true
-                        idButtonImageOverlays.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("text")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonImageOverlays
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = false
-                        idButtonImageEffects.down = false
-                        idButtonImageGeometry.down = false
-                        idButtonImageColors.down = false
-                        idButtonImageText.down = false
-                        idButtonImageOverlays.down = true
-                    }
-                    Label {
-                        text: qsTr("overlay")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
+                visible: mainToolbar.buttonImage.selected
             }
 
             // more details IMAGE
             Row {
                 id: idToolsRowImageFilters
-                visible: (mainToolbar.buttonImage.selected && idButtonImageFilters.down )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonFilters.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -3054,7 +2893,7 @@ Page {
             }
             Row {
                 id: idToolsRowImageEffects
-                visible: (mainToolbar.buttonImage.selected && idButtonImageEffects.down )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -3174,7 +3013,7 @@ Page {
             }
             Row {
                 id: idToolsRowImageEffectsBasics
-                visible: (mainToolbar.buttonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && (idComboBoxImageEffectsBasics.currentIndex === 1 || idComboBoxImageEffectsBasics.currentIndex === 2) )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && (idComboBoxImageEffectsBasics.currentIndex === 1 || idComboBoxImageEffectsBasics.currentIndex === 2) )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -3230,7 +3069,7 @@ Page {
             }
             Row {
                 id: idToolsRowImageEffectsFrameDetectionBW
-                visible: (mainToolbar.buttonImage.selected && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 3 && (idComboBoxImageEffectsFinders.currentIndex === 2 || idComboBoxImageEffectsFinders.currentIndex === 3) )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 3 && (idComboBoxImageEffectsFinders.currentIndex === 2 || idComboBoxImageEffectsFinders.currentIndex === 3) )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -3285,7 +3124,7 @@ Page {
             }
             Row {
                 id: idToolsRowImageColors
-                visible: (mainToolbar.buttonImage.selected && idButtonImageColors.down )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonColor.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -3422,7 +3261,7 @@ Page {
             }
             Row {
                 id: idToolsRowImageGeometry
-                visible: (mainToolbar.buttonImage.selected && idButtonImageGeometry.down )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonGeometry.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -3462,7 +3301,7 @@ Page {
             }
             Row {
                 id: idToolsRowImageText
-                visible: (mainToolbar.buttonImage.selected && idButtonImageText.down )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonText.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -3568,7 +3407,7 @@ Page {
             }
             Row {
                 id: idToolsRowImageTextInput
-                visible: (mainToolbar.buttonImage.selected && idButtonImageText.down )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonText.selected )
                 enabled: ( finishedLoading === true )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
@@ -3639,7 +3478,7 @@ Page {
             }
             Row {
                 id: idToolsRowImageOverlays
-                visible: (mainToolbar.buttonImage.selected && idButtonImageOverlays.down )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -3767,7 +3606,7 @@ Page {
             }
             Row {
                 id: idToolsRowImageOverlaysAlpha
-                visible: (mainToolbar.buttonImage.selected && idButtonImageOverlays.down && idComboBoxImageOverlayType.currentIndex === 4)
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected && idComboBoxImageOverlayType.currentIndex === 4)
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -5626,7 +5465,7 @@ Page {
                         if ( idButtonCutSpeed.down ) { py.speedFunction() }
                     }
                     if ( mainToolbar.buttonImage.selected ) {
-                        if ( idButtonImageFilters.down ) {
+                        if ( imageToolbar.buttonFilters.selected ) {
                             if ( idComboBoxImageFilters.currentIndex === 0 && cubeFileLoaded === true ) { py.imageLUT3dFunction( "extern" ) }
                             if ( idComboBoxImageFilters.currentIndex === 1 ) { py.imageLUT3dFunction ( "cineAnime.png" ) }
                             if ( idComboBoxImageFilters.currentIndex === 2 ) { py.imageGrayscaleFunction() }
@@ -5649,7 +5488,7 @@ Page {
                             if ( idComboBoxImageFilters.currentIndex === 19 ) { py.imageLUT3dFunction ( "cineWinter.png" ) }
                         }
 
-                        if ( idButtonImageEffects.down ) {
+                        if ( imageToolbar.buttonEffects.selected ) {
                             if ( idComboBoxImageEffects.currentIndex === 0 ) { // basics
                                 if (idComboBoxImageEffectsBasics.currentIndex === 0 ) { py.imageFadeFunction() }
                                 else if (idComboBoxImageEffectsBasics.currentIndex === 1 ) { py.imageBlurFunction() }
@@ -5682,7 +5521,7 @@ Page {
                             else if ( idComboBoxImageEffects.currentIndex === 4 ) { py.imageFrei0rFunction() } // frei0r plugins
                         }
 
-                        if ( idButtonImageColors.down ) {
+                        if ( imageToolbar.buttonColor.selected ) {
                             if ( idComboBoxImageColors.currentIndex === 0 ) { py.imageVibranceFunction() }
                             if ( idComboBoxImageColors.currentIndex === 1 ) { py.imageColorFunction("brightness") }
                             if ( idComboBoxImageColors.currentIndex === 2 ) { py.imageColorFunction("contrast") }
@@ -5694,20 +5533,20 @@ Page {
                             if ( idComboBoxImageColors.currentIndex === 8 ) { py.imageLUT3dFunction("cineLessContrast.cube") }
                         }
 
-                        if ( idButtonImageGeometry.down ) {
+                        if ( imageToolbar.buttonGeometry.selected ) {
                             if ( idComboBoxImageGeometry.currentIndex === 0 ) { py.imageMirrorFunction() }
                             if ( idComboBoxImageGeometry.currentIndex === 1 ) { py.imageRotateFunction() }
                         }
 
-                        if ( idButtonImageText.down ) { py.addTextFunction() }
+                        if ( imageToolbar.buttonText.selected ) { py.addTextFunction() }
 
-                        if ( idButtonImageOverlays.down && ( (idComboBoxImageOverlayType.currentIndex === 0 && overlayFileLoaded === true)
+                        if ( imageToolbar.buttonOverlay.selected && ( (idComboBoxImageOverlayType.currentIndex === 0 && overlayFileLoaded === true)
                                                             || (idComboBoxImageOverlayType.currentIndex === 1 && overlayFileLoaded === true)
                                                             || idComboBoxImageOverlayType.currentIndex === 2
                                                             || idComboBoxImageOverlayType.currentIndex === 3
                                                             ) ) { py.overlayFileFunction() }
 
-                        if ( idButtonImageOverlays.down && idComboBoxImageOverlayType.currentIndex === 4 && overlayFileLoaded === true )  { py.overlayAlphaClipFunction( "file", "part", "manual") }
+                        if ( imageToolbar.buttonOverlay.selected && idComboBoxImageOverlayType.currentIndex === 4 && overlayFileLoaded === true )  { py.overlayAlphaClipFunction( "file", "part", "manual") }
                     }
                     if ( mainToolbar.buttonAudio.selected ) {
                         if (idButtonAudioFade.down === true) {
