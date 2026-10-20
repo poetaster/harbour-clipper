@@ -4618,119 +4618,18 @@ Page {
                 }
             }
 
-            // tool-details FILE
-            Row {
-                id: idToolsRowFile
-                visible: mainToolbar.buttonFile.selected
-                x: mainToolbar.x
-                width: mainToolbar.width
+            SecondaryToolbarFile {
+                id: fileToolbar
 
-                //Disable Share
-                IconButton {
-                    id: idButtonFileShare
-                    down: true
-                    width: parent.width / 4
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonFileShare.down = true
-                        idButtonFileInfo.down = false
-                        idButtonFileRename.down = false
-                        idButtonFileDelete.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("share")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonFileInfo
-                    width: parent.width / 4
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonFileShare.down = false
-                        idButtonFileInfo.down = true
-                        idButtonFileRename.down = false
-                        idButtonFileDelete.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("fileinfo")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonFileRename
-                    width: parent.width / 4
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonFileShare.down = false
-                        idButtonFileInfo.down = false
-                        idButtonFileRename.down = true
-                        idButtonFileDelete.down = false
-                    }
-                    Label {
-                        text: qsTr("rename")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonFileDelete
-                    width: parent.width / 4
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonFileShare.down = false
-                        idButtonFileInfo.down = false
-                        idButtonFileRename.down = false
-                        idButtonFileDelete.down = true
-                    }
-                    Label {
-                        text: qsTr("delete")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
+                visible: mainToolbar.buttonFile.selected
+
+                onScroll: idTimerScrollToBottom.start()
             }
 
             // more details FILE
             Item {
                 id: idToolsRowFileShare
-                visible: (mainToolbar.buttonFile.selected && idButtonFileShare.down )
+                visible: (mainToolbar.buttonFile.selected && fileToolbar.buttonShare.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
                 height: idFileShareColumn.height
@@ -4758,7 +4657,7 @@ Page {
             }
             Item {
                 id: idToolsRowFileInfo
-                visible: (mainToolbar.buttonFile.selected && idButtonFileInfo.down )
+                visible: (mainToolbar.buttonFile.selected && fileToolbar.buttonInfo.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
                 height: idFileInfoColumn.height
@@ -4834,7 +4733,7 @@ Page {
             }
             Row {
                 id: idToolsRowFileRename
-                visible: (mainToolbar.buttonFile.selected && idButtonFileRename.down )
+                visible: (mainToolbar.buttonFile.selected && fileToolbar.buttonRename.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
                 height: idToolsRowFileRenameText.height
@@ -4850,7 +4749,7 @@ Page {
                     TextField {
                         id: idToolsRowFileRenameText
                         enabled: ( finishedLoading === true )
-                        visible: ( mainToolbar.buttonFile.selected && idButtonFileRename.down )
+                        visible: ( mainToolbar.buttonFile.selected && fileToolbar.buttonRename.selected )
                         width: parent.width
                         textTopMargin: Theme.paddingLarge
                         inputMethodHints: Qt.ImhNoPredictiveText
@@ -4888,21 +4787,16 @@ Page {
                 }
             }
             Item {
-                visible: (mainToolbar.buttonFile.selected && idButtonFileDelete.down )
+                visible: (mainToolbar.buttonFile.selected && fileToolbar.buttonDelete.selected )
                 width: parent.width
                 height: standardDetailItemHeight
             }
-
 
             Item {
                 id: idSpacerBottom
                 width: parent.width
                 height: Theme.paddingLarge
             }
-
-
-
-
         } // end column
     } // end flickable
 
@@ -5135,7 +5029,7 @@ Page {
                     }
                     if ( mainToolbar.buttonFile.selected ) {
                         //DISABLE share
-                        if (idButtonFileShare.down === true) {
+                        if (fileToolbar.buttonShare.selected === true) {
                             /*pageStack.push(Qt.resolvedUrl("SharePage.qml"), {
                                 shareFilePath : idMediaPlayer.source.toString(),
                                 shareFileName : origMediaFileName,
@@ -5143,10 +5037,10 @@ Page {
                             })*/
                             if (debug) console.log(tmpVideoFileSize)
                         }
-                        if (idButtonFileRename.down === true) {
+                        if (fileToolbar.buttonRename.selected === true) {
                             py.renameOriginal()
                         }
-                        if (idButtonFileDelete.down === true) {
+                        if (fileToolbar.buttonDelete.selected === true) {
                             remorse.execute( qsTr("Delete file?"))
                         }
                     }
