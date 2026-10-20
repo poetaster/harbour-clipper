@@ -1457,7 +1457,7 @@ Page {
         id: idSilicaFlickable
 
         anchors.fill: parent
-        contentHeight: page.height
+        contentHeight: column.height
 
         PullDownMenu {
             enabled: recordingAudioState === false // Patch: while recording do not allow slide down
@@ -2328,8 +2328,267 @@ Page {
                 }
             }
 
-            MainToolbar {
-                id: mainToolbar
+            Item {
+                width: parent.width
+                height: mainToolbar.height
+
+                RowLayout {
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                        rightMargin: Theme.horizontalPageMargin
+                    }
+
+                    spacing: Theme.paddingMedium
+
+                    MainToolbar {
+                        id: mainToolbar
+
+                        anchors.bottom: parent.bottom
+                        Layout.fillWidth: true
+                    }
+
+                    // TODO: The idea is to later create a bottom toolbar with those two buttons. 
+                    // The toolbar will be overlayed on top of the toolbox, the toolbox will be scrollable on its own
+
+                    Button {
+                        id: idButtonRecord
+
+                        anchors.verticalCenter: parent.verticalCenter
+                        visible: mainToolbar.buttonAudio.selected && audioToolbar.buttonRecorder.selected
+                        enabled: !noFile && finishedLoading && mainToolbar.buttonAudio.selected && audioToolbar.buttonRecorder.selected
+                        icon.source: "image://theme/icon-m-mic?"
+
+                        Rectangle {
+                            z: -1
+                            anchors.centerIn: parent
+                            width: parent.icon.width * 1/0.8
+                            height: width
+                            radius: width/2
+                            color: (parent.down) ? Theme.rgba(Theme.errorColor, 0.2) : Theme.rgba(Theme.primaryColor, 0.2)
+                        }
+
+                        onEntered: {
+                            startRecordingHandlePosX = idSliderHandle1.x + idSliderHandle1.width/2
+                            idMediaPlayer.pause() // in case it did not pause yet
+
+                            // this makes no sense since we have to mute to record
+                            //recordingBeepStart.play()
+                            //idTimerDelayRecording.start() // records, commands are issued when beep sound has finished
+
+                            recordingOverlayStart = (idMediaPlayer.position/1000).toString()
+                            recordingAudioState = true
+                            audioRecorder_Sample.record()
+                            idMediaPlayer.play()
+                            thumbnailVisible = false
+                        }
+
+                        onReleased: {
+                            audioRecorder_Sample.stop()
+                            recordingAudioState = false
+                            idMediaPlayer.pause()
+                            //thumbnailVisible = false
+                            // this makes no sense since we have to mute to record
+                            //recordingBeepStop.play()
+                            py.recordAudioFunction()
+                        }
+                    }
+
+                    IconButton {
+                        id: idButtonConfirm
+
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        enabled: (noFile === false && finishedLoading === true && idButtonRecord.down === false && idMediaPlayer.height > idTimeInfoRow.height)
+                                || (mainToolbar.buttonCollage.selected && collageToolbar.buttonSlideshow.selected && slideshowModel.count !== 0)
+                                || (mainToolbar.buttonCollage.selected && collageToolbar.buttonStoryline.selected && storylineModel.count !== 0)
+
+                        height: Theme.itemSizeSmall
+                        width: parent.width / 7
+                        icon.source: "image://theme/icon-m-accept"
+
+                        Rectangle {
+                            z: -1
+                            anchors.centerIn: parent
+                            anchors.verticalCenterOffset: -Theme.paddingSmall / 2.5
+                            anchors.horizontalCenterOffset: Theme.paddingSmall / 5
+                            width: parent.icon.width * 1/0.9
+                            height: width
+                            radius: width/2
+                            color: (parent.enabled) ? Theme.rgba(Theme.primaryColor, 0.2) : "transparent"
+                        }
+
+                        onClicked: {
+                            // TODO: On-apply behavior should be provided by the currently selected toolbox
+                            // For example, currently selected toolbox's Item is put into root.selectedToolbox and has a function apply()
+                            // This button should just call root.selectedToolbox.apply()
+                            // selectedToolbox should also provide status for the record button and implement a capability to receive updates from it
+                            // This way each toolbox can be incapsulated into a separate component file
+
+                            idSilicaFlickable.scrollToTop()
+                            if ( mainToolbar.buttonCut.selected ) {
+                                if ( cutToolbar.buttonTrim.selected ) { py.trimFunction() }
+                                if ( cutToolbar.buttonInsert.selected ) { py.addTimeFunction() }
+                                if ( cutToolbar.buttonCrop.selected ) { py.cropAreaFunction() }
+                                if ( cutToolbar.buttonPad.selected ) { py.padAreaFunction() }
+                                if ( cutToolbar.buttonResize.selected ) { py.resizeFunction() }
+                                if ( cutToolbar.buttonSpeed.selected ) { py.speedFunction() }
+                            }
+                            if ( mainToolbar.buttonImage.selected ) {
+                                if ( imageToolbar.buttonFilters.selected ) {
+                                    if ( idComboBoxImageFilters.currentIndex === 0 && cubeFileLoaded === true ) { py.imageLUT3dFunction( "extern" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 1 ) { py.imageLUT3dFunction ( "cineAnime.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 2 ) { py.imageGrayscaleFunction() }
+                                    if ( idComboBoxImageFilters.currentIndex === 3 ) { py.imageLUT3dFunction ( "cineBleak.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 4 ) { py.imageLUT3dFunction ( "cineBleach.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 5 ) { py.imageLUT3dFunction( "cineCold.cube" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 6 ) { py.imageLUT3dFunction( "cineDrama.cube" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 7 ) { py.imageLUT3dFunction ( "cineFall.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 8 ) { py.imageLUT3dFunction( "cineMoonlight.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 9 ) { py.imageCurveFunction("negative") }
+                                    if ( idComboBoxImageFilters.currentIndex === 10 ) { py.imageLUT3dFunction ( "cineOld.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 11 ) { py.imageLUT3dFunction( "cineOrangeTeal.cube" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 12 ) { py.imageLUT3dFunction ( "cineSpring.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 13 ) { py.imageLUT3dFunction ( "cineSummer.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 14 ) { py.imageLUT3dFunction ( "cineTealMagentaGold.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 15 ) { py.imageLUT3dFunction( "cineSunset.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 16 ) { py.imageLUT3dFunction( "cineVibrant.cube" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 17 ) { py.imageCurveFunction("vintage") }
+                                    if ( idComboBoxImageFilters.currentIndex === 18 ) { py.imageLUT3dFunction ( "cineWarm.cube" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 19 ) { py.imageLUT3dFunction ( "cineWinter.png" ) }
+                                }
+
+                                if ( imageToolbar.buttonEffects.selected ) {
+                                    if ( idComboBoxImageEffects.currentIndex === 0 ) { // basics
+                                        if (idComboBoxImageEffectsBasics.currentIndex === 0 ) { py.imageFadeFunction() }
+                                        else if (idComboBoxImageEffectsBasics.currentIndex === 1 ) { py.imageBlurFunction() }
+                                        else if (idComboBoxImageEffectsBasics.currentIndex === 2 ) { py.imageGeneralEffectFunction("unsharp") }
+                                        else if (idComboBoxImageEffectsBasics.currentIndex === 3 ) { py.imageGeneralEffectFunction( "erosion" ) }
+                                        else if (idComboBoxImageEffectsBasics.currentIndex === 4 ) { py.imageNormalizeFunction() }
+                                        else if (idComboBoxImageEffectsBasics.currentIndex === 5 ) { py.imageReverseFunction() }
+                                    }
+                                    else if ( idComboBoxImageEffects.currentIndex === 1 ) { // overlay
+                                        previewAlphaType = "video"
+                                        if (idComboBoxImageEffectsOverlays.currentIndex === 0) { py.overlayAlphaClipFunction( overlaysFolder + "flowersFalling.m4v", "part", "black:0.3:0.1" ) }
+                                        else if (idComboBoxImageEffectsOverlays.currentIndex === 1) { py.overlayOldMovieFunction() }
+                                        else if (idComboBoxImageEffectsOverlays.currentIndex === 2) { py.overlayAlphaClipFunction( overlaysFolder + "winterSnow.mp4", "part", "black:0.3:0.2" ) }
+                                        else if (idComboBoxImageEffectsOverlays.currentIndex === 3) { py.imageGeneralEffectFunction( "vignette" ) }
+                                    }
+                                    else if ( idComboBoxImageEffects.currentIndex === 2 ) { // repair
+                                        if (idComboBoxImageEffectsRepair.currentIndex === 0 ) { py.imageGeneralEffectFunction( "deblock" ) }
+                                        else if (idComboBoxImageEffectsRepair.currentIndex === 1 ) { py.imageGeneralEffectFunction( "vaguedenoiser" ) }
+                                        else if (idComboBoxImageEffectsRepair.currentIndex === 2 ) { py.imageGeneralEffectFunction( "fftdnoiz" ) } // denoise 3D
+                                        else if (idComboBoxImageEffectsRepair.currentIndex === 3 ) { py.imageDeshakeFunction() }
+                                        else if (idComboBoxImageEffectsRepair.currentIndex === 4 ) { py.repairFramesFunction() }
+                                        else if (idComboBoxImageEffectsRepair.currentIndex === 5 ) { py.imageStabilizeFunction() }
+                                    }
+                                    else if ( idComboBoxImageEffects.currentIndex === 3 ) { // detect
+                                        if (idComboBoxImageEffectsFinders.currentIndex === 0 ) { py.imageGeneralEffectFunction( "sobel" ) }
+                                        else if (idComboBoxImageEffectsFinders.currentIndex === 1 ) { py.imageGeneralEffectFunction( "edgedetect" ) }
+                                        else if (idComboBoxImageEffectsFinders.currentIndex === 2 ) { py.removeBWframesFunction( "black" ) }
+                                        else if (idComboBoxImageEffectsFinders.currentIndex === 3 ) { py.removeBWframesFunction( "white" ) }
+                                    }
+                                    else if ( idComboBoxImageEffects.currentIndex === 4 ) { py.imageFrei0rFunction() } // frei0r plugins
+                                }
+
+                                if ( imageToolbar.buttonColor.selected ) {
+                                    if ( idComboBoxImageColors.currentIndex === 0 ) { py.imageVibranceFunction() }
+                                    if ( idComboBoxImageColors.currentIndex === 1 ) { py.imageColorFunction("brightness") }
+                                    if ( idComboBoxImageColors.currentIndex === 2 ) { py.imageColorFunction("contrast") }
+                                    if ( idComboBoxImageColors.currentIndex === 3 ) { py.imageColorFunction("saturation") }
+                                    if ( idComboBoxImageColors.currentIndex === 4 ) { py.imageColorFunction("gamma") }
+                                    if ( idComboBoxImageColors.currentIndex === 5 ) { py.imageCurveFunction("lighter") }
+                                    if ( idComboBoxImageColors.currentIndex === 6 ) { py.imageCurveFunction("darker") }
+                                    if ( idComboBoxImageColors.currentIndex === 7 ) { py.imageCurveFunction("increase_contrast") }
+                                    if ( idComboBoxImageColors.currentIndex === 8 ) { py.imageLUT3dFunction("cineLessContrast.cube") }
+                                }
+
+                                if ( imageToolbar.buttonGeometry.selected ) {
+                                    if ( idComboBoxImageGeometry.currentIndex === 0 ) { py.imageMirrorFunction() }
+                                    if ( idComboBoxImageGeometry.currentIndex === 1 ) { py.imageRotateFunction() }
+                                }
+
+                                if ( imageToolbar.buttonText.selected ) { py.addTextFunction() }
+
+                                if ( imageToolbar.buttonOverlay.selected && ( (idComboBoxImageOverlayType.currentIndex === 0 && overlayFileLoaded === true)
+                                                                    || (idComboBoxImageOverlayType.currentIndex === 1 && overlayFileLoaded === true)
+                                                                    || idComboBoxImageOverlayType.currentIndex === 2
+                                                                    || idComboBoxImageOverlayType.currentIndex === 3
+                                                                    ) ) { py.overlayFileFunction() }
+
+                                if ( imageToolbar.buttonOverlay.selected && idComboBoxImageOverlayType.currentIndex === 4 && overlayFileLoaded === true )  { py.overlayAlphaClipFunction( "file", "part", "manual") }
+                            }
+                            if ( mainToolbar.buttonAudio.selected ) {
+                                if (audioToolbar.buttonFade.selected === true) {
+                                    py.audioFadeFunction()
+                                }
+                                if (audioToolbar.buttonVolume.selected === true) {
+                                    py.audioVolumeFunction()
+                                }
+                                if (audioToolbar.buttonExtract.selected === true) {
+                                    py.audioExtractFunction()
+                                }
+                                if (audioToolbar.buttonMixer.selected === true && addAudioLoaded === true) {
+                                    py.audioMixerFunction()
+                                }
+                                if (audioToolbar.buttonFilters.selected === true) {
+                                    if ( idComboBoxAudioFilters.currentIndex === 0 ) { py.audioEffectsFilters( "denoise" ) }
+                                    if ( idComboBoxAudioFilters.currentIndex === 1 ) { py.audioEffectsFilters( "echo" ) }
+                                    if ( idComboBoxAudioFilters.currentIndex === 2 ) { py.audioEffectsFilters( "highpass" ) }
+                                    if ( idComboBoxAudioFilters.currentIndex === 3 ) { py.audioEffectsFilters( "lowpass" ) }
+                                }
+                            }
+
+                            if ( mainToolbar.buttonCollage.selected ) {
+                                if (collageToolbar.buttonSlideshow.selected && slideshowModel.count > 0 ) {
+                                    py.createSlideshowFunction()
+                                }
+                                if ( collageToolbar.buttonSplitScreen.selected && overlayFileLoaded === true ) {
+                                    py.splitscreenFunction()
+                                }
+                                if ( collageToolbar.buttonStoryline.selected && storylineModel.count > 0 ) {
+                                    py.createStorylineFunction()
+                                }
+                                if ( collageToolbar.buttonSubtitles.selected && ( (idComboBoxCollageSubtitleAdd.currentIndex === 0 && addSubtitleLoaded === true) || (idComboBoxCollageSubtitleAdd.currentIndex === 1 && subtitleModel.count > 0 ) )) {
+                                    py.overlaySubtitleFunction()
+                                }
+                                if ( collageToolbar.buttonThumbnail.selected ) {
+                                    py.extractImagesFunction()
+                                }
+                            }
+                            if ( mainToolbar.buttonFile.selected ) {
+                                //DISABLE share
+                                if (fileToolbar.buttonShare.selected === true) {
+                                    /*pageStack.push(Qt.resolvedUrl("SharePage.qml"), {
+                                        shareFilePath : idMediaPlayer.source.toString(),
+                                        shareFileName : origMediaFileName,
+                                        tmpVideoFileSize : tmpVideoFileSize,
+                                    })*/
+                                    if (debug) console.log(tmpVideoFileSize)
+                                }
+                                if (fileToolbar.buttonRename.selected === true) {
+                                    py.renameOriginal()
+                                }
+                                if (fileToolbar.buttonDelete.selected === true) {
+                                    remorse.execute( qsTr("Delete file?"))
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Rather hacky solution for now, later buttons will be put on the bottom bar
+                Rectangle {
+                    anchors {
+                        right: parent.right
+                        bottom: parent.bottom
+                    }
+
+                    width: parent.width - mainToolbar.width
+                    height: Theme.dp(1)
+                    color: Theme.highlightColor
+                    opacity: Theme.opacityOverlay
+                }
             }
 
             SecondaryToolbarCut {
@@ -4799,259 +5058,6 @@ Page {
             }
         } // end column
     } // end flickable
-
-    // Bottom toolbar overlays the main flickable.
-    // Future design may include separate flickables
-    // for toolbox and for the video. In this case the
-    // toolbox will overlay the video player
-    // (inspired by the bottom sheet component in Android).
-    Column {
-        id: bottomToolbar
-
-        anchors.bottom: parent.bottom
-        width: parent.width
-
-        Rectangle {
-            width: parent.width
-            height: Theme.dp(1)
-            color: Theme.secondaryColor
-        }
-
-        Row {
-            width: parent.width
-            leftPadding: Theme.horizontalPageMargin
-            rightPadding: Theme.horizontalPageMargin
-            topPadding: Theme.paddingSmall
-            bottomPadding: Theme.paddingSmall
-            spacing: Theme.paddingMedium
-
-            Button {
-                id: idButtonRecord
-
-                visible: mainToolbar.buttonAudio.selected && audioToolbar.buttonRecorder.selected
-                enabled: !noFile && finishedLoading && mainToolbar.buttonAudio.selected && audioToolbar.buttonRecorder.selected
-                icon.source: "image://theme/icon-m-mic?"
-
-                Rectangle {
-                    z: -1
-                    anchors.centerIn: parent
-                    width: parent.icon.width * 1/0.8
-                    height: width
-                    radius: width/2
-                    color: (parent.down) ? Theme.rgba(Theme.errorColor, 0.2) : Theme.rgba(Theme.primaryColor, 0.2)
-                }
-
-                onEntered: {
-                    startRecordingHandlePosX = idSliderHandle1.x + idSliderHandle1.width/2
-                    idMediaPlayer.pause() // in case it did not pause yet
-
-                    // this makes no sense since we have to mute to record
-                    //recordingBeepStart.play()
-                    //idTimerDelayRecording.start() // records, commands are issued when beep sound has finished
-
-                    recordingOverlayStart = (idMediaPlayer.position/1000).toString()
-                    recordingAudioState = true
-                    audioRecorder_Sample.record()
-                    idMediaPlayer.play()
-                    thumbnailVisible = false
-                }
-
-                onReleased: {
-                    audioRecorder_Sample.stop()
-                    recordingAudioState = false
-                    idMediaPlayer.pause()
-                    //thumbnailVisible = false
-                    // this makes no sense since we have to mute to record
-                    //recordingBeepStop.play()
-                    py.recordAudioFunction()
-                }
-            }
-
-            IconButton {
-                id: idButtonConfirm
-
-                enabled: (noFile === false && finishedLoading === true && idButtonRecord.down === false && idMediaPlayer.height > idTimeInfoRow.height)
-                         || (mainToolbar.buttonCollage.selected && collageToolbar.buttonSlideshow.selected && slideshowModel.count !== 0)
-                         || (mainToolbar.buttonCollage.selected && collageToolbar.buttonStoryline.selected && storylineModel.count !== 0)
-
-                height: Theme.itemSizeSmall
-                width: parent.width / 7
-                icon.source: "image://theme/icon-m-accept"
-
-                Rectangle {
-                    z: -1
-                    anchors.centerIn: parent
-                    anchors.verticalCenterOffset: -Theme.paddingSmall / 2.5
-                    anchors.horizontalCenterOffset: Theme.paddingSmall / 5
-                    width: parent.icon.width * 1/0.9
-                    height: width
-                    radius: width/2
-                    color: (parent.enabled) ? Theme.rgba(Theme.primaryColor, 0.2) : "transparent"
-                }
-
-                onClicked: {
-                    // TODO: On-apply behavior should be provided by the currently selected toolbox
-                    // For example, currently selected toolbox's Item is put into root.selectedToolbox and has a function apply()
-                    // This button should just call root.selectedToolbox.apply()
-                    // selectedToolbox should also provide status for the record button and implement a capability to receive updates from it
-                    // This way each toolbox can be incapsulated into a separate component file
-
-                    idSilicaFlickable.scrollToTop()
-                    if ( mainToolbar.buttonCut.selected ) {
-                        if ( cutToolbar.buttonTrim.selected ) { py.trimFunction() }
-                        if ( cutToolbar.buttonInsert.selected ) { py.addTimeFunction() }
-                        if ( cutToolbar.buttonCrop.selected ) { py.cropAreaFunction() }
-                        if ( cutToolbar.buttonPad.selected ) { py.padAreaFunction() }
-                        if ( cutToolbar.buttonResize.selected ) { py.resizeFunction() }
-                        if ( cutToolbar.buttonSpeed.selected ) { py.speedFunction() }
-                    }
-                    if ( mainToolbar.buttonImage.selected ) {
-                        if ( imageToolbar.buttonFilters.selected ) {
-                            if ( idComboBoxImageFilters.currentIndex === 0 && cubeFileLoaded === true ) { py.imageLUT3dFunction( "extern" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 1 ) { py.imageLUT3dFunction ( "cineAnime.png" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 2 ) { py.imageGrayscaleFunction() }
-                            if ( idComboBoxImageFilters.currentIndex === 3 ) { py.imageLUT3dFunction ( "cineBleak.png" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 4 ) { py.imageLUT3dFunction ( "cineBleach.png" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 5 ) { py.imageLUT3dFunction( "cineCold.cube" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 6 ) { py.imageLUT3dFunction( "cineDrama.cube" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 7 ) { py.imageLUT3dFunction ( "cineFall.png" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 8 ) { py.imageLUT3dFunction( "cineMoonlight.png" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 9 ) { py.imageCurveFunction("negative") }
-                            if ( idComboBoxImageFilters.currentIndex === 10 ) { py.imageLUT3dFunction ( "cineOld.png" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 11 ) { py.imageLUT3dFunction( "cineOrangeTeal.cube" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 12 ) { py.imageLUT3dFunction ( "cineSpring.png" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 13 ) { py.imageLUT3dFunction ( "cineSummer.png" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 14 ) { py.imageLUT3dFunction ( "cineTealMagentaGold.png" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 15 ) { py.imageLUT3dFunction( "cineSunset.png" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 16 ) { py.imageLUT3dFunction( "cineVibrant.cube" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 17 ) { py.imageCurveFunction("vintage") }
-                            if ( idComboBoxImageFilters.currentIndex === 18 ) { py.imageLUT3dFunction ( "cineWarm.cube" ) }
-                            if ( idComboBoxImageFilters.currentIndex === 19 ) { py.imageLUT3dFunction ( "cineWinter.png" ) }
-                        }
-
-                        if ( imageToolbar.buttonEffects.selected ) {
-                            if ( idComboBoxImageEffects.currentIndex === 0 ) { // basics
-                                if (idComboBoxImageEffectsBasics.currentIndex === 0 ) { py.imageFadeFunction() }
-                                else if (idComboBoxImageEffectsBasics.currentIndex === 1 ) { py.imageBlurFunction() }
-                                else if (idComboBoxImageEffectsBasics.currentIndex === 2 ) { py.imageGeneralEffectFunction("unsharp") }
-                                else if (idComboBoxImageEffectsBasics.currentIndex === 3 ) { py.imageGeneralEffectFunction( "erosion" ) }
-                                else if (idComboBoxImageEffectsBasics.currentIndex === 4 ) { py.imageNormalizeFunction() }
-                                else if (idComboBoxImageEffectsBasics.currentIndex === 5 ) { py.imageReverseFunction() }
-                            }
-                            else if ( idComboBoxImageEffects.currentIndex === 1 ) { // overlay
-                                previewAlphaType = "video"
-                                if (idComboBoxImageEffectsOverlays.currentIndex === 0) { py.overlayAlphaClipFunction( overlaysFolder + "flowersFalling.m4v", "part", "black:0.3:0.1" ) }
-                                else if (idComboBoxImageEffectsOverlays.currentIndex === 1) { py.overlayOldMovieFunction() }
-                                else if (idComboBoxImageEffectsOverlays.currentIndex === 2) { py.overlayAlphaClipFunction( overlaysFolder + "winterSnow.mp4", "part", "black:0.3:0.2" ) }
-                                else if (idComboBoxImageEffectsOverlays.currentIndex === 3) { py.imageGeneralEffectFunction( "vignette" ) }
-                            }
-                            else if ( idComboBoxImageEffects.currentIndex === 2 ) { // repair
-                                if (idComboBoxImageEffectsRepair.currentIndex === 0 ) { py.imageGeneralEffectFunction( "deblock" ) }
-                                else if (idComboBoxImageEffectsRepair.currentIndex === 1 ) { py.imageGeneralEffectFunction( "vaguedenoiser" ) }
-                                else if (idComboBoxImageEffectsRepair.currentIndex === 2 ) { py.imageGeneralEffectFunction( "fftdnoiz" ) } // denoise 3D
-                                else if (idComboBoxImageEffectsRepair.currentIndex === 3 ) { py.imageDeshakeFunction() }
-                                else if (idComboBoxImageEffectsRepair.currentIndex === 4 ) { py.repairFramesFunction() }
-                                else if (idComboBoxImageEffectsRepair.currentIndex === 5 ) { py.imageStabilizeFunction() }
-                            }
-                            else if ( idComboBoxImageEffects.currentIndex === 3 ) { // detect
-                                if (idComboBoxImageEffectsFinders.currentIndex === 0 ) { py.imageGeneralEffectFunction( "sobel" ) }
-                                else if (idComboBoxImageEffectsFinders.currentIndex === 1 ) { py.imageGeneralEffectFunction( "edgedetect" ) }
-                                else if (idComboBoxImageEffectsFinders.currentIndex === 2 ) { py.removeBWframesFunction( "black" ) }
-                                else if (idComboBoxImageEffectsFinders.currentIndex === 3 ) { py.removeBWframesFunction( "white" ) }
-                            }
-                            else if ( idComboBoxImageEffects.currentIndex === 4 ) { py.imageFrei0rFunction() } // frei0r plugins
-                        }
-
-                        if ( imageToolbar.buttonColor.selected ) {
-                            if ( idComboBoxImageColors.currentIndex === 0 ) { py.imageVibranceFunction() }
-                            if ( idComboBoxImageColors.currentIndex === 1 ) { py.imageColorFunction("brightness") }
-                            if ( idComboBoxImageColors.currentIndex === 2 ) { py.imageColorFunction("contrast") }
-                            if ( idComboBoxImageColors.currentIndex === 3 ) { py.imageColorFunction("saturation") }
-                            if ( idComboBoxImageColors.currentIndex === 4 ) { py.imageColorFunction("gamma") }
-                            if ( idComboBoxImageColors.currentIndex === 5 ) { py.imageCurveFunction("lighter") }
-                            if ( idComboBoxImageColors.currentIndex === 6 ) { py.imageCurveFunction("darker") }
-                            if ( idComboBoxImageColors.currentIndex === 7 ) { py.imageCurveFunction("increase_contrast") }
-                            if ( idComboBoxImageColors.currentIndex === 8 ) { py.imageLUT3dFunction("cineLessContrast.cube") }
-                        }
-
-                        if ( imageToolbar.buttonGeometry.selected ) {
-                            if ( idComboBoxImageGeometry.currentIndex === 0 ) { py.imageMirrorFunction() }
-                            if ( idComboBoxImageGeometry.currentIndex === 1 ) { py.imageRotateFunction() }
-                        }
-
-                        if ( imageToolbar.buttonText.selected ) { py.addTextFunction() }
-
-                        if ( imageToolbar.buttonOverlay.selected && ( (idComboBoxImageOverlayType.currentIndex === 0 && overlayFileLoaded === true)
-                                                            || (idComboBoxImageOverlayType.currentIndex === 1 && overlayFileLoaded === true)
-                                                            || idComboBoxImageOverlayType.currentIndex === 2
-                                                            || idComboBoxImageOverlayType.currentIndex === 3
-                                                            ) ) { py.overlayFileFunction() }
-
-                        if ( imageToolbar.buttonOverlay.selected && idComboBoxImageOverlayType.currentIndex === 4 && overlayFileLoaded === true )  { py.overlayAlphaClipFunction( "file", "part", "manual") }
-                    }
-                    if ( mainToolbar.buttonAudio.selected ) {
-                        if (audioToolbar.buttonFade.selected === true) {
-                            py.audioFadeFunction()
-                        }
-                        if (audioToolbar.buttonVolume.selected === true) {
-                            py.audioVolumeFunction()
-                        }
-                        if (audioToolbar.buttonExtract.selected === true) {
-                            py.audioExtractFunction()
-                        }
-                        if (audioToolbar.buttonMixer.selected === true && addAudioLoaded === true) {
-                            py.audioMixerFunction()
-                        }
-                        if (audioToolbar.buttonFilters.selected === true) {
-                            if ( idComboBoxAudioFilters.currentIndex === 0 ) { py.audioEffectsFilters( "denoise" ) }
-                            if ( idComboBoxAudioFilters.currentIndex === 1 ) { py.audioEffectsFilters( "echo" ) }
-                            if ( idComboBoxAudioFilters.currentIndex === 2 ) { py.audioEffectsFilters( "highpass" ) }
-                            if ( idComboBoxAudioFilters.currentIndex === 3 ) { py.audioEffectsFilters( "lowpass" ) }
-                        }
-                    }
-
-                    if ( mainToolbar.buttonCollage.selected ) {
-                        if (collageToolbar.buttonSlideshow.selected && slideshowModel.count > 0 ) {
-                            py.createSlideshowFunction()
-                        }
-                        if ( collageToolbar.buttonSplitScreen.selected && overlayFileLoaded === true ) {
-                            py.splitscreenFunction()
-                        }
-                        if ( collageToolbar.buttonStoryline.selected && storylineModel.count > 0 ) {
-                            py.createStorylineFunction()
-                        }
-                        if ( collageToolbar.buttonSubtitles.selected && ( (idComboBoxCollageSubtitleAdd.currentIndex === 0 && addSubtitleLoaded === true) || (idComboBoxCollageSubtitleAdd.currentIndex === 1 && subtitleModel.count > 0 ) )) {
-                            py.overlaySubtitleFunction()
-                        }
-                        if ( collageToolbar.buttonThumbnail.selected ) {
-                            py.extractImagesFunction()
-                        }
-                    }
-                    if ( mainToolbar.buttonFile.selected ) {
-                        //DISABLE share
-                        if (fileToolbar.buttonShare.selected === true) {
-                            /*pageStack.push(Qt.resolvedUrl("SharePage.qml"), {
-                                shareFilePath : idMediaPlayer.source.toString(),
-                                shareFileName : origMediaFileName,
-                                tmpVideoFileSize : tmpVideoFileSize,
-                            })*/
-                            if (debug) console.log(tmpVideoFileSize)
-                        }
-                        if (fileToolbar.buttonRename.selected === true) {
-                            py.renameOriginal()
-                        }
-                        if (fileToolbar.buttonDelete.selected === true) {
-                            remorse.execute( qsTr("Delete file?"))
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-
-
 
 // *********************************************** useful functions *********************************************** //
 
