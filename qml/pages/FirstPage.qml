@@ -2498,596 +2498,6 @@ Page {
                 }
             }
 
-            // tool-details IMAGE
-            Row {
-                id: idToolsRowImage
-                visible: mainToolbar.buttonImage.selected
-                x: mainToolbar.x
-                width: mainToolbar.width
-
-                IconButton {
-                    id: idButtonImageEffects
-                    down: true
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = false
-                        idButtonImageEffects.down = true
-                        idButtonImageGeometry.down = false
-                        idButtonImageColors.down = false
-                        idButtonImageText.down = false
-                        idButtonImageOverlays.down = false
-                    }
-                    Label {
-                        text: qsTr("effects")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonImageFilters
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = true
-                        idButtonImageEffects.down = false
-                        idButtonImageGeometry.down = false
-                        idButtonImageColors.down = false
-                        idButtonImageText.down = false
-                        idButtonImageOverlays.down = false
-                    }
-                    Label {
-                        text: qsTr("filters")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonImageColors
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = false
-                        idButtonImageEffects.down = false
-                        idButtonImageGeometry.down = false
-                        idButtonImageColors.down = true
-                        idButtonImageText.down = false
-                        idButtonImageOverlays.down = false
-                    }
-                    Label {
-                        text: qsTr("colors")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonImageGeometry
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = false
-                        idButtonImageEffects.down = false
-                        idButtonImageGeometry.down = true
-                        idButtonImageColors.down = false
-                        idButtonImageText.down = false
-                        idButtonImageOverlays.down = false
-                    }
-                    Label {
-                        text: qsTr("geometry")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonImageText
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = false
-                        idButtonImageEffects.down = false
-                        idButtonImageGeometry.down = false
-                        idButtonImageColors.down = false
-                        idButtonImageText.down = true
-                        idButtonImageOverlays.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("text")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonImageOverlays
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = false
-                        idButtonImageEffects.down = false
-                        idButtonImageGeometry.down = false
-                        idButtonImageColors.down = false
-                        idButtonImageText.down = false
-                        idButtonImageOverlays.down = true
-                    }
-                    Label {
-                        text: qsTr("overlay")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-            }
-
-            // tool-details AUDIO
-            Row {
-                id: idToolsRowAudio
-                visible: mainToolbar.buttonAudio.selected
-                x: mainToolbar.x
-                width: mainToolbar.width
-
-                IconButton {
-                    id: idButtonAudioVolume
-                    down: true
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = false
-                        idButtonAudioFilters.down = false
-                        idButtonAudioExtract.down = false
-                        idButtonAudioVolume.down = true
-                        idButtonAudioMixer.down = false
-                        idButtonAudioRecord.down = false
-                    }
-                    Label {
-                        text: qsTr("volume")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonAudioFilters
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = false
-                        idButtonAudioFilters.down = true
-                        idButtonAudioExtract.down = false
-                        idButtonAudioVolume.down = false
-                        idButtonAudioMixer.down = false
-                        idButtonAudioRecord.down = false
-                    }
-                    Label {
-                        text: qsTr("filters")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonAudioFade
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = true
-                        idButtonAudioFilters.down = false
-                        idButtonAudioExtract.down = false
-                        idButtonAudioVolume.down = false
-                        idButtonAudioMixer.down = false
-                        idButtonAudioRecord.down = false
-                    }
-                    Label {
-                        text: qsTr("fade")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonAudioExtract
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = false
-                        idButtonAudioFilters.down = false
-                        idButtonAudioExtract.down = true
-                        idButtonAudioVolume.down = false
-                        idButtonAudioMixer.down = false
-                        idButtonAudioRecord.down = false
-                    }
-                    Label {
-                        text: qsTr("extract")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonAudioMixer
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = false
-                        idButtonAudioFilters.down = false
-                        idButtonAudioExtract.down = false
-                        idButtonAudioVolume.down = false
-                        idButtonAudioMixer.down = true
-                        idButtonAudioRecord.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("mixer")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonAudioRecord
-                    //visible: false
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = false
-                        idButtonAudioFilters.down = false
-                        idButtonAudioExtract.down = false
-                        idButtonAudioVolume.down = false
-                        idButtonAudioMixer.down = false
-                        idButtonAudioRecord.down = true
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("recorder")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-            }
-
-            // tool-details COLLAGE
-            Row {
-                id: idToolsRowCollage
-                visible: mainToolbar.buttonCollage.selected
-                x: mainToolbar.x
-                width: mainToolbar.width
-
-                IconButton {
-                    id: idButtonCollageStoryline
-                    down: true
-                    width: parent.width / 5
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCollageStoryline.down = true
-                        idButtonCollageSlideshow.down = false
-                        idButtonCollageSplitscreen.down = false
-                        idButtonCollageSubtitle.down = false
-                        idButtonCollageImageExtract.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("storyline")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCollageSlideshow
-                    width: parent.width / 5
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCollageStoryline.down = false
-                        idButtonCollageSlideshow.down = true
-                        idButtonCollageSplitscreen.down = false
-                        idButtonCollageSubtitle.down = false
-                        idButtonCollageImageExtract.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("slideshow")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCollageSubtitle
-                    width: parent.width / 5
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCollageStoryline.down = false
-                        idButtonCollageSlideshow.down = false
-                        idButtonCollageSplitscreen.down = false
-                        idButtonCollageSubtitle.down = true
-                        idButtonCollageImageExtract.down = false
-                    }
-                    Label {
-                        text: qsTr("subtitles")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCollageSplitscreen
-                    width: parent.width / 5
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCollageStoryline.down = false
-                        idButtonCollageSlideshow.down = false
-                        idButtonCollageSplitscreen.down = true
-                        idButtonCollageSubtitle.down = false
-                        idButtonCollageImageExtract.down = false
-                    }
-                    Label {
-                        text: qsTr("splitscreen")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCollageImageExtract
-                    width: parent.width / 5
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCollageStoryline.down = false
-                        idButtonCollageSlideshow.down = false
-                        idButtonCollageSplitscreen.down = false
-                        idButtonCollageSubtitle.down = false
-                        idButtonCollageImageExtract.down = true
-                    }
-                    Label {
-                        text: qsTr("thumbnail")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-            }
-
-            // tool-details FILE
-            Row {
-                id: idToolsRowFile
-                visible: mainToolbar.buttonFile.selected
-                x: mainToolbar.x
-                width: mainToolbar.width
-
-                //Disable Share
-                IconButton {
-                    id: idButtonFileShare
-                    down: true
-                    width: parent.width / 4
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonFileShare.down = true
-                        idButtonFileInfo.down = false
-                        idButtonFileRename.down = false
-                        idButtonFileDelete.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("share")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonFileInfo
-                    width: parent.width / 4
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonFileShare.down = false
-                        idButtonFileInfo.down = true
-                        idButtonFileRename.down = false
-                        idButtonFileDelete.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("fileinfo")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonFileRename
-                    width: parent.width / 4
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonFileShare.down = false
-                        idButtonFileInfo.down = false
-                        idButtonFileRename.down = true
-                        idButtonFileDelete.down = false
-                    }
-                    Label {
-                        text: qsTr("rename")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonFileDelete
-                    width: parent.width / 4
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonFileShare.down = false
-                        idButtonFileInfo.down = false
-                        idButtonFileRename.down = false
-                        idButtonFileDelete.down = true
-                    }
-                    Label {
-                        text: qsTr("delete")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                /*
-                Rectangle {
-                    width: parent.width / 6 * 2
-                    y: Theme.paddingMedium
-                    height: parent.height - 2*Theme.paddingMedium
-                    color: backColorTools
-                }
-                */
-            }
-
 
             // more details CUT
             Row {
@@ -3426,6 +2836,172 @@ Page {
                 }
             }
 
+            // tool-details IMAGE
+            Row {
+                id: idToolsRowImage
+                visible: mainToolbar.buttonImage.selected
+                x: mainToolbar.x
+                width: mainToolbar.width
+
+                IconButton {
+                    id: idButtonImageEffects
+                    down: true
+                    width: parent.width / 6
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonImageFilters.down = false
+                        idButtonImageEffects.down = true
+                        idButtonImageGeometry.down = false
+                        idButtonImageColors.down = false
+                        idButtonImageText.down = false
+                        idButtonImageOverlays.down = false
+                    }
+                    Label {
+                        text: qsTr("effects")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonImageFilters
+                    width: parent.width / 6
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonImageFilters.down = true
+                        idButtonImageEffects.down = false
+                        idButtonImageGeometry.down = false
+                        idButtonImageColors.down = false
+                        idButtonImageText.down = false
+                        idButtonImageOverlays.down = false
+                    }
+                    Label {
+                        text: qsTr("filters")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonImageColors
+                    width: parent.width / 6
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonImageFilters.down = false
+                        idButtonImageEffects.down = false
+                        idButtonImageGeometry.down = false
+                        idButtonImageColors.down = true
+                        idButtonImageText.down = false
+                        idButtonImageOverlays.down = false
+                    }
+                    Label {
+                        text: qsTr("colors")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonImageGeometry
+                    width: parent.width / 6
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonImageFilters.down = false
+                        idButtonImageEffects.down = false
+                        idButtonImageGeometry.down = true
+                        idButtonImageColors.down = false
+                        idButtonImageText.down = false
+                        idButtonImageOverlays.down = false
+                    }
+                    Label {
+                        text: qsTr("geometry")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonImageText
+                    width: parent.width / 6
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonImageFilters.down = false
+                        idButtonImageEffects.down = false
+                        idButtonImageGeometry.down = false
+                        idButtonImageColors.down = false
+                        idButtonImageText.down = true
+                        idButtonImageOverlays.down = false
+                        idTimerScrollToBottom.start()
+                    }
+                    Label {
+                        text: qsTr("text")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonImageOverlays
+                    width: parent.width / 6
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonImageFilters.down = false
+                        idButtonImageEffects.down = false
+                        idButtonImageGeometry.down = false
+                        idButtonImageColors.down = false
+                        idButtonImageText.down = false
+                        idButtonImageOverlays.down = true
+                    }
+                    Label {
+                        text: qsTr("overlay")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+            }
 
             // more details IMAGE
             Row {
@@ -4261,6 +3837,174 @@ Page {
                 }
             }
 
+            // tool-details AUDIO
+            Row {
+                id: idToolsRowAudio
+                visible: mainToolbar.buttonAudio.selected
+                x: mainToolbar.x
+                width: mainToolbar.width
+
+                IconButton {
+                    id: idButtonAudioVolume
+                    down: true
+                    width: parent.width / 6
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonAudioFade.down = false
+                        idButtonAudioFilters.down = false
+                        idButtonAudioExtract.down = false
+                        idButtonAudioVolume.down = true
+                        idButtonAudioMixer.down = false
+                        idButtonAudioRecord.down = false
+                    }
+                    Label {
+                        text: qsTr("volume")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonAudioFilters
+                    width: parent.width / 6
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonAudioFade.down = false
+                        idButtonAudioFilters.down = true
+                        idButtonAudioExtract.down = false
+                        idButtonAudioVolume.down = false
+                        idButtonAudioMixer.down = false
+                        idButtonAudioRecord.down = false
+                    }
+                    Label {
+                        text: qsTr("filters")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonAudioFade
+                    width: parent.width / 6
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonAudioFade.down = true
+                        idButtonAudioFilters.down = false
+                        idButtonAudioExtract.down = false
+                        idButtonAudioVolume.down = false
+                        idButtonAudioMixer.down = false
+                        idButtonAudioRecord.down = false
+                    }
+                    Label {
+                        text: qsTr("fade")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonAudioExtract
+                    width: parent.width / 6
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonAudioFade.down = false
+                        idButtonAudioFilters.down = false
+                        idButtonAudioExtract.down = true
+                        idButtonAudioVolume.down = false
+                        idButtonAudioMixer.down = false
+                        idButtonAudioRecord.down = false
+                    }
+                    Label {
+                        text: qsTr("extract")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonAudioMixer
+                    width: parent.width / 6
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonAudioFade.down = false
+                        idButtonAudioFilters.down = false
+                        idButtonAudioExtract.down = false
+                        idButtonAudioVolume.down = false
+                        idButtonAudioMixer.down = true
+                        idButtonAudioRecord.down = false
+                        idTimerScrollToBottom.start()
+                    }
+                    Label {
+                        text: qsTr("mixer")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonAudioRecord
+
+                    width: parent.width / 6
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonAudioFade.down = false
+                        idButtonAudioFilters.down = false
+                        idButtonAudioExtract.down = false
+                        idButtonAudioVolume.down = false
+                        idButtonAudioMixer.down = false
+                        idButtonAudioRecord.down = true
+                        idTimerScrollToBottom.start()
+                    }
+                    Label {
+                        text: qsTr("recorder")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+            }
 
             // more details AUDIO
             Row {
@@ -4630,6 +4374,142 @@ Page {
                 }
             }
 
+            // tool-details COLLAGE
+            Row {
+                id: idToolsRowCollage
+                visible: mainToolbar.buttonCollage.selected
+                x: mainToolbar.x
+                width: mainToolbar.width
+
+                IconButton {
+                    id: idButtonCollageStoryline
+                    down: true
+                    width: parent.width / 5
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonCollageStoryline.down = true
+                        idButtonCollageSlideshow.down = false
+                        idButtonCollageSplitscreen.down = false
+                        idButtonCollageSubtitle.down = false
+                        idButtonCollageImageExtract.down = false
+                        idTimerScrollToBottom.start()
+                    }
+                    Label {
+                        text: qsTr("storyline")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonCollageSlideshow
+                    width: parent.width / 5
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonCollageStoryline.down = false
+                        idButtonCollageSlideshow.down = true
+                        idButtonCollageSplitscreen.down = false
+                        idButtonCollageSubtitle.down = false
+                        idButtonCollageImageExtract.down = false
+                        idTimerScrollToBottom.start()
+                    }
+                    Label {
+                        text: qsTr("slideshow")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonCollageSubtitle
+                    width: parent.width / 5
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonCollageStoryline.down = false
+                        idButtonCollageSlideshow.down = false
+                        idButtonCollageSplitscreen.down = false
+                        idButtonCollageSubtitle.down = true
+                        idButtonCollageImageExtract.down = false
+                    }
+                    Label {
+                        text: qsTr("subtitles")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonCollageSplitscreen
+                    width: parent.width / 5
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonCollageStoryline.down = false
+                        idButtonCollageSlideshow.down = false
+                        idButtonCollageSplitscreen.down = true
+                        idButtonCollageSubtitle.down = false
+                        idButtonCollageImageExtract.down = false
+                    }
+                    Label {
+                        text: qsTr("splitscreen")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonCollageImageExtract
+                    width: parent.width / 5
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonCollageStoryline.down = false
+                        idButtonCollageSlideshow.down = false
+                        idButtonCollageSplitscreen.down = false
+                        idButtonCollageSubtitle.down = false
+                        idButtonCollageImageExtract.down = true
+                    }
+                    Label {
+                        text: qsTr("thumbnail")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+            }
 
             // more details COLLAGE
             Row {
@@ -5348,6 +5228,115 @@ Page {
                         font.pixelSize: Theme.fontSizeExtraSmall
                         color: Theme.secondaryColor //highlightColor
                         text: idToolsRowCollageImageExtractIntervall.value + " " + qsTr("sec")
+                    }
+                }
+            }
+
+            // tool-details FILE
+            Row {
+                id: idToolsRowFile
+                visible: mainToolbar.buttonFile.selected
+                x: mainToolbar.x
+                width: mainToolbar.width
+
+                //Disable Share
+                IconButton {
+                    id: idButtonFileShare
+                    down: true
+                    width: parent.width / 4
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonFileShare.down = true
+                        idButtonFileInfo.down = false
+                        idButtonFileRename.down = false
+                        idButtonFileDelete.down = false
+                        idTimerScrollToBottom.start()
+                    }
+                    Label {
+                        text: qsTr("share")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonFileInfo
+                    width: parent.width / 4
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonFileShare.down = false
+                        idButtonFileInfo.down = true
+                        idButtonFileRename.down = false
+                        idButtonFileDelete.down = false
+                        idTimerScrollToBottom.start()
+                    }
+                    Label {
+                        text: qsTr("fileinfo")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonFileRename
+                    width: parent.width / 4
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonFileShare.down = false
+                        idButtonFileInfo.down = false
+                        idButtonFileRename.down = true
+                        idButtonFileDelete.down = false
+                    }
+                    Label {
+                        text: qsTr("rename")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
+                    }
+                }
+                IconButton {
+                    id: idButtonFileDelete
+                    width: parent.width / 4
+                    height: Theme.itemSizeSmall
+                    onClicked: {
+                        idButtonFileShare.down = false
+                        idButtonFileInfo.down = false
+                        idButtonFileRename.down = false
+                        idButtonFileDelete.down = true
+                    }
+                    Label {
+                        text: qsTr("delete")
+                        truncationMode: TruncationMode.Fade
+                        font.pixelSize: Theme.fontSizeExtraSmall
+                        anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        z: -1
+                        anchors.fill: parent
+                        anchors.topMargin: Theme.paddingMedium
+                        anchors.bottomMargin: anchors.topMargin
+                        color: backColorTools
                     }
                 }
             }
