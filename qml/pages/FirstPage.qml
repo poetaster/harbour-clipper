@@ -2641,19 +2641,17 @@ Page {
                     }
                 }
             }
-            Row {
-                id: idToolsRowCutAdd
-                visible: (mainToolbar.buttonCut.selected && cutToolbar.buttonInsert.selected )
-                x: spacerLandscapeLowerToolRow
-                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
-                Item {
-                    width: mainToolbar.x
-                    height: standardDetailItemHeight
-                }
+            Column {
+                id: idToolsRowCutAdd
+
+                width: parent.width
+                visible: mainToolbar.buttonCut.selected && cutToolbar.buttonInsert.selected
+
                 ComboBox {
                     id: idComboBoxCutAddColor
-                    width: parent.width / 6 * 2
+
+                    width: parent.width
                     description: qsTr("frame source")
                     menu: ContextMenu {
                         MenuItem { text: qsTr("black") }
@@ -2662,10 +2660,12 @@ Page {
                         MenuItem { text: qsTr("video file") }
                     }
                 }
+
                 Slider {
                     id: idToolsRowCutAddSlider
+
                     visible: ( idComboBoxCutAddColor.currentIndex !== 3 )
-                    width: parent.width / 6 * 4
+                    width: parent.width
                     leftMargin: Theme.paddingMedium * 1.1
                     rightMargin: leftMargin
                     minimumValue: 1
@@ -2680,22 +2680,22 @@ Page {
                         anchors.bottomMargin: -Theme.paddingSmall / 2
                         anchors.horizontalCenter: parent.horizontalCenter
                         font.pixelSize: Theme.fontSizeExtraSmall
-                        color: Theme.secondaryColor //highlightColor
-                        text: qsTr("for") + " " + idToolsRowCutAddSlider.value + " s"
+                        color: Theme.secondaryColor
+                        text: qsTr("for %1s").arg(idToolsRowCutAddSlider.value)
                     }
                 }
+
                 ValueButton {
                     enabled: ( noFile === false && finishedLoading === true )
                     visible: ( idComboBoxCutAddColor.currentIndex === 3 )
-                    width: parent.width / 6 * 4.5
-                    height: standardDetailItemHeight
+                    width: parent.width
                     value: (addFileLoaded === false) ? qsTr("[none]"): ( addFileName )
                     description: qsTr("file")
-                    onClicked: {
-                        pageStack.push(addFilePickerPageVideo )
-                    }
+
+                    onClicked: pageStack.push(addFilePickerPageVideo )
                 }
             }
+
             Row {
                 id: idToolsRowCutCrop
                 visible: (mainToolbar.buttonCut.selected && cutToolbar.buttonCrop.selected )
@@ -2801,20 +2801,25 @@ Page {
                     }
                 }
             }
-            Row {
-                id: idToolsRowCutResize
-                visible: (mainToolbar.buttonCut.selected && cutToolbar.buttonResize.selected )
-                x: spacerLandscapeLowerToolRow
-                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
-                Item {
-                    width: mainToolbar.x
-                    height: standardDetailItemHeight
+            Column {
+                id: idToolsRowCutResize
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: Theme.horizontalPageMargin
+                    rightMargin: Theme.horizontalPageMargin
                 }
+
+                visible: mainToolbar.buttonCut.selected && cutToolbar.buttonResize.selected
+
                 ComboBox {
                     id: idComboBoxCutResizeMaindimension
-                    width: parent.width / 6 * 2
+
+                    width: parent.width
                     description: qsTr("target")
+
                     menu: ContextMenu {
                         MenuItem { text: qsTr("width") }
                         MenuItem { text: qsTr("height") }
@@ -2822,84 +2827,76 @@ Page {
                         MenuItem { text: qsTr("stretch") }
                     }
                 }
-                Item {
-                    width: parent.width / 6 * 4
-                    height: standardDetailItemHeight
-                    Row {
-                        width: parent.width
-                        height: parent.height
-                        TextField {
-                            id: idToolsCutDetailsColumn3Width
-                            enableSoftwareInputPanel: ( idComboBoxCutResizeMaindimension.currentIndex !== 1 )
-                            enabled: ( idComboBoxCutResizeMaindimension.currentIndex !== 1 )
-                            width: parent.width / 2
-                            height: Theme.itemSizeMedium
-                            textTopMargin: Theme.paddingMedium
-                            text: ( idComboBoxCutResizeMaindimension.currentIndex !== 1 ) ? sourceVideoWidth : qsTr("auto")
-                            color: Theme.highlightColor
-                            inputMethodHints: Qt.ImhDigitsOnly
-                            validator: IntValidator { bottom: 1; top: 9999 }
-                            EnterKey.onClicked: {
-                                if (idToolsCutDetailsColumn3Width.text < 1 || idToolsCutDetailsColumn3Width.text === "") {
-                                    idToolsCutDetailsColumn3Width.text = sourceVideoWidth
-                                }
-                                idToolsCutDetailsColumn3Width.focus = false
-                            }
-                            /*
-                            Label {
-                                anchors.left: parent.right
-                                anchors.leftMargin: - 2 * width
-                                anchors.verticalCenter: parent.verticalCenter
-                                font.pixelSize: Theme.fontSizeExtraSmall
-                                color: Theme.secondaryColor
-                                text: qsTr("px")
-                            }
-                            */
-                            Label {
-                                anchors.top: parent.bottom
-                                font.pixelSize: Theme.fontSizeExtraSmall
-                                color: Theme.secondaryColor
-                                text: qsTr("px-width")
-                            }
+
+                Row {
+                    width: parent.width
+                    
+                    TextField {
+                        id: idToolsCutDetailsColumn3Width
+
+                        enableSoftwareInputPanel: idComboBoxCutResizeMaindimension.currentIndex !== 1
+                        enabled: idComboBoxCutResizeMaindimension.currentIndex !== 1
+                        width: parent.width / 2
+                        height: Theme.itemSizeMedium
+                        textTopMargin: Theme.paddingMedium
+                        text: idComboBoxCutResizeMaindimension.currentIndex !== 1 ? sourceVideoWidth : qsTr("auto")
+                        color: Theme.highlightColor
+                        inputMethodHints: Qt.ImhDigitsOnly
+ 
+                        validator: IntValidator { 
+                            bottom: 1
+                            top: 9999 
                         }
-                        TextField {
-                            id: idToolsCutDetailsColumn3Height
-                            enableSoftwareInputPanel: ( idComboBoxCutResizeMaindimension.currentIndex !== 0 )
-                            enabled: ( idComboBoxCutResizeMaindimension.currentIndex !== 0 )
-                            width: parent.width / 2
-                            height: Theme.itemSizeMedium
-                            textTopMargin: Theme.paddingMedium
-                            text: ( idComboBoxCutResizeMaindimension.currentIndex !== 0 ) ? sourceVideoHeight : qsTr("auto")
-                            color: Theme.highlightColor
-                            inputMethodHints: Qt.ImhDigitsOnly
-                            validator: IntValidator { bottom: 1; top: 9999 }
-                            EnterKey.onClicked: {
-                                if (idToolsCutDetailsColumn3Height.text < 1 || idToolsCutDetailsColumn3Height.text === "") {
-                                    idToolsCutDetailsColumn3Height.text = sourceVideoHeight
-                                }
-                                idToolsCutDetailsColumn3Height.focus = false
+ 
+                        EnterKey.onClicked: {
+                            if (idToolsCutDetailsColumn3Width.text < 1 || idToolsCutDetailsColumn3Width.text === "") {
+                                idToolsCutDetailsColumn3Width.text = sourceVideoWidth
                             }
-                            /*
-                            Label {
-                                anchors.left: parent.right
-                                anchors.leftMargin: - 2 * width
-                                anchors.verticalCenter: parent.verticalCenter
-                                font.pixelSize: Theme.fontSizeExtraSmall
-                                color: Theme.secondaryColor
-                                text: qsTr("px")
-                            }
-                            */
-                            Label {
-                                anchors.top: parent.bottom
-                                font.pixelSize: Theme.fontSizeExtraSmall
-                                color: Theme.secondaryColor
-                                text: qsTr("px-height")
-                            }
+                            idToolsCutDetailsColumn3Width.focus = false
                         }
 
+                        Label {
+                            anchors.top: parent.bottom
+                            font.pixelSize: Theme.fontSizeExtraSmall
+                            color: Theme.secondaryColor
+                            text: qsTr("px-width")
+                        }
+                    }
+
+                    TextField {
+                        id: idToolsCutDetailsColumn3Height
+
+                        enableSoftwareInputPanel: idComboBoxCutResizeMaindimension.currentIndex !== 0
+                        enabled: idComboBoxCutResizeMaindimension.currentIndex !== 0
+                        width: parent.width / 2
+                        height: Theme.itemSizeMedium
+                        textTopMargin: Theme.paddingMedium
+                        text: idComboBoxCutResizeMaindimension.currentIndex !== 0 ? sourceVideoHeight : qsTr("auto")
+                        color: Theme.highlightColor
+                        inputMethodHints: Qt.ImhDigitsOnly
+
+                        validator: IntValidator { 
+                            bottom: 1 
+                            top: 9999 
+                        }
+
+                        EnterKey.onClicked: {
+                            if (idToolsCutDetailsColumn3Height.text < 1 || idToolsCutDetailsColumn3Height.text === "") {
+                                idToolsCutDetailsColumn3Height.text = sourceVideoHeight
+                            }
+                            idToolsCutDetailsColumn3Height.focus = false
+                        }
+
+                        Label {
+                            anchors.top: parent.bottom
+                            font.pixelSize: Theme.fontSizeExtraSmall
+                            color: Theme.secondaryColor
+                            text: qsTr("px-height")
+                        }
                     }
                 }
             }
+
             Row {
                 id: idToolsRowCutSpeed
                 visible: (mainToolbar.buttonCut.selected && cutToolbar.buttonSpeed.selected )
