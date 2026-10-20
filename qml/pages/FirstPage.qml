@@ -98,7 +98,7 @@ Page {
                                           || (mainToolbar.buttonAudio.selected && (audioToolbar.buttonFade.selected || audioToolbar.buttonRecorder.selected) )
                                           || (mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected && idComboBoxAudioNewLength.currentIndex === 0 )
                                           || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFilters.selected && idComboBoxAudioFilters.currentIndex === 1 ) // echo effects do not support yet timeline editing
-                                          || (mainToolbar.buttonCollage.selected && ( idButtonCollageSubtitle.down === false || (idButtonCollageSubtitle.down === true && idComboBoxCollageSubtitleAdd.currentIndex === 0) ) )
+                                          || (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSubtitles.selected === false || (collageToolbar.buttonSubtitles.selected === true && idComboBoxCollageSubtitleAdd.currentIndex === 0) ) )
                                           || mainToolbar.buttonFile.selected
                                          ) ? true : false
     property var lastToolsButtonPressed : "Cut"
@@ -3889,147 +3889,18 @@ Page {
                 }
             }
 
-            // tool-details COLLAGE
-            Row {
-                id: idToolsRowCollage
-                visible: mainToolbar.buttonCollage.selected
-                x: mainToolbar.x
-                width: mainToolbar.width
+            SecondaryToolbarCollage {
+                id: collageToolbar
 
-                IconButton {
-                    id: idButtonCollageStoryline
-                    down: true
-                    width: parent.width / 5
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCollageStoryline.down = true
-                        idButtonCollageSlideshow.down = false
-                        idButtonCollageSplitscreen.down = false
-                        idButtonCollageSubtitle.down = false
-                        idButtonCollageImageExtract.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("storyline")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCollageSlideshow
-                    width: parent.width / 5
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCollageStoryline.down = false
-                        idButtonCollageSlideshow.down = true
-                        idButtonCollageSplitscreen.down = false
-                        idButtonCollageSubtitle.down = false
-                        idButtonCollageImageExtract.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("slideshow")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCollageSubtitle
-                    width: parent.width / 5
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCollageStoryline.down = false
-                        idButtonCollageSlideshow.down = false
-                        idButtonCollageSplitscreen.down = false
-                        idButtonCollageSubtitle.down = true
-                        idButtonCollageImageExtract.down = false
-                    }
-                    Label {
-                        text: qsTr("subtitles")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCollageSplitscreen
-                    width: parent.width / 5
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCollageStoryline.down = false
-                        idButtonCollageSlideshow.down = false
-                        idButtonCollageSplitscreen.down = true
-                        idButtonCollageSubtitle.down = false
-                        idButtonCollageImageExtract.down = false
-                    }
-                    Label {
-                        text: qsTr("splitscreen")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCollageImageExtract
-                    width: parent.width / 5
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCollageStoryline.down = false
-                        idButtonCollageSlideshow.down = false
-                        idButtonCollageSplitscreen.down = false
-                        idButtonCollageSubtitle.down = false
-                        idButtonCollageImageExtract.down = true
-                    }
-                    Label {
-                        text: qsTr("thumbnail")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
+                visible: mainToolbar.buttonCollage.selected
+
+                onScroll: idTimerScrollToBottom.start()
             }
 
             // more details COLLAGE
             Row {
                 id: idToolsRowCollageSplitscreen
-                visible: (mainToolbar.buttonCollage.selected && idButtonCollageSplitscreen.down )
+                visible: (mainToolbar.buttonCollage.selected && collageToolbar.buttonSplitScreen.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -4072,7 +3943,7 @@ Page {
             }
             Row {
                 id: idToolsRowCollage1
-                visible: (mainToolbar.buttonCollage.selected && ( idButtonCollageSlideshow.down || idButtonCollageStoryline.down ) )
+                visible: (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected ) )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -4082,7 +3953,7 @@ Page {
                 }
                 ComboBox {
                     id: idComboBoxCollageSlideshowEffect
-                    visible: idButtonCollageSlideshow.down
+                    visible: collageToolbar.buttonSlideshow.selected
                     width: parent.width / 6 * 3
                     description: (currentIndex === 0) ? qsTr("no camera movement") : qsTr("camera movement")
                     menu: ContextMenu {
@@ -4092,7 +3963,7 @@ Page {
                 }
                 ValueButton {
                     id: idComboBoxCollageStorylineEffect
-                    visible: idButtonCollageStoryline.down
+                    visible: collageToolbar.buttonStoryline.selected
                     width: parent.width / 6 * 3
                     height: standardDetailItemHeight
                     value: qsTr("target resolution")
@@ -4146,13 +4017,13 @@ Page {
             }
             Separator {
                 width: parent.width
-                visible: (mainToolbar.buttonCollage.selected && ( idButtonCollageSlideshow.down || idButtonCollageStoryline.down ) )
+                visible: (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected ) )
                 horizontalAlignment: Qt.AlignHCenter
                 color: Theme.primaryColor
             }
             Row {
                 id: idToolsRowCollage2TransitionDuration
-                visible: (mainToolbar.buttonCollage.selected && ( idButtonCollageSlideshow.down || idButtonCollageStoryline.down ) )
+                visible: (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected ) )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -4161,7 +4032,7 @@ Page {
                     height: standardDetailItemHeight
                 }
                 ValueButton {
-                    visible: idButtonCollageSlideshow.down
+                    visible: collageToolbar.buttonSlideshow.selected
                     width: parent.width / 6 * 1.5
                     enabled: ( finishedLoading === true )
                     height: standardDetailItemHeight
@@ -4170,7 +4041,7 @@ Page {
                     onClicked: { pageStack.push(slideshowImagePicker) }
                 }
                 ValueButton {
-                    visible: idButtonCollageStoryline.down
+                    visible: collageToolbar.buttonStoryline.selected
                     width: parent.width / 6 * 3
                     enabled: ( finishedLoading === true )
                     height: standardDetailItemHeight
@@ -4180,7 +4051,7 @@ Page {
                 }
                 TextField {
                     id: idToolsCollageImageDuration
-                    visible: idButtonCollageSlideshow.down
+                    visible: collageToolbar.buttonSlideshow.selected
                     width: parent.width / 6 * 1.5
                     height: Theme.itemSizeMedium
                     textTopMargin: Theme.paddingMedium
@@ -4289,7 +4160,7 @@ Page {
                     text: "1"
                     color: (idComboBoxCollageStoryTransition.currentIndex !== 0) ? Theme.highlightColor : "transparent"
                     inputMethodHints: Qt.ImhDigitsOnly
-                    validator: IntValidator { bottom: 1; top: (idButtonCollageSlideshow.down) ? (parseInt(idToolsCollageImageDuration.text)) : (Math.round(storylineAddFileDuration)) }
+                    validator: IntValidator { bottom: 1; top: (collageToolbar.buttonSlideshow.selected) ? (parseInt(idToolsCollageImageDuration.text)) : (Math.round(storylineAddFileDuration)) }
                     EnterKey.onClicked: {
                         if (idToolsCollageImageTransitionDuration.text.length < 1 || idToolsCollageImageTransitionDuration.text < 1 ) {
                             idToolsCollageImageTransitionDuration.text = "1"
@@ -4321,7 +4192,7 @@ Page {
             }
             Row {
                 id: idToolsRowCollage3AddButton
-                visible: (mainToolbar.buttonCollage.selected && (idButtonCollageSlideshow.down || idButtonCollageStoryline.down) )
+                visible: (mainToolbar.buttonCollage.selected && (collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected) )
                 x: spacerLandscapeLowerToolRow
                 topPadding: -Theme.paddingMedium
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
@@ -4337,15 +4208,15 @@ Page {
                 IconButton {
                     width: parent.width / 6 * 2
                     height: standardDetailItemHeight * 1.3
-                    enabled: ( ( (idButtonCollageSlideshow.down && slideshowAddFileLoaded === true) || ( idButtonCollageStoryline.down && storylineAddFileLoaded === true) ) && idToolsCollageImageDuration.focus === false && idToolsCollageImageTransitionDuration.focus === false )
+                    enabled: ( ( (collageToolbar.buttonSlideshow.selected && slideshowAddFileLoaded === true) || ( collageToolbar.buttonStoryline.selected && storylineAddFileLoaded === true) ) && idToolsCollageImageDuration.focus === false && idToolsCollageImageTransitionDuration.focus === false )
                     icon.source: "image://theme/icon-m-add?"
                     icon.width: Theme.iconSizeMedium * 1.35
                     icon.height: icon.width
                     onClicked: {
                         idToolsCollageImageDuration.focus = false
                         idToolsCollageImageTransitionDuration.focus = false
-                        if ( idButtonCollageSlideshow.down ) { var targetModel = "slideshow" }
-                        else if ( idButtonCollageStoryline.down ) { targetModel = "storyline" }
+                        if ( collageToolbar.buttonSlideshow.selected ) { var targetModel = "slideshow" }
+                        else if ( collageToolbar.buttonStoryline.selected ) { targetModel = "storyline" }
                         prepareCollageModel( targetModel )
                     }
                 }
@@ -4356,7 +4227,7 @@ Page {
             }
             Row {
                 id: idToolsRowCollage4Slideshow
-                visible: (mainToolbar.buttonCollage.selected && idButtonCollageSlideshow.down )
+                visible: (mainToolbar.buttonCollage.selected && collageToolbar.buttonSlideshow.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -4449,7 +4320,7 @@ Page {
             }
             Row {
                 id: idToolsRowCollage4Storyline
-                visible: (mainToolbar.buttonCollage.selected && idButtonCollageStoryline.down )
+                visible: (mainToolbar.buttonCollage.selected && collageToolbar.buttonStoryline.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -4543,7 +4414,7 @@ Page {
 
             Row {
                 id: idToolsRowCollageSubtitles
-                visible: (mainToolbar.buttonCollage.selected && idButtonCollageSubtitle.down )
+                visible: (mainToolbar.buttonCollage.selected && collageToolbar.buttonSubtitles.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -4592,7 +4463,7 @@ Page {
             }
             Row {
                 id: idToolsRowCollageSubtitlesInput
-                visible: (mainToolbar.buttonCollage.selected && idButtonCollageSubtitle.down && idComboBoxCollageSubtitleAdd.currentIndex === 1)
+                visible: (mainToolbar.buttonCollage.selected && collageToolbar.buttonSubtitles.selected && idComboBoxCollageSubtitleAdd.currentIndex === 1)
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -4633,7 +4504,7 @@ Page {
             }
             Row {
                 id: idToolsRowCollageSubtitlesOutput
-                visible: (mainToolbar.buttonCollage.selected && idButtonCollageSubtitle.down && idComboBoxCollageSubtitleAdd.currentIndex === 1)
+                visible: (mainToolbar.buttonCollage.selected && collageToolbar.buttonSubtitles.selected && idComboBoxCollageSubtitleAdd.currentIndex === 1)
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -4705,7 +4576,7 @@ Page {
 
             Row {
                 id: idToolsRowCollageImageExtract
-                visible: (mainToolbar.buttonCollage.selected && idButtonCollageImageExtract.down )
+                visible: (mainToolbar.buttonCollage.selected && collageToolbar.buttonThumbnail.selected )
                 x: spacerLandscapeLowerToolRow
                 width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
@@ -5106,8 +4977,8 @@ Page {
                 id: idButtonConfirm
 
                 enabled: (noFile === false && finishedLoading === true && idButtonRecord.down === false && idMediaPlayer.height > idTimeInfoRow.height)
-                         || (mainToolbar.buttonCollage.selected && idButtonCollageSlideshow.down && slideshowModel.count !== 0)
-                         || (mainToolbar.buttonCollage.selected && idButtonCollageStoryline.down && storylineModel.count !== 0)
+                         || (mainToolbar.buttonCollage.selected && collageToolbar.buttonSlideshow.selected && slideshowModel.count !== 0)
+                         || (mainToolbar.buttonCollage.selected && collageToolbar.buttonStoryline.selected && storylineModel.count !== 0)
 
                 height: Theme.itemSizeSmall
                 width: parent.width / 7
@@ -5246,19 +5117,19 @@ Page {
                     }
 
                     if ( mainToolbar.buttonCollage.selected ) {
-                        if (idButtonCollageSlideshow.down && slideshowModel.count > 0 ) {
+                        if (collageToolbar.buttonSlideshow.selected && slideshowModel.count > 0 ) {
                             py.createSlideshowFunction()
                         }
-                        if ( idButtonCollageSplitscreen.down && overlayFileLoaded === true ) {
+                        if ( collageToolbar.buttonSplitScreen.selected && overlayFileLoaded === true ) {
                             py.splitscreenFunction()
                         }
-                        if ( idButtonCollageStoryline.down && storylineModel.count > 0 ) {
+                        if ( collageToolbar.buttonStoryline.selected && storylineModel.count > 0 ) {
                             py.createStorylineFunction()
                         }
-                        if ( idButtonCollageSubtitle.down && ( (idComboBoxCollageSubtitleAdd.currentIndex === 0 && addSubtitleLoaded === true) || (idComboBoxCollageSubtitleAdd.currentIndex === 1 && subtitleModel.count > 0 ) )) {
+                        if ( collageToolbar.buttonSubtitles.selected && ( (idComboBoxCollageSubtitleAdd.currentIndex === 0 && addSubtitleLoaded === true) || (idComboBoxCollageSubtitleAdd.currentIndex === 1 && subtitleModel.count > 0 ) )) {
                             py.overlaySubtitleFunction()
                         }
-                        if ( idButtonCollageImageExtract.down ) {
+                        if ( collageToolbar.buttonThumbnail.selected ) {
                             py.extractImagesFunction()
                         }
                     }
