@@ -25,6 +25,9 @@ SOURCES += src/harbour-clipper.cpp \
 
 DISTFILES += qml/harbour-clipper.qml \
     .gitignore \
+    qml/components/CollageTools.qml \
+    qml/components/DraggableItem.qml \
+    qml/components/DraggableItemDropArea.qml \
     qml/components/FileFunctions.qml \
     qml/components/PythonHandler.qml \
     qml/cover/CoverPage.qml \

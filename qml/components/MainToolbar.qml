@@ -47,7 +47,10 @@ ToolbarBase {
         icon: "../symbols/icon-m-timeline.svg"
         selected: root.selectedButton == buttonCollage
 
-        onClicked: root.selectedButton = buttonCollage
+        onClicked: {
+            root.selectedButton = buttonCollage
+            collageFunctions.source  = "CollageTools.qml"
+        }
     }
 
     MainToolbarItem {
