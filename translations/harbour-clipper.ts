@@ -143,10 +143,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>for</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>ratio</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1304,6 +1300,10 @@
     </message>
     <message>
         <source>thumbnail</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>for %1s</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -1,21 +1,30 @@
 import QtQuick 2.6
+import QtQuick.Layouts 1.1
+import QtGraphicalEffects 1.0
 import Sailfish.Silica 1.0
 import Sailfish.Pickers 1.0 // File-Loader
 import QtMultimedia 5.6 // Audio + Video Support
-//import QtFeedback 5.0 // vibration feedback
 import io.thp.pyotherside 1.5
 import AudioRecorder 1.0 // custom qt audio recorder
 
+import "../components"
+
 Page {
     id: page
+
     allowedOrientations: Orientation.All
+
     onOrientationTransitionRunningChanged: {
         delayShowCropMarkers = true
         idTimerDelaySetCropmarkers.start()
     }
+
     onOrientationChanged: {
-        if ( page.orientation === Orientation.Landscape ) { spacerLandscapeLowerToolRow = page.width / 14 }
-        else if ( page.orientation === Orientation.Portrait ) { spacerLandscapeLowerToolRow = 0 }
+        if (page.orientation & Orientation.LandscapeMask) {
+            spacerLandscapeLowerToolRow = page.width / 14
+        } else if (page.orientation & Orientation.PortraitMask) {
+            spacerLandscapeLowerToolRow = 0
+        }
     }
 
     // file and folder variables
@@ -67,30 +76,30 @@ Page {
     property var plusMinusInfo : ""
     property var itemsToolbar : 5
     property var fontSizePreview : Theme.fontSizeExtraLarge
-    property bool trimAreaVisible : (idButtonCut.down && idButtonCutTrim.down) ? true : false
-    property bool cropAreaVisible : ( (idButtonCut.down && idButtonCutCrop.down)
-                                     || (idButtonImage.down && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) // blur
-                                     || (idButtonImage.down && idButtonImageOverlays.down && overlayFilePath !== "" && (idComboBoxImageOverlayType.currentIndex === 0 ||  idComboBoxImageOverlayType.currentIndex === 1 || (idComboBoxImageOverlayType.currentIndex === 4 && idComboBoxImageOverlayAlphaStretch.currentIndex === 1 )) )
-                                     || (idButtonImage.down && idButtonImageOverlays.down && ( idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) )
+    property bool trimAreaVisible : (mainToolbar.buttonCut.selected && cutToolbar.buttonTrim.selected) ? true : false
+    property bool cropAreaVisible : ( (mainToolbar.buttonCut.selected && cutToolbar.buttonCrop.selected)
+                                     || (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) // blur
+                                     || (mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected && overlayFilePath !== "" && (idComboBoxImageOverlayType.currentIndex === 0 ||  idComboBoxImageOverlayType.currentIndex === 1 || (idComboBoxImageOverlayType.currentIndex === 4 && idComboBoxImageOverlayAlphaStretch.currentIndex === 1 )) )
+                                     || (mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected && ( idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) )
                                      ) ? true : false
-    property bool textAreaVisible : ( idButtonImage.down && idButtonImageText.down ) ? true : false
-    property bool hideUpperTimeMarkers : ( cropAreaVisible === true || dragAreaText.pressed || idButtonFile.down || idMediaPlayer.height <= idTimeInfoRow.height ) ? true : false
+    property bool textAreaVisible : ( mainToolbar.buttonImage.selected && imageToolbar.buttonText.selected ) ? true : false
+    property bool hideUpperTimeMarkers : ( cropAreaVisible === true || dragAreaText.pressed || mainToolbar.buttonFile.selected || idMediaPlayer.height <= idTimeInfoRow.height ) ? true : false
     property bool hideLowerTimeMarkers : ( dragAreaText.pressed
                                           || idMediaPlayer.height <= idTimeInfoRow.height
                                           || dragArea1.pressed
                                           || dragArea2.pressed
-                                          || (idButtonCut.down && ( idButtonCutTrim.down === false ) )
-                                          || (idButtonImage.down && ( (idButtonImageEffects.down && ((idComboBoxImageEffects.currentIndex === 0 && ( (idComboBoxImageEffectsBasics.currentIndex === 0 && ( idComboBoxImageEffectsFade.currentIndex === 0 || idComboBoxImageEffectsFade.currentIndex === 1 )) || idComboBoxImageEffectsBasics.currentIndex === 5) ) // fade || reverse ||
+                                          || (mainToolbar.buttonCut.selected && ( cutToolbar.buttonTrim.selected === false ) )
+                                          || (mainToolbar.buttonImage.selected && ( (imageToolbar.buttonEffects.selected && ((idComboBoxImageEffects.currentIndex === 0 && ( (idComboBoxImageEffectsBasics.currentIndex === 0 && ( idComboBoxImageEffectsFade.currentIndex === 0 || idComboBoxImageEffectsFade.currentIndex === 1 )) || idComboBoxImageEffectsBasics.currentIndex === 5) ) // fade || reverse ||
                                                                                                  || (idComboBoxImageEffects.currentIndex === 2 && (idComboBoxImageEffectsRepair.currentIndex === 3 || idComboBoxImageEffectsRepair.currentIndex === 4 || idComboBoxImageEffectsRepair.currentIndex === 5) )  // deshake || repairFrames || stabilize ||
                                                                                                  || (idComboBoxImageEffects.currentIndex === 3 && ( idComboBoxImageEffectsFinders.currentIndex === 2 || idComboBoxImageEffectsFinders.currentIndex === 3 ) ) // blackFrame || whiteFrame
                                                                                                  || idComboBoxImageEffects.currentIndex === 4 // all frei0r effects
                                                                                                  )) //reverse only works for whole clip
-                                                                     || idButtonImageGeometry.down) )
-                                          || (idButtonAudio.down && (idButtonAudioFade.down || idButtonAudioRecord.down) )
-                                          || (idButtonAudio.down && idButtonAudioMixer.down && idComboBoxAudioNewLength.currentIndex === 0 )
-                                          || (idButtonAudio.down && idButtonAudioFilters.down && idComboBoxAudioFilters.currentIndex === 1 ) // echo effects do not support yet timeline editing
-                                          || (idButtonCollage.down && ( idButtonCollageSubtitle.down === false || (idButtonCollageSubtitle.down === true && idComboBoxCollageSubtitleAdd.currentIndex === 0) ) )
-                                          || idButtonFile.down
+                                                                     || imageToolbar.buttonGeometry.selected) )
+                                          || (mainToolbar.buttonAudio.selected && (audioToolbar.buttonFade.selected || audioToolbar.buttonRecorder.selected) )
+                                          || (mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected && idComboBoxAudioNewLength.currentIndex === 0 )
+                                          || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFilters.selected && idComboBoxAudioFilters.currentIndex === 1 ) // echo effects do not support yet timeline editing
+                                          || (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSubtitles.selected === false || (collageToolbar.buttonSubtitles.selected === true && idComboBoxCollageSubtitleAdd.currentIndex === 0) ) )
+                                          || mainToolbar.buttonFile.selected
                                          ) ? true : false
     property var lastToolsButtonPressed : "Cut"
     property var backColorTools : Theme.rgba(Theme.primaryColor, 0.1) // "transparent" // Theme.rgba(Theme.highlightDimmerColor, 0.5)
@@ -245,9 +254,9 @@ Page {
     // watchdogs: when entering or leaving certain tools
     Item {
         id: idWatchdog_ratioChangeOverlay
-        enabled: ( idButtonImage.down && idButtonImageOverlays.down&& ( overlayFilePath !== "" || idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) ) ? true : false
+        enabled: ( mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected&& ( overlayFilePath !== "" || idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) ) ? true : false
         onEnabledChanged: {
-            if ( idButtonImage.down && idButtonImageOverlays.down && ( overlayFilePath !== "" || idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) ) { // on_enter
+            if ( mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected && ( overlayFilePath !== "" || idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) ) { // on_enter
                 if ( idComboBoxImageOverlayType.currentIndex === 0 ) { croppingRatio = previewRatioFileImage }
                 else if ( idComboBoxImageOverlayType.currentIndex === 1 ) { croppingRatio = previewRatioFileVideo }
                 else if ( idComboBoxImageOverlayType.currentIndex === 4 ) { croppingRatio = previewRatioFileVideo } //ToDo: give its own ratio
@@ -258,9 +267,9 @@ Page {
     }
     Item {
         id: idWatchdog_ratioChangeBlur
-        enabled: ( idButtonImage.down && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) ? true : false
+        enabled: ( mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) ? true : false
         onEnabledChanged: {
-            if ( idButtonImage.down && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) { // on_enter
+            if ( mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 1 ) { // on_enter
                 croppingRatio = 0
                 setCropmarkersRatio()
             }
@@ -268,9 +277,9 @@ Page {
     }
     Item {
         id: idWatchdog_ratioChangeCrop
-        enabled: ( idButtonCut.down && idButtonCutCrop.down ) ? true : false
+        enabled: ( mainToolbar.buttonCut.selected && cutToolbar.buttonCrop.selected ) ? true : false
         onEnabledChanged: {
-            if ( idButtonCut.down && idButtonCutCrop.down ) { // on_enter
+            if ( mainToolbar.buttonCut.selected && cutToolbar.buttonCrop.selected ) { // on_enter
                 croppingRatio = oldRatioCrop
                 setCropmarkersRatio()
             }
@@ -598,21 +607,10 @@ Page {
     }
 
     AudioRecorder {
-        id: audioRecorder_Sample //(( audioRecorder_Sample.recording ) ? audioRecorder_Sample.stop() : audioRecorder_Sample.record() )
-        onRecordingChanged: {
-            console.log("recording changed")
+        id: audioRecorder_Sample
 
-        }
-
+        onRecordingChanged: console.log("recording changed")
     }
-
-    /*
-    HapticsEffect {
-        id: idVibration
-        duration: 200
-        intensity: 10
-    }
-    */
 
     SoundEffect {
         id: recordingBeepStart
@@ -1454,13 +1452,10 @@ Page {
         }
     } // end python
 
-
-
-
-
     // To enable PullDownMenu, place our content in a SilicaFlickable
     SilicaFlickable {
         id: idSilicaFlickable
+
         anchors.fill: parent
         contentHeight: column.height
 
@@ -1515,77 +1510,14 @@ Page {
             id: column
             width: page.width
 
-            SectionHeader {
-                id: idSectionHeader
-                height: idSectionHeaderColumn.height
-                Column {
-                    id: idSectionHeaderColumn
-                    width: parent.width / 5 * 4
-                    height: idLabelProgramName.height + idLabelFilePath.height
-                    anchors.top: parent.top
-                    anchors.topMargin: Theme.paddingMedium
-                    anchors.right: parent.right
-                    anchors.rightMargin: -Theme.paddingMedium
-                    Label {
-                        id: idLabelProgramName
-                        width: parent.width
-                        anchors.right: parent.right
-                        horizontalAlignment: Text.AlignRight
-                        font.pixelSize: Theme.fontSizeLarge
-                        color: Theme.primaryColor
-                        text: qsTr("Videoworks")
-                        /*
-                        MouseArea {
-                            anchors.fill: parent
-                            onEntered: idVibration.start()
-                        }
-                        */
-                    }
-                    Label {
-                        id: idLabelFilePath
-                        width: parent.width
-                        anchors.right: parent.right
-                        horizontalAlignment: Text.AlignRight
-                        font.pixelSize: Theme.fontSizeTiny
-                        color: Theme.primaryColor
-                        truncationMode: TruncationMode.Elide
-                        text: origMediaFilePath
-                    }
-                }
-                IconButton {
-                    id: idIconUndoButton
-                    visible: ( enabled === true ) ? true : false
-                    enabled: ( undoNr >= 1 && finishedLoading === true ) ? true : false
-                    width: (parent.width) / 5 * 1
-                    height: idLabelProgramName.height + idLabelFilePath.height
-                    anchors.top: parent.top
-                    anchors.topMargin: Theme.paddingMedium + Theme.paddingSmall/2
-                    anchors.left: parent.left
-                    anchors.leftMargin: -Theme.paddingMedium * 3
-                    icon.source: "../symbols/icon-l-undo.svg"
-                    icon.width: Theme.iconSizeMedium
-                    icon.height: Theme.iconSizeMedium
-                    scale: 1.5
-                    Label {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        font.pixelSize: Theme.fontSizeTiny
-                        text: undoNr
-                        scale: 1/1.5
-                    }
-                    onClicked: {
-                        undoBackwards()
-                    }
-                }
-                BusyIndicator {
-                    anchors.horizontalCenter: idIconUndoButton.horizontalCenter
-                    anchors.horizontalCenterOffset: -Theme.paddingSmall/3.5
-                    anchors.verticalCenter: idIconUndoButton.verticalCenter
-                    anchors.verticalCenterOffset: Theme.paddingSmall/3.5
-                    running: (finishedLoading === true) ? false : true
-                    size: BusyIndicatorSize.Medium
-                }
+            MainPageHeader {
+                undoNumber: page.undoNr
+                filename: page.origMediaFilePath
+                finishedLoading: page.finishedLoading
+
+                onUndo: page.undoBackwards()
             }
+
             Item {
                 width: parent.width
                 height: 1.5 * Theme.paddingLarge
@@ -1821,7 +1753,7 @@ Page {
                         }
                         Image {
                             id: idPreviewOverlayImage
-                            visible: ( idButtonImage.down && idButtonImageOverlays.down && overlayFilePath !== "" && ( idComboBoxImageOverlayType.currentIndex === 0 || idComboBoxImageOverlayType.currentIndex === 1 || idComboBoxImageOverlayType.currentIndex === 4 ) )
+                            visible: ( mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected && overlayFilePath !== "" && ( idComboBoxImageOverlayType.currentIndex === 0 || idComboBoxImageOverlayType.currentIndex === 1 || idComboBoxImageOverlayType.currentIndex === 4 ) )
                             cache: false
                             autoTransform: true
                             opacity: (idComboBoxImageOverlayType.currentIndex === 4) ? 0.6 : idToolsRowImageOverlayOpacitySlider.value
@@ -1830,7 +1762,7 @@ Page {
                         }
                         Rectangle {
                             id: idPreviewOverlayRectangle
-                            visible: ( idButtonImage.down && idButtonImageOverlays.down && ( idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) )
+                            visible: ( mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected && ( idComboBoxImageOverlayType.currentIndex === 2 || idComboBoxImageOverlayType.currentIndex === 3 ) )
                             anchors.fill: parent
                             opacity: ( idComboBoxImageOverlayType.currentIndex === 2 ) ? idToolsRowImageOverlayOpacitySlider.value : 1
                             color: ( idComboBoxImageOverlayType.currentIndex === 2 ) ? drawRectangleColor : "transparent"
@@ -2152,7 +2084,7 @@ Page {
 
                 Rectangle {
                     id: idLabelFromToLeft
-                    visible: ( (finishedLoading === true && noFile === false) && ( (idButtonImage.down && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 0) || (idButtonAudio.down && idButtonAudioFade.down &&  idComboBoxAudioFade.currentIndex === 0 ) ) )
+                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 0) || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFade.selected &&  idComboBoxAudioFade.currentIndex === 0 ) ) )
                     z: -1
                     y: Theme.paddingMedium
                     height: parent.height - 2 * y
@@ -2174,7 +2106,7 @@ Page {
 
                 Rectangle {
                     id: idLabelFromToRight
-                    visible: ( (finishedLoading === true && noFile === false) && ( (idButtonImage.down && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 1) || (idButtonAudio.down && idButtonAudioFade.down &&  idComboBoxAudioFade.currentIndex === 1 ) ) )
+                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 1) || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFade.selected &&  idComboBoxAudioFade.currentIndex === 1 ) ) )
                     z: -1
                     y: Theme.paddingMedium
                     height: parent.height - 2 * y
@@ -2196,7 +2128,7 @@ Page {
 
                 Rectangle {
                     id: idRectangleMixer
-                    visible: ( finishedLoading === true && noFile === false && idButtonAudio.down && idButtonAudioMixer.down && idComboBoxAudioNewLength.currentIndex === 0 && addAudioLoaded === true )
+                    visible: ( finishedLoading === true && noFile === false && mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected && idComboBoxAudioNewLength.currentIndex === 0 && addAudioLoaded === true )
                     z: -1
                     y: Theme.paddingMedium
                     height: parent.height - 2 * y
@@ -2218,7 +2150,7 @@ Page {
 
                 Rectangle {
                     id: idRectangleAudioRecording
-                    visible: ( idButtonAudio.down && idButtonAudioRecord.down && recordingAudioState === true )
+                    visible: ( mainToolbar.buttonAudio.selected && audioToolbar.buttonRecorder.selected && recordingAudioState === true )
                     z: -1
                     y: Theme.paddingMedium
                     x: startRecordingHandlePosX
@@ -2229,144 +2161,156 @@ Page {
                 }
             }
 
-            Row {
+            RowLayout {
                 id: idPlayPauseMarkerRow
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: Theme.paddingLarge * 2
-                anchors.rightMargin: Theme.paddingLarge * 2
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: Theme.horizontalPageMargin
+                    rightMargin: Theme.horizontalPageMargin
+                }
+
                 height: Theme.itemSizeLarge
 
+                Item {
+                    Layout.fillWidth: true
+                }
+
                 IconButton {
-                    enabled: (noFile === false && finishedLoading === true && hideLowerTimeMarkers === false )
-                    height: parent.height
-                    width: parent.width / 5
+                    enabled: !noFile && finishedLoading && !hideLowerTimeMarkers
                     icon.source : "../symbols/icon-m-marker.svg"
-                    icon.height: Theme.iconSizeMedium * 1.05
-                    icon.width: Theme.iconSizeMedium * 1.05
+
                     onClicked: {
                         if (idMediaPlayer.position > toPosMillisecond) {
                             fromPosMillisecond = toPosMillisecond
                             toPosMillisecond = idMediaPlayer.position
-                        }
-                        else {
+                        } else {
                             fromPosMillisecond = idMediaPlayer.position
                         }
                     }
-                    onPressAndHold: {
-                        idMediaPlayer.seek(fromPosMillisecond)
-                    }
+
+                    onPressAndHold: idMediaPlayer.seek(fromPosMillisecond)
                 }
+
                 IconButton {
-                    enabled: (noFile === false && finishedLoading === true && (idMediaPlayer.height > idTimeInfoRow.height) )
-                    height: parent.height
-                    width: parent.width / 5
+                    enabled: !noFile && finishedLoading && idMediaPlayer.height > idTimeInfoRow.height
                     icon.source : "image://theme/icon-m-media-rewind?"
-                    icon.height: Theme.iconSizeMedium * 1.33
-                    icon.width: Theme.iconSizeMedium * 1.33
+
                     onClicked: {
                         if ( (idMediaPlayer.position - 1000) >= 0 ) {
                             idMediaPlayer.seek(idMediaPlayer.position - 1000)
                             plusMinusInfo = "-1 sec"
                             idTimerShowInfoPlusMinus.start()
+
                             if ( thumbnailVisible === true ) {
                                 py.createPreviewImage()
                             }
+
                             thumbnailVisible = false
                         }
                     }
+
                     onPressAndHold: {
                         if ( (idMediaPlayer.position - 10000) >= 0 ) {
                             idMediaPlayer.seek(idMediaPlayer.position - 10000)
                             plusMinusInfo = "-10 sec"
                             idTimerShowInfoPlusMinus.start()
+
                             if ( thumbnailVisible === true ) {
                                 py.createPreviewImage()
                             }
+
                             thumbnailVisible = false
                         }
                     }
                 }
-                IconButton {
+
+                MainPlayerButton {
                     id: idButtonPlayPauseStop
-                    enabled: (noFile === false && finishedLoading === true && (idMediaPlayer.height > idTimeInfoRow.height) )
-                    height: parent.height
-                    width: parent.width / 5
-                    icon.source: ( idMediaPlayer.playbackState !== MediaPlayer.PlayingState) ? "image://theme/icon-m-play?" : "image://theme/icon-m-pause?"
-                    icon.width: Theme.iconSizeMedium * 1.1
-                    icon.height: Theme.iconSizeMedium * 1.1
+                
+                    enabled: !noFile && finishedLoading && idMediaPlayer.height > idTimeInfoRow.height
+
+                    icon: {
+                        if (idMediaPlayer.playbackState !== MediaPlayer.PlayingState) { 
+                            return "image://theme/icon-m-play"
+                        } else { 
+                            return "image://theme/icon-m-pause"
+                        }
+                    }
+
+                    color: {
+                        if (idMediaPlayer.playbackState !== MediaPlayer.PlayingState) {
+                            return Theme.rgba(Theme.presenceColor(Theme.PresenceAvailable), 0.7)
+                        } else if (recordingAudioState) {
+                            return Theme.errorColor
+                        } else {
+                            return Theme.rgba(Theme.presenceColor(Theme.PresenceAway), 0.7)
+                        }
+                    }
+
                     onClicked: {
                         if (idMediaPlayer.playbackState === MediaPlayer.PlayingState ) {
                             idMediaPlayer.pause()
-                        }
-                        else {
+                        } else {
                             idMediaPlayer.play()
                         }
+                        
                         thumbnailVisible = false
                     }
+
                     onPressAndHold: {
                         idMediaPlayer.seek(0)
                         idMediaPlayer.stop()
-                        //thumbnailVisible = true
-                    }
-                    Rectangle {
-                        //visible: (noFile === false && finishedLoading === true)
-                        anchors.centerIn: parent
-                        width: Theme.iconSizeMedium * 1.1 - border.width /2 + border.width * 1.9
-                        height: width
-                        radius: width/2
-                        color: "transparent"
-                        border.color: ( idMediaPlayer.playbackState !== MediaPlayer.PlayingState ) ? ( Theme.rgba(Theme.presenceColor(Theme.PresenceAvailable),0.7) ) : ( ( recordingAudioState === true ) ? ( Theme.errorColor ) : ( Theme.rgba(Theme.presenceColor(Theme.PresenceAway),0.7) ) )
-                        border.width: Theme.paddingMedium * 0.6
                     }
                 }
+                
                 IconButton {
-                    enabled: (noFile === false && finishedLoading === true && (idMediaPlayer.height > idTimeInfoRow.height) )
-                    height: parent.height
-                    width: parent.width / 5
+                    enabled: !noFile && finishedLoading && idMediaPlayer.height > idTimeInfoRow.height
                     icon.source : "image://theme/icon-m-media-forward?"
-                    icon.height: Theme.iconSizeMedium * 1.33
-                    icon.width: Theme.iconSizeMedium * 1.33
-                    //icon.color: Theme.highlightColor
+
                     onClicked: {
                         if ( (idMediaPlayer.position + 1000) <= idMediaPlayer.duration ) {
                             idMediaPlayer.seek(idMediaPlayer.position + 1000)
                             plusMinusInfo = "+1 sec"
                             idTimerShowInfoPlusMinus.start()
+
                             if ( thumbnailVisible === true ) {
                                 py.createPreviewImage()
                             }
+
                             thumbnailVisible = false
                         }
                     }
+
                     onPressAndHold: {
                         if ( (idMediaPlayer.position + 10000) <= idMediaPlayer.duration ) {
                             idMediaPlayer.seek(idMediaPlayer.position + 10000)
                             plusMinusInfo = "+10 sec"
                             idTimerShowInfoPlusMinus.start()
+
                             if ( thumbnailVisible === true ) {
                                 py.createPreviewImage()
                             }
+
                             thumbnailVisible = false
                         }
                     }
                 }
+
                 IconButton {
-                    enabled: (noFile === false && finishedLoading === true && hideLowerTimeMarkers === false )
-                    height: parent.height
-                    width: parent.width / 5
-                    icon.source : "../symbols/icon-m-marker.svg"
-                    icon.height: Theme.iconSizeMedium * 1.05
-                    icon.width: Theme.iconSizeMedium * 1.05
+                    enabled: !noFile && finishedLoading && !hideLowerTimeMarkers
+                    icon.source: "../symbols/icon-m-marker.svg"
+
                     onClicked: {
                         if (idMediaPlayer.position < fromPosMillisecond) {
                             toPosMillisecond = fromPosMillisecond
                             fromPosMillisecond = idMediaPlayer.position
-                        }
-                        else {
+                        } else {
                             toPosMillisecond = idMediaPlayer.position
                         }
                     }
+
                     onPressAndHold: {
                         idMediaPlayer.seek(toPosMillisecond)
                         if ( idMediaPlayer.position === idMediaPlayer.duration ) {
@@ -2374,130 +2318,50 @@ Page {
                         }
                     }
                 }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                // This will be used to open-close the sidebar or bottom sheet
+                // SecondaryButton {
+                //     icon {
+                //         source: "image://theme/icon-m-enter-close"
+                //         rotation: 180
+                //     }
+                // }
             }
+
             Item {
                 width: parent.width
-                height: Theme.paddingLarge * 3
-            }
+                height: mainToolbar.height
 
-
-
-
-
-            // main toolbar
-            Row {
-                id: idToolsCategoriesRow
-                x: Theme.paddingSmall
-                width: parent.width - 2*x
-
-                Item {
-                    id: borderRectTools
-                    width: (parent.width / 6 - parent.width / 7) / 2 // adjust centered position of 6 elements with next line that has 6 elements
-                    height: parent.height
-                }
-                IconButton {
-                    id: idButtonCut
-                    icon.opacity: 1
-                    down: true
-                    height: Theme.itemSizeSmall
-                    width: parent.width / 7
-                    icon.source : "../symbols/icon-m-cut.svg"
-                    icon.width: Theme.iconSizeMedium
-                    icon.height: Theme.iconSizeMedium
-                    onClicked: {
-                        idButtonCut.down = true
-                        idButtonImage.down = false
-                        idButtonAudio.down = false
-                        idButtonFile.down = false
-                        idButtonCollage.down = false
+                RowLayout {
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                        rightMargin: Theme.horizontalPageMargin
                     }
-                }
-                IconButton {
-                    id: idButtonImage
-                    icon.opacity: 1
-                    down: false
-                    height: Theme.itemSizeSmall
-                    width: parent.width / 7
-                    icon.source : "image://theme/icon-m-ambience?"
-                    icon.width: Theme.iconSizeMedium
-                    icon.height: Theme.iconSizeMedium
-                    onClicked: {
-                        idButtonCut.down = false
-                        idButtonImage.down = true
-                        idButtonAudio.down = false
-                        idButtonFile.down = false
-                        idButtonCollage.down = false
-                    }
-                }
-                IconButton {
-                    id: idButtonAudio
-                    icon.opacity: 1
-                    down: false
-                    height: Theme.itemSizeSmall
-                    width: parent.width / 7
-                    icon.height: Theme.itemSizeSmall * 0.8
-                    icon.source : "image://theme/icon-m-sounds?" // speaker
-                    onClicked: {
-                        idButtonCut.down = false
-                        idButtonImage.down = false
-                        idButtonAudio.down = true
-                        idButtonFile.down = false
-                        idButtonCollage.down = false
-                    }
-                }
-                IconButton {
-                    id: idButtonCollage
-                    icon.opacity: 1
-                    down: false
-                    height: Theme.itemSizeSmall
-                    width: parent.width / 7
-                    icon.source: "../symbols/icon-m-timeline.svg"
-                    icon.width: Theme.itemSizeSmall
-                    icon.height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCut.down = false
-                        idButtonImage.down = false
-                        idButtonAudio.down = false
-                        idButtonFile.down = false
-                        idButtonCollage.down = true
-                    }
-                }
-                IconButton {
-                    id: idButtonFile
-                    icon.opacity: 1
-                    down: false
-                    height: Theme.itemSizeSmall
-                    width: parent.width / 7
-                    icon.source: "image://theme/icon-m-file-document-light?"
-                    onClicked: {
-                        idButtonCut.down = false
-                        idButtonImage.down = false
-                        idButtonAudio.down = false
-                        idButtonFile.down = true
-                        idButtonCollage.down = false
-                    }
-                }
-                Item {
-                    width: parent.width / 7 - 2 * borderRectTools.width
-                    height: parent.height
-                }
-                Item {
-                    id: idButtonRecordingItem
-                    visible: ( idButtonAudio.down && idButtonAudioRecord.down )
-                    height: Theme.itemSizeSmall
-                    width: parent.width / 7
 
-                    IconButton {
+                    spacing: Theme.paddingMedium
+
+                    MainToolbar {
+                        id: mainToolbar
+
+                        anchors.bottom: parent.bottom
+                        Layout.fillWidth: true
+                    }
+
+                    // TODO: The idea is to later create a bottom toolbar with those two buttons. 
+                    // The toolbar will be overlayed on top of the toolbox, the toolbox will be scrollable on its own
+
+                    Button {
                         id: idButtonRecord
-                        enabled: ( noFile === false && finishedLoading === true && idButtonAudio.down && idButtonAudioRecord.down )
-                        anchors.centerIn: parent
-                        anchors.verticalCenterOffset: -Theme.paddingSmall / 2.5
-                        anchors.horizontalCenterOffset: Theme.paddingSmall / 5
-                        width: parent.width
-                        height: parent.height
+
+                        anchors.verticalCenter: parent.verticalCenter
+                        visible: mainToolbar.buttonAudio.selected && audioToolbar.buttonRecorder.selected
+                        enabled: !noFile && finishedLoading && mainToolbar.buttonAudio.selected && audioToolbar.buttonRecorder.selected
                         icon.source: "image://theme/icon-m-mic?"
-                        icon.width: Theme.iconSizeMedium * 0.8
-                        icon.height: icon.width
 
                         Rectangle {
                             z: -1
@@ -2507,6 +2371,7 @@ Page {
                             radius: width/2
                             color: (parent.down) ? Theme.rgba(Theme.errorColor, 0.2) : Theme.rgba(Theme.primaryColor, 0.2)
                         }
+
                         onEntered: {
                             startRecordingHandlePosX = idSliderHandle1.x + idSliderHandle1.width/2
                             idMediaPlayer.pause() // in case it did not pause yet
@@ -2521,6 +2386,7 @@ Page {
                             idMediaPlayer.play()
                             thumbnailVisible = false
                         }
+
                         onReleased: {
                             audioRecorder_Sample.stop()
                             recordingAudioState = false
@@ -2531,950 +2397,219 @@ Page {
                             py.recordAudioFunction()
                         }
                     }
-                }
-                IconButton {
-                    id: idButtonConfirm
-                    enabled: ( (noFile === false && finishedLoading === true && idButtonRecord.down === false && (idMediaPlayer.height > idTimeInfoRow.height)) || ( idButtonCollage.down && idButtonCollageSlideshow.down && slideshowModel.count !== 0 ) || ( idButtonCollage.down && idButtonCollageStoryline.down && storylineModel.count !== 0 ) )
-                    height: Theme.itemSizeSmall
-                    width: parent.width / 7
-                    icon.source : ("image://theme/icon-m-accept?")
-                    icon.width: Theme.iconSizeMedium * 0.9// * 1.25
-                    icon.height: icon.width
-                    icon.color: (enabled) ? Theme.primaryColor : "transparent"
 
-                    Rectangle {
-                        z: -1
-                        anchors.centerIn: parent
-                        anchors.verticalCenterOffset: -Theme.paddingSmall / 2.5
-                        anchors.horizontalCenterOffset: Theme.paddingSmall / 5
-                        width: parent.icon.width * 1/0.9
-                        height: width
-                        radius: width/2
-                        color: (parent.enabled) ? Theme.rgba(Theme.primaryColor, 0.2) : "transparent"
-                    }
-                    onClicked: {
-                        idSilicaFlickable.scrollToTop()
-                        if ( idButtonCut.down ) {
-                            if ( idButtonCutTrim.down ) { py.trimFunction() }
-                            if ( idButtonCutAdd.down ) { py.addTimeFunction() }
-                            if ( idButtonCutCrop.down ) { py.cropAreaFunction() }
-                            if ( idButtonCutPad.down ) { py.padAreaFunction() }
-                            if ( idButtonCutResize.down ) { py.resizeFunction() }
-                            if ( idButtonCutSpeed.down ) { py.speedFunction() }
+                    IconButton {
+                        id: idButtonConfirm
+
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        enabled: (noFile === false && finishedLoading === true && idButtonRecord.down === false && idMediaPlayer.height > idTimeInfoRow.height)
+                                || (mainToolbar.buttonCollage.selected && collageToolbar.buttonSlideshow.selected && slideshowModel.count !== 0)
+                                || (mainToolbar.buttonCollage.selected && collageToolbar.buttonStoryline.selected && storylineModel.count !== 0)
+
+                        height: Theme.itemSizeSmall
+                        width: parent.width / 7
+                        icon.source: "image://theme/icon-m-accept"
+
+                        Rectangle {
+                            z: -1
+                            anchors.centerIn: parent
+                            anchors.verticalCenterOffset: -Theme.paddingSmall / 2.5
+                            anchors.horizontalCenterOffset: Theme.paddingSmall / 5
+                            width: parent.icon.width * 1/0.9
+                            height: width
+                            radius: width/2
+                            color: (parent.enabled) ? Theme.rgba(Theme.primaryColor, 0.2) : "transparent"
                         }
-                        if ( idButtonImage.down ) {
-                            if ( idButtonImageFilters.down ) {
-                                if ( idComboBoxImageFilters.currentIndex === 0 && cubeFileLoaded === true ) { py.imageLUT3dFunction( "extern" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 1 ) { py.imageLUT3dFunction ( "cineAnime.png" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 2 ) { py.imageGrayscaleFunction() }
-                                if ( idComboBoxImageFilters.currentIndex === 3 ) { py.imageLUT3dFunction ( "cineBleak.png" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 4 ) { py.imageLUT3dFunction ( "cineBleach.png" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 5 ) { py.imageLUT3dFunction( "cineCold.cube" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 6 ) { py.imageLUT3dFunction( "cineDrama.cube" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 7 ) { py.imageLUT3dFunction ( "cineFall.png" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 8 ) { py.imageLUT3dFunction( "cineMoonlight.png" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 9 ) { py.imageCurveFunction("negative") }
-                                if ( idComboBoxImageFilters.currentIndex === 10 ) { py.imageLUT3dFunction ( "cineOld.png" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 11 ) { py.imageLUT3dFunction( "cineOrangeTeal.cube" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 12 ) { py.imageLUT3dFunction ( "cineSpring.png" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 13 ) { py.imageLUT3dFunction ( "cineSummer.png" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 14 ) { py.imageLUT3dFunction ( "cineTealMagentaGold.png" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 15 ) { py.imageLUT3dFunction( "cineSunset.png" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 16 ) { py.imageLUT3dFunction( "cineVibrant.cube" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 17 ) { py.imageCurveFunction("vintage") }
-                                if ( idComboBoxImageFilters.currentIndex === 18 ) { py.imageLUT3dFunction ( "cineWarm.cube" ) }
-                                if ( idComboBoxImageFilters.currentIndex === 19 ) { py.imageLUT3dFunction ( "cineWinter.png" ) }
-                            }
 
-                            if ( idButtonImageEffects.down ) {
-                                if ( idComboBoxImageEffects.currentIndex === 0 ) { // basics
-                                    if (idComboBoxImageEffectsBasics.currentIndex === 0 ) { py.imageFadeFunction() }
-                                    else if (idComboBoxImageEffectsBasics.currentIndex === 1 ) { py.imageBlurFunction() }
-                                    else if (idComboBoxImageEffectsBasics.currentIndex === 2 ) { py.imageGeneralEffectFunction("unsharp") }
-                                    else if (idComboBoxImageEffectsBasics.currentIndex === 3 ) { py.imageGeneralEffectFunction( "erosion" ) }
-                                    else if (idComboBoxImageEffectsBasics.currentIndex === 4 ) { py.imageNormalizeFunction() }
-                                    else if (idComboBoxImageEffectsBasics.currentIndex === 5 ) { py.imageReverseFunction() }
+                        onClicked: {
+                            // TODO: On-apply behavior should be provided by the currently selected toolbox
+                            // For example, currently selected toolbox's Item is put into root.selectedToolbox and has a function apply()
+                            // This button should just call root.selectedToolbox.apply()
+                            // selectedToolbox should also provide status for the record button and implement a capability to receive updates from it
+                            // This way each toolbox can be incapsulated into a separate component file
+
+                            idSilicaFlickable.scrollToTop()
+                            if ( mainToolbar.buttonCut.selected ) {
+                                if ( cutToolbar.buttonTrim.selected ) { py.trimFunction() }
+                                if ( cutToolbar.buttonInsert.selected ) { py.addTimeFunction() }
+                                if ( cutToolbar.buttonCrop.selected ) { py.cropAreaFunction() }
+                                if ( cutToolbar.buttonPad.selected ) { py.padAreaFunction() }
+                                if ( cutToolbar.buttonResize.selected ) { py.resizeFunction() }
+                                if ( cutToolbar.buttonSpeed.selected ) { py.speedFunction() }
+                            }
+                            if ( mainToolbar.buttonImage.selected ) {
+                                if ( imageToolbar.buttonFilters.selected ) {
+                                    if ( idComboBoxImageFilters.currentIndex === 0 && cubeFileLoaded === true ) { py.imageLUT3dFunction( "extern" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 1 ) { py.imageLUT3dFunction ( "cineAnime.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 2 ) { py.imageGrayscaleFunction() }
+                                    if ( idComboBoxImageFilters.currentIndex === 3 ) { py.imageLUT3dFunction ( "cineBleak.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 4 ) { py.imageLUT3dFunction ( "cineBleach.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 5 ) { py.imageLUT3dFunction( "cineCold.cube" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 6 ) { py.imageLUT3dFunction( "cineDrama.cube" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 7 ) { py.imageLUT3dFunction ( "cineFall.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 8 ) { py.imageLUT3dFunction( "cineMoonlight.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 9 ) { py.imageCurveFunction("negative") }
+                                    if ( idComboBoxImageFilters.currentIndex === 10 ) { py.imageLUT3dFunction ( "cineOld.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 11 ) { py.imageLUT3dFunction( "cineOrangeTeal.cube" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 12 ) { py.imageLUT3dFunction ( "cineSpring.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 13 ) { py.imageLUT3dFunction ( "cineSummer.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 14 ) { py.imageLUT3dFunction ( "cineTealMagentaGold.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 15 ) { py.imageLUT3dFunction( "cineSunset.png" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 16 ) { py.imageLUT3dFunction( "cineVibrant.cube" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 17 ) { py.imageCurveFunction("vintage") }
+                                    if ( idComboBoxImageFilters.currentIndex === 18 ) { py.imageLUT3dFunction ( "cineWarm.cube" ) }
+                                    if ( idComboBoxImageFilters.currentIndex === 19 ) { py.imageLUT3dFunction ( "cineWinter.png" ) }
                                 }
-                                else if ( idComboBoxImageEffects.currentIndex === 1 ) { // overlay
-                                    previewAlphaType = "video"
-                                    if (idComboBoxImageEffectsOverlays.currentIndex === 0) { py.overlayAlphaClipFunction( overlaysFolder + "flowersFalling.m4v", "part", "black:0.3:0.1" ) }
-                                    else if (idComboBoxImageEffectsOverlays.currentIndex === 1) { py.overlayOldMovieFunction() }
-                                    else if (idComboBoxImageEffectsOverlays.currentIndex === 2) { py.overlayAlphaClipFunction( overlaysFolder + "winterSnow.mp4", "part", "black:0.3:0.2" ) }
-                                    else if (idComboBoxImageEffectsOverlays.currentIndex === 3) { py.imageGeneralEffectFunction( "vignette" ) }
+
+                                if ( imageToolbar.buttonEffects.selected ) {
+                                    if ( idComboBoxImageEffects.currentIndex === 0 ) { // basics
+                                        if (idComboBoxImageEffectsBasics.currentIndex === 0 ) { py.imageFadeFunction() }
+                                        else if (idComboBoxImageEffectsBasics.currentIndex === 1 ) { py.imageBlurFunction() }
+                                        else if (idComboBoxImageEffectsBasics.currentIndex === 2 ) { py.imageGeneralEffectFunction("unsharp") }
+                                        else if (idComboBoxImageEffectsBasics.currentIndex === 3 ) { py.imageGeneralEffectFunction( "erosion" ) }
+                                        else if (idComboBoxImageEffectsBasics.currentIndex === 4 ) { py.imageNormalizeFunction() }
+                                        else if (idComboBoxImageEffectsBasics.currentIndex === 5 ) { py.imageReverseFunction() }
+                                    }
+                                    else if ( idComboBoxImageEffects.currentIndex === 1 ) { // overlay
+                                        previewAlphaType = "video"
+                                        if (idComboBoxImageEffectsOverlays.currentIndex === 0) { py.overlayAlphaClipFunction( overlaysFolder + "flowersFalling.m4v", "part", "black:0.3:0.1" ) }
+                                        else if (idComboBoxImageEffectsOverlays.currentIndex === 1) { py.overlayOldMovieFunction() }
+                                        else if (idComboBoxImageEffectsOverlays.currentIndex === 2) { py.overlayAlphaClipFunction( overlaysFolder + "winterSnow.mp4", "part", "black:0.3:0.2" ) }
+                                        else if (idComboBoxImageEffectsOverlays.currentIndex === 3) { py.imageGeneralEffectFunction( "vignette" ) }
+                                    }
+                                    else if ( idComboBoxImageEffects.currentIndex === 2 ) { // repair
+                                        if (idComboBoxImageEffectsRepair.currentIndex === 0 ) { py.imageGeneralEffectFunction( "deblock" ) }
+                                        else if (idComboBoxImageEffectsRepair.currentIndex === 1 ) { py.imageGeneralEffectFunction( "vaguedenoiser" ) }
+                                        else if (idComboBoxImageEffectsRepair.currentIndex === 2 ) { py.imageGeneralEffectFunction( "fftdnoiz" ) } // denoise 3D
+                                        else if (idComboBoxImageEffectsRepair.currentIndex === 3 ) { py.imageDeshakeFunction() }
+                                        else if (idComboBoxImageEffectsRepair.currentIndex === 4 ) { py.repairFramesFunction() }
+                                        else if (idComboBoxImageEffectsRepair.currentIndex === 5 ) { py.imageStabilizeFunction() }
+                                    }
+                                    else if ( idComboBoxImageEffects.currentIndex === 3 ) { // detect
+                                        if (idComboBoxImageEffectsFinders.currentIndex === 0 ) { py.imageGeneralEffectFunction( "sobel" ) }
+                                        else if (idComboBoxImageEffectsFinders.currentIndex === 1 ) { py.imageGeneralEffectFunction( "edgedetect" ) }
+                                        else if (idComboBoxImageEffectsFinders.currentIndex === 2 ) { py.removeBWframesFunction( "black" ) }
+                                        else if (idComboBoxImageEffectsFinders.currentIndex === 3 ) { py.removeBWframesFunction( "white" ) }
+                                    }
+                                    else if ( idComboBoxImageEffects.currentIndex === 4 ) { py.imageFrei0rFunction() } // frei0r plugins
                                 }
-                                else if ( idComboBoxImageEffects.currentIndex === 2 ) { // repair
-                                    if (idComboBoxImageEffectsRepair.currentIndex === 0 ) { py.imageGeneralEffectFunction( "deblock" ) }
-                                    else if (idComboBoxImageEffectsRepair.currentIndex === 1 ) { py.imageGeneralEffectFunction( "vaguedenoiser" ) }
-                                    else if (idComboBoxImageEffectsRepair.currentIndex === 2 ) { py.imageGeneralEffectFunction( "fftdnoiz" ) } // denoise 3D
-                                    else if (idComboBoxImageEffectsRepair.currentIndex === 3 ) { py.imageDeshakeFunction() }
-                                    else if (idComboBoxImageEffectsRepair.currentIndex === 4 ) { py.repairFramesFunction() }
-                                    else if (idComboBoxImageEffectsRepair.currentIndex === 5 ) { py.imageStabilizeFunction() }
+
+                                if ( imageToolbar.buttonColor.selected ) {
+                                    if ( idComboBoxImageColors.currentIndex === 0 ) { py.imageVibranceFunction() }
+                                    if ( idComboBoxImageColors.currentIndex === 1 ) { py.imageColorFunction("brightness") }
+                                    if ( idComboBoxImageColors.currentIndex === 2 ) { py.imageColorFunction("contrast") }
+                                    if ( idComboBoxImageColors.currentIndex === 3 ) { py.imageColorFunction("saturation") }
+                                    if ( idComboBoxImageColors.currentIndex === 4 ) { py.imageColorFunction("gamma") }
+                                    if ( idComboBoxImageColors.currentIndex === 5 ) { py.imageCurveFunction("lighter") }
+                                    if ( idComboBoxImageColors.currentIndex === 6 ) { py.imageCurveFunction("darker") }
+                                    if ( idComboBoxImageColors.currentIndex === 7 ) { py.imageCurveFunction("increase_contrast") }
+                                    if ( idComboBoxImageColors.currentIndex === 8 ) { py.imageLUT3dFunction("cineLessContrast.cube") }
                                 }
-                                else if ( idComboBoxImageEffects.currentIndex === 3 ) { // detect
-                                    if (idComboBoxImageEffectsFinders.currentIndex === 0 ) { py.imageGeneralEffectFunction( "sobel" ) }
-                                    else if (idComboBoxImageEffectsFinders.currentIndex === 1 ) { py.imageGeneralEffectFunction( "edgedetect" ) }
-                                    else if (idComboBoxImageEffectsFinders.currentIndex === 2 ) { py.removeBWframesFunction( "black" ) }
-                                    else if (idComboBoxImageEffectsFinders.currentIndex === 3 ) { py.removeBWframesFunction( "white" ) }
+
+                                if ( imageToolbar.buttonGeometry.selected ) {
+                                    if ( idComboBoxImageGeometry.currentIndex === 0 ) { py.imageMirrorFunction() }
+                                    if ( idComboBoxImageGeometry.currentIndex === 1 ) { py.imageRotateFunction() }
                                 }
-                                else if ( idComboBoxImageEffects.currentIndex === 4 ) { py.imageFrei0rFunction() } // frei0r plugins
+
+                                if ( imageToolbar.buttonText.selected ) { py.addTextFunction() }
+
+                                if ( imageToolbar.buttonOverlay.selected && ( (idComboBoxImageOverlayType.currentIndex === 0 && overlayFileLoaded === true)
+                                                                    || (idComboBoxImageOverlayType.currentIndex === 1 && overlayFileLoaded === true)
+                                                                    || idComboBoxImageOverlayType.currentIndex === 2
+                                                                    || idComboBoxImageOverlayType.currentIndex === 3
+                                                                    ) ) { py.overlayFileFunction() }
+
+                                if ( imageToolbar.buttonOverlay.selected && idComboBoxImageOverlayType.currentIndex === 4 && overlayFileLoaded === true )  { py.overlayAlphaClipFunction( "file", "part", "manual") }
+                            }
+                            if ( mainToolbar.buttonAudio.selected ) {
+                                if (audioToolbar.buttonFade.selected === true) {
+                                    py.audioFadeFunction()
+                                }
+                                if (audioToolbar.buttonVolume.selected === true) {
+                                    py.audioVolumeFunction()
+                                }
+                                if (audioToolbar.buttonExtract.selected === true) {
+                                    py.audioExtractFunction()
+                                }
+                                if (audioToolbar.buttonMixer.selected === true && addAudioLoaded === true) {
+                                    py.audioMixerFunction()
+                                }
+                                if (audioToolbar.buttonFilters.selected === true) {
+                                    if ( idComboBoxAudioFilters.currentIndex === 0 ) { py.audioEffectsFilters( "denoise" ) }
+                                    if ( idComboBoxAudioFilters.currentIndex === 1 ) { py.audioEffectsFilters( "echo" ) }
+                                    if ( idComboBoxAudioFilters.currentIndex === 2 ) { py.audioEffectsFilters( "highpass" ) }
+                                    if ( idComboBoxAudioFilters.currentIndex === 3 ) { py.audioEffectsFilters( "lowpass" ) }
+                                }
                             }
 
-                            if ( idButtonImageColors.down ) {
-                                if ( idComboBoxImageColors.currentIndex === 0 ) { py.imageVibranceFunction() }
-                                if ( idComboBoxImageColors.currentIndex === 1 ) { py.imageColorFunction("brightness") }
-                                if ( idComboBoxImageColors.currentIndex === 2 ) { py.imageColorFunction("contrast") }
-                                if ( idComboBoxImageColors.currentIndex === 3 ) { py.imageColorFunction("saturation") }
-                                if ( idComboBoxImageColors.currentIndex === 4 ) { py.imageColorFunction("gamma") }
-                                if ( idComboBoxImageColors.currentIndex === 5 ) { py.imageCurveFunction("lighter") }
-                                if ( idComboBoxImageColors.currentIndex === 6 ) { py.imageCurveFunction("darker") }
-                                if ( idComboBoxImageColors.currentIndex === 7 ) { py.imageCurveFunction("increase_contrast") }
-                                if ( idComboBoxImageColors.currentIndex === 8 ) { py.imageLUT3dFunction("cineLessContrast.cube") }
+                            if ( mainToolbar.buttonCollage.selected ) {
+                                if (collageToolbar.buttonSlideshow.selected && slideshowModel.count > 0 ) {
+                                    py.createSlideshowFunction()
+                                }
+                                if ( collageToolbar.buttonSplitScreen.selected && overlayFileLoaded === true ) {
+                                    py.splitscreenFunction()
+                                }
+                                if ( collageToolbar.buttonStoryline.selected && storylineModel.count > 0 ) {
+                                    py.createStorylineFunction()
+                                }
+                                if ( collageToolbar.buttonSubtitles.selected && ( (idComboBoxCollageSubtitleAdd.currentIndex === 0 && addSubtitleLoaded === true) || (idComboBoxCollageSubtitleAdd.currentIndex === 1 && subtitleModel.count > 0 ) )) {
+                                    py.overlaySubtitleFunction()
+                                }
+                                if ( collageToolbar.buttonThumbnail.selected ) {
+                                    py.extractImagesFunction()
+                                }
                             }
-
-                            if ( idButtonImageGeometry.down ) {
-                                if ( idComboBoxImageGeometry.currentIndex === 0 ) { py.imageMirrorFunction() }
-                                if ( idComboBoxImageGeometry.currentIndex === 1 ) { py.imageRotateFunction() }
-                            }
-
-                            if ( idButtonImageText.down ) { py.addTextFunction() }
-
-                            if ( idButtonImageOverlays.down && ( (idComboBoxImageOverlayType.currentIndex === 0 && overlayFileLoaded === true)
-                                                                || (idComboBoxImageOverlayType.currentIndex === 1 && overlayFileLoaded === true)
-                                                                || idComboBoxImageOverlayType.currentIndex === 2
-                                                                || idComboBoxImageOverlayType.currentIndex === 3
-                                                                ) ) { py.overlayFileFunction() }
-
-                            if ( idButtonImageOverlays.down && idComboBoxImageOverlayType.currentIndex === 4 && overlayFileLoaded === true )  { py.overlayAlphaClipFunction( "file", "part", "manual") }
-                        }
-                        if ( idButtonAudio.down ) {
-                            if (idButtonAudioFade.down === true) {
-                                py.audioFadeFunction()
-                            }
-                            if (idButtonAudioVolume.down === true) {
-                                py.audioVolumeFunction()
-                            }
-                            if (idButtonAudioExtract.down === true) {
-                                py.audioExtractFunction()
-                            }
-                            if (idButtonAudioMixer.down === true && addAudioLoaded === true) {
-                                py.audioMixerFunction()
-                            }
-                            if (idButtonAudioFilters.down === true) {
-                                if ( idComboBoxAudioFilters.currentIndex === 0 ) { py.audioEffectsFilters( "denoise" ) }
-                                if ( idComboBoxAudioFilters.currentIndex === 1 ) { py.audioEffectsFilters( "echo" ) }
-                                if ( idComboBoxAudioFilters.currentIndex === 2 ) { py.audioEffectsFilters( "highpass" ) }
-                                if ( idComboBoxAudioFilters.currentIndex === 3 ) { py.audioEffectsFilters( "lowpass" ) }
-                            }
-                        }
-
-                        if ( idButtonCollage.down ) {
-                            if (idButtonCollageSlideshow.down && slideshowModel.count > 0 ) {
-                                py.createSlideshowFunction()
-                            }
-                            if ( idButtonCollageSplitscreen.down && overlayFileLoaded === true ) {
-                                py.splitscreenFunction()
-                            }
-                            if ( idButtonCollageStoryline.down && storylineModel.count > 0 ) {
-                                py.createStorylineFunction()
-                            }
-                            if ( idButtonCollageSubtitle.down && ( (idComboBoxCollageSubtitleAdd.currentIndex === 0 && addSubtitleLoaded === true) || (idComboBoxCollageSubtitleAdd.currentIndex === 1 && subtitleModel.count > 0 ) )) {
-                                py.overlaySubtitleFunction()
-                            }
-                            if ( idButtonCollageImageExtract.down ) {
-                                py.extractImagesFunction()
-                            }
-                        }
-                        if ( idButtonFile.down ) {
-                            //DISABLE share
-                            if (idButtonFileShare.down === true) {
-                                /*pageStack.push(Qt.resolvedUrl("SharePage.qml"), {
-                                    shareFilePath : idMediaPlayer.source.toString(),
-                                    shareFileName : origMediaFileName,
-                                    tmpVideoFileSize : tmpVideoFileSize,
-                                })*/
-                                if (debug) console.log(tmpVideoFileSize)
-                            }
-                            if (idButtonFileRename.down === true) {
-                                py.renameOriginal()
-                            }
-                            if (idButtonFileDelete.down === true) {
-                                remorse.execute( qsTr("Delete file?"))
+                            if ( mainToolbar.buttonFile.selected ) {
+                                //DISABLE share
+                                if (fileToolbar.buttonShare.selected === true) {
+                                    /*pageStack.push(Qt.resolvedUrl("SharePage.qml"), {
+                                        shareFilePath : idMediaPlayer.source.toString(),
+                                        shareFileName : origMediaFileName,
+                                        tmpVideoFileSize : tmpVideoFileSize,
+                                    })*/
+                                    if (debug) console.log(tmpVideoFileSize)
+                                }
+                                if (fileToolbar.buttonRename.selected === true) {
+                                    py.renameOriginal()
+                                }
+                                if (fileToolbar.buttonDelete.selected === true) {
+                                    remorse.execute( qsTr("Delete file?"))
+                                }
                             }
                         }
                     }
                 }
-                Item {
-                    width: borderRectTools.width
-                    height: borderRectTools.height
-                }
-            }
 
-            // tool-details CUT
-            Row {
-                id: idToolsRowCut
-                visible: idButtonCut.down
-                x: idToolsCategoriesRow.x
-                width: idToolsCategoriesRow.width
-
-                IconButton {
-                    id: idButtonCutTrim
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    down: true
-                    onClicked: {
-                        idButtonCutTrim.down = true
-                        idButtonCutAdd.down = false
-                        idButtonCutCrop.down = false
-                        idButtonCutPad.down = false
-                        idButtonCutResize.down = false
-                        idButtonCutSpeed.down = false
-                    }
-                    Label {
-                        text: qsTr("trim")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCutAdd
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCutTrim.down = false
-                        idButtonCutAdd.down = true
-                        idButtonCutCrop.down = false
-                        idButtonCutPad.down = false
-                        idButtonCutResize.down = false
-                        idButtonCutSpeed.down = false
-                    }
-                    Label {
-                        text: qsTr("insert")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCutCrop
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCutTrim.down = false
-                        idButtonCutAdd.down = false
-                        idButtonCutCrop.down = true
-                        idButtonCutPad.down = false
-                        idButtonCutResize.down = false
-                        idButtonCutSpeed.down = false
-                    }
-                    Label {
-                        text: qsTr("crop")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCutPad
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCutTrim.down = false
-                        idButtonCutAdd.down = false
-                        idButtonCutCrop.down = false
-                        idButtonCutPad.down = true
-                        idButtonCutResize.down = false
-                        idButtonCutSpeed.down = false
-                    }
-                    Label {
-                        text: qsTr("pad")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCutResize
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCutTrim.down = false
-                        idButtonCutAdd.down = false
-                        idButtonCutCrop.down = false
-                        idButtonCutPad.down = false
-                        idButtonCutResize.down = true
-                        idButtonCutSpeed.down = false
-                    }
-                    Label {
-                        text: qsTr("resize")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCutSpeed
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCutTrim.down = false
-                        idButtonCutAdd.down = false
-                        idButtonCutCrop.down = false
-                        idButtonCutPad.down = false
-                        idButtonCutResize.down = false
-                        idButtonCutSpeed.down = true
-                    }
-                    Label {
-                        text: qsTr("speed")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-            }
-
-            // tool-details IMAGE
-            Row {
-                id: idToolsRowImage
-                visible: idButtonImage.down
-                x: idToolsCategoriesRow.x
-                width: idToolsCategoriesRow.width
-
-                IconButton {
-                    id: idButtonImageEffects
-                    down: true
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = false
-                        idButtonImageEffects.down = true
-                        idButtonImageGeometry.down = false
-                        idButtonImageColors.down = false
-                        idButtonImageText.down = false
-                        idButtonImageOverlays.down = false
-                    }
-                    Label {
-                        text: qsTr("effects")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonImageFilters
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = true
-                        idButtonImageEffects.down = false
-                        idButtonImageGeometry.down = false
-                        idButtonImageColors.down = false
-                        idButtonImageText.down = false
-                        idButtonImageOverlays.down = false
-                    }
-                    Label {
-                        text: qsTr("filters")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonImageColors
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = false
-                        idButtonImageEffects.down = false
-                        idButtonImageGeometry.down = false
-                        idButtonImageColors.down = true
-                        idButtonImageText.down = false
-                        idButtonImageOverlays.down = false
-                    }
-                    Label {
-                        text: qsTr("colors")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonImageGeometry
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = false
-                        idButtonImageEffects.down = false
-                        idButtonImageGeometry.down = true
-                        idButtonImageColors.down = false
-                        idButtonImageText.down = false
-                        idButtonImageOverlays.down = false
-                    }
-                    Label {
-                        text: qsTr("geometry")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonImageText
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = false
-                        idButtonImageEffects.down = false
-                        idButtonImageGeometry.down = false
-                        idButtonImageColors.down = false
-                        idButtonImageText.down = true
-                        idButtonImageOverlays.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("text")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonImageOverlays
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonImageFilters.down = false
-                        idButtonImageEffects.down = false
-                        idButtonImageGeometry.down = false
-                        idButtonImageColors.down = false
-                        idButtonImageText.down = false
-                        idButtonImageOverlays.down = true
-                    }
-                    Label {
-                        text: qsTr("overlay")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-            }
-
-            // tool-details AUDIO
-            Row {
-                id: idToolsRowAudio
-                visible: idButtonAudio.down
-                x: idToolsCategoriesRow.x
-                width: idToolsCategoriesRow.width
-
-                IconButton {
-                    id: idButtonAudioVolume
-                    down: true
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = false
-                        idButtonAudioFilters.down = false
-                        idButtonAudioExtract.down = false
-                        idButtonAudioVolume.down = true
-                        idButtonAudioMixer.down = false
-                        idButtonAudioRecord.down = false
-                    }
-                    Label {
-                        text: qsTr("volume")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonAudioFilters
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = false
-                        idButtonAudioFilters.down = true
-                        idButtonAudioExtract.down = false
-                        idButtonAudioVolume.down = false
-                        idButtonAudioMixer.down = false
-                        idButtonAudioRecord.down = false
-                    }
-                    Label {
-                        text: qsTr("filters")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonAudioFade
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = true
-                        idButtonAudioFilters.down = false
-                        idButtonAudioExtract.down = false
-                        idButtonAudioVolume.down = false
-                        idButtonAudioMixer.down = false
-                        idButtonAudioRecord.down = false
-                    }
-                    Label {
-                        text: qsTr("fade")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonAudioExtract
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = false
-                        idButtonAudioFilters.down = false
-                        idButtonAudioExtract.down = true
-                        idButtonAudioVolume.down = false
-                        idButtonAudioMixer.down = false
-                        idButtonAudioRecord.down = false
-                    }
-                    Label {
-                        text: qsTr("extract")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonAudioMixer
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = false
-                        idButtonAudioFilters.down = false
-                        idButtonAudioExtract.down = false
-                        idButtonAudioVolume.down = false
-                        idButtonAudioMixer.down = true
-                        idButtonAudioRecord.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("mixer")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonAudioRecord
-                    //visible: false
-                    width: parent.width / 6
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonAudioFade.down = false
-                        idButtonAudioFilters.down = false
-                        idButtonAudioExtract.down = false
-                        idButtonAudioVolume.down = false
-                        idButtonAudioMixer.down = false
-                        idButtonAudioRecord.down = true
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("recorder")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-            }
-
-            // tool-details COLLAGE
-            Row {
-                id: idToolsRowCollage
-                visible: idButtonCollage.down
-                x: idToolsCategoriesRow.x
-                width: idToolsCategoriesRow.width
-
-                IconButton {
-                    id: idButtonCollageStoryline
-                    down: true
-                    width: parent.width / 5
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCollageStoryline.down = true
-                        idButtonCollageSlideshow.down = false
-                        idButtonCollageSplitscreen.down = false
-                        idButtonCollageSubtitle.down = false
-                        idButtonCollageImageExtract.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("storyline")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCollageSlideshow
-                    width: parent.width / 5
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCollageStoryline.down = false
-                        idButtonCollageSlideshow.down = true
-                        idButtonCollageSplitscreen.down = false
-                        idButtonCollageSubtitle.down = false
-                        idButtonCollageImageExtract.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("slideshow")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCollageSubtitle
-                    width: parent.width / 5
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCollageStoryline.down = false
-                        idButtonCollageSlideshow.down = false
-                        idButtonCollageSplitscreen.down = false
-                        idButtonCollageSubtitle.down = true
-                        idButtonCollageImageExtract.down = false
-                    }
-                    Label {
-                        text: qsTr("subtitles")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCollageSplitscreen
-                    width: parent.width / 5
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCollageStoryline.down = false
-                        idButtonCollageSlideshow.down = false
-                        idButtonCollageSplitscreen.down = true
-                        idButtonCollageSubtitle.down = false
-                        idButtonCollageImageExtract.down = false
-                    }
-                    Label {
-                        text: qsTr("splitscreen")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonCollageImageExtract
-                    width: parent.width / 5
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonCollageStoryline.down = false
-                        idButtonCollageSlideshow.down = false
-                        idButtonCollageSplitscreen.down = false
-                        idButtonCollageSubtitle.down = false
-                        idButtonCollageImageExtract.down = true
-                    }
-                    Label {
-                        text: qsTr("thumbnail")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-            }
-
-            // tool-details FILE
-            Row {
-                id: idToolsRowFile
-                visible: idButtonFile.down
-                x: idToolsCategoriesRow.x
-                width: idToolsCategoriesRow.width
-
-                //Disable Share
-                IconButton {
-                    id: idButtonFileShare
-                    down: true
-                    width: parent.width / 4
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonFileShare.down = true
-                        idButtonFileInfo.down = false
-                        idButtonFileRename.down = false
-                        idButtonFileDelete.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("share")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonFileInfo
-                    width: parent.width / 4
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonFileShare.down = false
-                        idButtonFileInfo.down = true
-                        idButtonFileRename.down = false
-                        idButtonFileDelete.down = false
-                        idTimerScrollToBottom.start()
-                    }
-                    Label {
-                        text: qsTr("fileinfo")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonFileRename
-                    width: parent.width / 4
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonFileShare.down = false
-                        idButtonFileInfo.down = false
-                        idButtonFileRename.down = true
-                        idButtonFileDelete.down = false
-                    }
-                    Label {
-                        text: qsTr("rename")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                IconButton {
-                    id: idButtonFileDelete
-                    width: parent.width / 4
-                    height: Theme.itemSizeSmall
-                    onClicked: {
-                        idButtonFileShare.down = false
-                        idButtonFileInfo.down = false
-                        idButtonFileRename.down = false
-                        idButtonFileDelete.down = true
-                    }
-                    Label {
-                        text: qsTr("delete")
-                        truncationMode: TruncationMode.Fade
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        anchors.centerIn: parent
-                    }
-                    Rectangle {
-                        z: -1
-                        anchors.fill: parent
-                        anchors.topMargin: Theme.paddingMedium
-                        anchors.bottomMargin: anchors.topMargin
-                        color: backColorTools
-                    }
-                }
-                /*
+                // Rather hacky solution for now, later buttons will be put on the bottom bar
                 Rectangle {
-                    width: parent.width / 6 * 2
-                    y: Theme.paddingMedium
-                    height: parent.height - 2*Theme.paddingMedium
-                    color: backColorTools
+                    anchors {
+                        right: parent.right
+                        bottom: parent.bottom
+                    }
+
+                    width: parent.width - mainToolbar.width
+                    height: Theme.dp(1)
+                    color: Theme.highlightColor
+                    opacity: Theme.opacityOverlay
                 }
-                */
             }
 
+            SecondaryToolbarCut {
+                id: cutToolbar
+
+                visible: mainToolbar.buttonCut.selected
+            }
 
             // more details CUT
             Row {
                 id: idToolsRowCutTrim
-                visible: (idButtonCut.down && idButtonCutTrim.down )
+                visible: (mainToolbar.buttonCut.selected && cutToolbar.buttonTrim.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -3510,19 +2645,17 @@ Page {
                     }
                 }
             }
-            Row {
-                id: idToolsRowCutAdd
-                visible: (idButtonCut.down && idButtonCutAdd.down )
-                x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
 
-                Item {
-                    width: idToolsCategoriesRow.x
-                    height: standardDetailItemHeight
-                }
+            Column {
+                id: idToolsRowCutAdd
+
+                width: parent.width
+                visible: mainToolbar.buttonCut.selected && cutToolbar.buttonInsert.selected
+
                 ComboBox {
                     id: idComboBoxCutAddColor
-                    width: parent.width / 6 * 2
+
+                    width: parent.width
                     description: qsTr("frame source")
                     menu: ContextMenu {
                         MenuItem { text: qsTr("black") }
@@ -3531,10 +2664,12 @@ Page {
                         MenuItem { text: qsTr("video file") }
                     }
                 }
+
                 Slider {
                     id: idToolsRowCutAddSlider
+
                     visible: ( idComboBoxCutAddColor.currentIndex !== 3 )
-                    width: parent.width / 6 * 4
+                    width: parent.width
                     leftMargin: Theme.paddingMedium * 1.1
                     rightMargin: leftMargin
                     minimumValue: 1
@@ -3549,30 +2684,30 @@ Page {
                         anchors.bottomMargin: -Theme.paddingSmall / 2
                         anchors.horizontalCenter: parent.horizontalCenter
                         font.pixelSize: Theme.fontSizeExtraSmall
-                        color: Theme.secondaryColor //highlightColor
-                        text: qsTr("for") + " " + idToolsRowCutAddSlider.value + " s"
+                        color: Theme.secondaryColor
+                        text: qsTr("for %1s").arg(idToolsRowCutAddSlider.value)
                     }
                 }
+
                 ValueButton {
                     enabled: ( noFile === false && finishedLoading === true )
                     visible: ( idComboBoxCutAddColor.currentIndex === 3 )
-                    width: parent.width / 6 * 4.5
-                    height: standardDetailItemHeight
+                    width: parent.width
                     value: (addFileLoaded === false) ? qsTr("[none]"): ( addFileName )
                     description: qsTr("file")
-                    onClicked: {
-                        pageStack.push(addFilePickerPageVideo )
-                    }
+
+                    onClicked: pageStack.push(addFilePickerPageVideo )
                 }
             }
+
             Row {
                 id: idToolsRowCutCrop
-                visible: (idButtonCut.down && idButtonCutCrop.down )
+                visible: (mainToolbar.buttonCut.selected && cutToolbar.buttonCrop.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -3607,12 +2742,12 @@ Page {
             }
             Row {
                 id: idToolsRowCutPad
-                visible: (idButtonCut.down && idButtonCutPad.down )
+                visible: (mainToolbar.buttonCut.selected && cutToolbar.buttonPad.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -3670,20 +2805,25 @@ Page {
                     }
                 }
             }
-            Row {
-                id: idToolsRowCutResize
-                visible: (idButtonCut.down && idButtonCutResize.down )
-                x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
 
-                Item {
-                    width: idToolsCategoriesRow.x
-                    height: standardDetailItemHeight
+            Column {
+                id: idToolsRowCutResize
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    leftMargin: Theme.horizontalPageMargin
+                    rightMargin: Theme.horizontalPageMargin
                 }
+
+                visible: mainToolbar.buttonCut.selected && cutToolbar.buttonResize.selected
+
                 ComboBox {
                     id: idComboBoxCutResizeMaindimension
-                    width: parent.width / 6 * 2
+
+                    width: parent.width
                     description: qsTr("target")
+
                     menu: ContextMenu {
                         MenuItem { text: qsTr("width") }
                         MenuItem { text: qsTr("height") }
@@ -3691,92 +2831,84 @@ Page {
                         MenuItem { text: qsTr("stretch") }
                     }
                 }
-                Item {
-                    width: parent.width / 6 * 4
-                    height: standardDetailItemHeight
-                    Row {
-                        width: parent.width
-                        height: parent.height
-                        TextField {
-                            id: idToolsCutDetailsColumn3Width
-                            enableSoftwareInputPanel: ( idComboBoxCutResizeMaindimension.currentIndex !== 1 )
-                            enabled: ( idComboBoxCutResizeMaindimension.currentIndex !== 1 )
-                            width: parent.width / 2
-                            height: Theme.itemSizeMedium
-                            textTopMargin: Theme.paddingMedium
-                            text: ( idComboBoxCutResizeMaindimension.currentIndex !== 1 ) ? sourceVideoWidth : qsTr("auto")
-                            color: Theme.highlightColor
-                            inputMethodHints: Qt.ImhDigitsOnly
-                            validator: IntValidator { bottom: 1; top: 9999 }
-                            EnterKey.onClicked: {
-                                if (idToolsCutDetailsColumn3Width.text < 1 || idToolsCutDetailsColumn3Width.text === "") {
-                                    idToolsCutDetailsColumn3Width.text = sourceVideoWidth
-                                }
-                                idToolsCutDetailsColumn3Width.focus = false
-                            }
-                            /*
-                            Label {
-                                anchors.left: parent.right
-                                anchors.leftMargin: - 2 * width
-                                anchors.verticalCenter: parent.verticalCenter
-                                font.pixelSize: Theme.fontSizeExtraSmall
-                                color: Theme.secondaryColor
-                                text: qsTr("px")
-                            }
-                            */
-                            Label {
-                                anchors.top: parent.bottom
-                                font.pixelSize: Theme.fontSizeExtraSmall
-                                color: Theme.secondaryColor
-                                text: qsTr("px-width")
-                            }
+
+                Row {
+                    width: parent.width
+                    
+                    TextField {
+                        id: idToolsCutDetailsColumn3Width
+
+                        enableSoftwareInputPanel: idComboBoxCutResizeMaindimension.currentIndex !== 1
+                        enabled: idComboBoxCutResizeMaindimension.currentIndex !== 1
+                        width: parent.width / 2
+                        height: Theme.itemSizeMedium
+                        textTopMargin: Theme.paddingMedium
+                        text: idComboBoxCutResizeMaindimension.currentIndex !== 1 ? sourceVideoWidth : qsTr("auto")
+                        color: Theme.highlightColor
+                        inputMethodHints: Qt.ImhDigitsOnly
+ 
+                        validator: IntValidator { 
+                            bottom: 1
+                            top: 9999 
                         }
-                        TextField {
-                            id: idToolsCutDetailsColumn3Height
-                            enableSoftwareInputPanel: ( idComboBoxCutResizeMaindimension.currentIndex !== 0 )
-                            enabled: ( idComboBoxCutResizeMaindimension.currentIndex !== 0 )
-                            width: parent.width / 2
-                            height: Theme.itemSizeMedium
-                            textTopMargin: Theme.paddingMedium
-                            text: ( idComboBoxCutResizeMaindimension.currentIndex !== 0 ) ? sourceVideoHeight : qsTr("auto")
-                            color: Theme.highlightColor
-                            inputMethodHints: Qt.ImhDigitsOnly
-                            validator: IntValidator { bottom: 1; top: 9999 }
-                            EnterKey.onClicked: {
-                                if (idToolsCutDetailsColumn3Height.text < 1 || idToolsCutDetailsColumn3Height.text === "") {
-                                    idToolsCutDetailsColumn3Height.text = sourceVideoHeight
-                                }
-                                idToolsCutDetailsColumn3Height.focus = false
+ 
+                        EnterKey.onClicked: {
+                            if (idToolsCutDetailsColumn3Width.text < 1 || idToolsCutDetailsColumn3Width.text === "") {
+                                idToolsCutDetailsColumn3Width.text = sourceVideoWidth
                             }
-                            /*
-                            Label {
-                                anchors.left: parent.right
-                                anchors.leftMargin: - 2 * width
-                                anchors.verticalCenter: parent.verticalCenter
-                                font.pixelSize: Theme.fontSizeExtraSmall
-                                color: Theme.secondaryColor
-                                text: qsTr("px")
-                            }
-                            */
-                            Label {
-                                anchors.top: parent.bottom
-                                font.pixelSize: Theme.fontSizeExtraSmall
-                                color: Theme.secondaryColor
-                                text: qsTr("px-height")
-                            }
+                            idToolsCutDetailsColumn3Width.focus = false
                         }
 
+                        Label {
+                            anchors.top: parent.bottom
+                            font.pixelSize: Theme.fontSizeExtraSmall
+                            color: Theme.secondaryColor
+                            text: qsTr("px-width")
+                        }
+                    }
+
+                    TextField {
+                        id: idToolsCutDetailsColumn3Height
+
+                        enableSoftwareInputPanel: idComboBoxCutResizeMaindimension.currentIndex !== 0
+                        enabled: idComboBoxCutResizeMaindimension.currentIndex !== 0
+                        width: parent.width / 2
+                        height: Theme.itemSizeMedium
+                        textTopMargin: Theme.paddingMedium
+                        text: idComboBoxCutResizeMaindimension.currentIndex !== 0 ? sourceVideoHeight : qsTr("auto")
+                        color: Theme.highlightColor
+                        inputMethodHints: Qt.ImhDigitsOnly
+
+                        validator: IntValidator { 
+                            bottom: 1 
+                            top: 9999 
+                        }
+
+                        EnterKey.onClicked: {
+                            if (idToolsCutDetailsColumn3Height.text < 1 || idToolsCutDetailsColumn3Height.text === "") {
+                                idToolsCutDetailsColumn3Height.text = sourceVideoHeight
+                            }
+                            idToolsCutDetailsColumn3Height.focus = false
+                        }
+
+                        Label {
+                            anchors.top: parent.bottom
+                            font.pixelSize: Theme.fontSizeExtraSmall
+                            color: Theme.secondaryColor
+                            text: qsTr("px-height")
+                        }
                     }
                 }
             }
+
             Row {
                 id: idToolsRowCutSpeed
-                visible: (idButtonCut.down && idButtonCutSpeed.down )
+                visible: (mainToolbar.buttonCut.selected && cutToolbar.buttonSpeed.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Slider {
@@ -3803,16 +2935,21 @@ Page {
                 }
             }
 
+            SecondaryToolbarImage {
+                id: imageToolbar
+
+                visible: mainToolbar.buttonImage.selected
+            }
 
             // more details IMAGE
             Row {
                 id: idToolsRowImageFilters
-                visible: (idButtonImage.down && idButtonImageFilters.down )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonFilters.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -3855,12 +2992,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageEffects
-                visible: (idButtonImage.down && idButtonImageEffects.down )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -3975,12 +3112,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageEffectsBasics
-                visible: (idButtonImage.down && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 0 && (idComboBoxImageEffectsBasics.currentIndex === 1 || idComboBoxImageEffectsBasics.currentIndex === 2) )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && (idComboBoxImageEffectsBasics.currentIndex === 1 || idComboBoxImageEffectsBasics.currentIndex === 2) )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Slider {
@@ -4031,12 +3168,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageEffectsFrameDetectionBW
-                visible: (idButtonImage.down && idButtonImageEffects.down && idComboBoxImageEffects.currentIndex === 3 && (idComboBoxImageEffectsFinders.currentIndex === 2 || idComboBoxImageEffectsFinders.currentIndex === 3) )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 3 && (idComboBoxImageEffectsFinders.currentIndex === 2 || idComboBoxImageEffectsFinders.currentIndex === 3) )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Slider {
@@ -4086,12 +3223,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageColors
-                visible: (idButtonImage.down && idButtonImageColors.down )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonColor.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4223,12 +3360,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageGeometry
-                visible: (idButtonImage.down && idButtonImageGeometry.down )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonGeometry.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4263,12 +3400,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageText
-                visible: (idButtonImage.down && idButtonImageText.down )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonText.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4369,13 +3506,13 @@ Page {
             }
             Row {
                 id: idToolsRowImageTextInput
-                visible: (idButtonImage.down && idButtonImageText.down )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonText.selected )
                 enabled: ( finishedLoading === true )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Item {
@@ -4440,12 +3577,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageOverlays
-                visible: (idButtonImage.down && idButtonImageOverlays.down )
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4568,12 +3705,12 @@ Page {
             }
             Row {
                 id: idToolsRowImageOverlaysAlpha
-                visible: (idButtonImage.down && idButtonImageOverlays.down && idComboBoxImageOverlayType.currentIndex === 4)
+                visible: (mainToolbar.buttonImage.selected && imageToolbar.buttonOverlay.selected && idComboBoxImageOverlayType.currentIndex === 4)
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4638,16 +3775,21 @@ Page {
                 }
             }
 
+            SecondaryToolbarAudio {
+                id: audioToolbar
+
+                visible: mainToolbar.buttonAudio.selected
+            }
 
             // more details AUDIO
             Row {
                 id: idToolsRowAudioFade
-                visible: (idButtonAudio.down && idButtonAudioFade.down )
+                visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonFade.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4662,12 +3804,12 @@ Page {
             }
             Row {
                 id: idToolsRowAudioVolume
-                visible: (idButtonAudio.down && idButtonAudioVolume.down )
+                visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonVolume.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4705,12 +3847,12 @@ Page {
             }
             Row {
                 id: idToolsRowAudioExtract
-                visible: (idButtonAudio.down && idButtonAudioExtract.down )
+                visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonExtract.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4728,12 +3870,12 @@ Page {
             }
             Row {
                 id: idToolsRowAudioMixer1a
-                visible: (idButtonAudio.down && idButtonAudioMixer.down )
+                visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -4808,12 +3950,12 @@ Page {
             }
             Row {
                 id: idToolsRowAudioMixer1bRecorder
-                visible: ( idButtonAudio.down && idButtonAudioRecord.down )
+                visible: ( mainToolbar.buttonAudio.selected && audioToolbar.buttonRecorder.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
 
@@ -4830,16 +3972,16 @@ Page {
             }
             Row {
                 id: idToolsRowAudioMixer2
-                visible: (idButtonAudio.down && (idButtonAudioMixer.down || idButtonAudioRecord.down) )
+                visible: (mainToolbar.buttonAudio.selected && (audioToolbar.buttonMixer.selected || audioToolbar.buttonRecorder.selected) )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ValueButton {
-                    visible: idButtonAudioRecord.down
+                    visible: audioToolbar.buttonRecorder.selected
                     width: parent.width / 6 * 2
                     height: standardDetailItemHeight
                     value: qsTr("recording")
@@ -4847,7 +3989,7 @@ Page {
                     description: qsTr("overlay audio")
                 }
                 ValueButton {
-                    visible: idButtonAudioMixer.down
+                    visible: audioToolbar.buttonMixer.selected
                     width: parent.width / 6 * 2
                     enabled: ( noFile === false && finishedLoading === true )
                     height: standardDetailItemHeight
@@ -4879,12 +4021,12 @@ Page {
             }
             Row {
                 id: idToolsRowAudioMixer3
-                visible: (idButtonAudio.down && (idButtonAudioMixer.down || idButtonAudioRecord.down) )
+                visible: (mainToolbar.buttonAudio.selected && (audioToolbar.buttonMixer.selected || audioToolbar.buttonRecorder.selected) )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ValueButton {
@@ -4918,12 +4060,12 @@ Page {
             }
             Row {
                 id: idToolsRowAudioFilters
-                visible: (idButtonAudio.down && idButtonAudioFilters.down )
+                visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonFilters.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -5007,16 +4149,23 @@ Page {
                 }
             }
 
+            SecondaryToolbarCollage {
+                id: collageToolbar
+
+                visible: mainToolbar.buttonCollage.selected
+
+                onScroll: idTimerScrollToBottom.start()
+            }
 
             // more details COLLAGE
             Row {
                 id: idToolsRowCollageSplitscreen
-                visible: (idButtonCollage.down && idButtonCollageSplitscreen.down )
+                visible: (mainToolbar.buttonCollage.selected && collageToolbar.buttonSplitScreen.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -5054,17 +4203,17 @@ Page {
             }
             Row {
                 id: idToolsRowCollage1
-                visible: (idButtonCollage.down && ( idButtonCollageSlideshow.down || idButtonCollageStoryline.down ) )
+                visible: (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected ) )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
                     id: idComboBoxCollageSlideshowEffect
-                    visible: idButtonCollageSlideshow.down
+                    visible: collageToolbar.buttonSlideshow.selected
                     width: parent.width / 6 * 3
                     description: (currentIndex === 0) ? qsTr("no camera movement") : qsTr("camera movement")
                     menu: ContextMenu {
@@ -5074,7 +4223,7 @@ Page {
                 }
                 ValueButton {
                     id: idComboBoxCollageStorylineEffect
-                    visible: idButtonCollageStoryline.down
+                    visible: collageToolbar.buttonStoryline.selected
                     width: parent.width / 6 * 3
                     height: standardDetailItemHeight
                     value: qsTr("target resolution")
@@ -5128,22 +4277,22 @@ Page {
             }
             Separator {
                 width: parent.width
-                visible: (idButtonCollage.down && ( idButtonCollageSlideshow.down || idButtonCollageStoryline.down ) )
+                visible: (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected ) )
                 horizontalAlignment: Qt.AlignHCenter
                 color: Theme.primaryColor
             }
             Row {
                 id: idToolsRowCollage2TransitionDuration
-                visible: (idButtonCollage.down && ( idButtonCollageSlideshow.down || idButtonCollageStoryline.down ) )
+                visible: (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected ) )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ValueButton {
-                    visible: idButtonCollageSlideshow.down
+                    visible: collageToolbar.buttonSlideshow.selected
                     width: parent.width / 6 * 1.5
                     enabled: ( finishedLoading === true )
                     height: standardDetailItemHeight
@@ -5152,7 +4301,7 @@ Page {
                     onClicked: { pageStack.push(slideshowImagePicker) }
                 }
                 ValueButton {
-                    visible: idButtonCollageStoryline.down
+                    visible: collageToolbar.buttonStoryline.selected
                     width: parent.width / 6 * 3
                     enabled: ( finishedLoading === true )
                     height: standardDetailItemHeight
@@ -5162,7 +4311,7 @@ Page {
                 }
                 TextField {
                     id: idToolsCollageImageDuration
-                    visible: idButtonCollageSlideshow.down
+                    visible: collageToolbar.buttonSlideshow.selected
                     width: parent.width / 6 * 1.5
                     height: Theme.itemSizeMedium
                     textTopMargin: Theme.paddingMedium
@@ -5271,7 +4420,7 @@ Page {
                     text: "1"
                     color: (idComboBoxCollageStoryTransition.currentIndex !== 0) ? Theme.highlightColor : "transparent"
                     inputMethodHints: Qt.ImhDigitsOnly
-                    validator: IntValidator { bottom: 1; top: (idButtonCollageSlideshow.down) ? (parseInt(idToolsCollageImageDuration.text)) : (Math.round(storylineAddFileDuration)) }
+                    validator: IntValidator { bottom: 1; top: (collageToolbar.buttonSlideshow.selected) ? (parseInt(idToolsCollageImageDuration.text)) : (Math.round(storylineAddFileDuration)) }
                     EnterKey.onClicked: {
                         if (idToolsCollageImageTransitionDuration.text.length < 1 || idToolsCollageImageTransitionDuration.text < 1 ) {
                             idToolsCollageImageTransitionDuration.text = "1"
@@ -5303,13 +4452,13 @@ Page {
             }
             Row {
                 id: idToolsRowCollage3AddButton
-                visible: (idButtonCollage.down && (idButtonCollageSlideshow.down || idButtonCollageStoryline.down) )
+                visible: (mainToolbar.buttonCollage.selected && (collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected) )
                 x: spacerLandscapeLowerToolRow
                 topPadding: -Theme.paddingMedium
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Item {
@@ -5319,15 +4468,15 @@ Page {
                 IconButton {
                     width: parent.width / 6 * 2
                     height: standardDetailItemHeight * 1.3
-                    enabled: ( ( (idButtonCollageSlideshow.down && slideshowAddFileLoaded === true) || ( idButtonCollageStoryline.down && storylineAddFileLoaded === true) ) && idToolsCollageImageDuration.focus === false && idToolsCollageImageTransitionDuration.focus === false )
+                    enabled: ( ( (collageToolbar.buttonSlideshow.selected && slideshowAddFileLoaded === true) || ( collageToolbar.buttonStoryline.selected && storylineAddFileLoaded === true) ) && idToolsCollageImageDuration.focus === false && idToolsCollageImageTransitionDuration.focus === false )
                     icon.source: "image://theme/icon-m-add?"
                     icon.width: Theme.iconSizeMedium * 1.35
                     icon.height: icon.width
                     onClicked: {
                         idToolsCollageImageDuration.focus = false
                         idToolsCollageImageTransitionDuration.focus = false
-                        if ( idButtonCollageSlideshow.down ) { var targetModel = "slideshow" }
-                        else if ( idButtonCollageStoryline.down ) { targetModel = "storyline" }
+                        if ( collageToolbar.buttonSlideshow.selected ) { var targetModel = "slideshow" }
+                        else if ( collageToolbar.buttonStoryline.selected ) { targetModel = "storyline" }
                         prepareCollageModel( targetModel )
                     }
                 }
@@ -5338,12 +4487,12 @@ Page {
             }
             Row {
                 id: idToolsRowCollage4Slideshow
-                visible: (idButtonCollage.down && idButtonCollageSlideshow.down )
+                visible: (mainToolbar.buttonCollage.selected && collageToolbar.buttonSlideshow.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: 1 // standardDetailItemHeight
                 }
                 Rectangle {
@@ -5431,12 +4580,12 @@ Page {
             }
             Row {
                 id: idToolsRowCollage4Storyline
-                visible: (idButtonCollage.down && idButtonCollageStoryline.down )
+                visible: (mainToolbar.buttonCollage.selected && collageToolbar.buttonStoryline.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: 1 // standardDetailItemHeight
                 }
                 Rectangle {
@@ -5525,12 +4674,12 @@ Page {
 
             Row {
                 id: idToolsRowCollageSubtitles
-                visible: (idButtonCollage.down && idButtonCollageSubtitle.down )
+                visible: (mainToolbar.buttonCollage.selected && collageToolbar.buttonSubtitles.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -5574,12 +4723,12 @@ Page {
             }
             Row {
                 id: idToolsRowCollageSubtitlesInput
-                visible: (idButtonCollage.down && idButtonCollageSubtitle.down && idComboBoxCollageSubtitleAdd.currentIndex === 1)
+                visible: (mainToolbar.buttonCollage.selected && collageToolbar.buttonSubtitles.selected && idComboBoxCollageSubtitleAdd.currentIndex === 1)
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Item {
@@ -5615,12 +4764,12 @@ Page {
             }
             Row {
                 id: idToolsRowCollageSubtitlesOutput
-                visible: (idButtonCollage.down && idButtonCollageSubtitle.down && idComboBoxCollageSubtitleAdd.currentIndex === 1)
+                visible: (mainToolbar.buttonCollage.selected && collageToolbar.buttonSubtitles.selected && idComboBoxCollageSubtitleAdd.currentIndex === 1)
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Rectangle {
@@ -5682,54 +4831,17 @@ Page {
                             }
                         } // end dragable
                     }
-
-                    /*
-                    SilicaListView {
-                        id: listView3
-                        height: contentHeight
-                        anchors.fill: parent
-                        model: subtitleModel
-                        delegate: Item {
-                            width: parent.width
-                            height: testLabel.height
-
-                            Row {
-                                width: parent.width
-                                height: parent.height
-
-                                Label {
-                                    id: testLabel
-                                    width: parent.width / 6 * 5
-                                    leftPadding: Theme.paddingLarge + Theme.paddingSmall
-                                    font.pixelSize: Theme.fontSizeExtraSmall
-                                    wrapMode: TextEdit.Wrap
-                                    color: Theme.primaryColor
-                                    text: (model.index + 1) + "\n" + model.timestamp + "\n" + model.text
-                                }
-                                IconButton {
-                                    width: parent.width / 6
-                                    height: parent.height / 4 * 3
-                                    icon.source: "image://theme/icon-cover-cancel?"
-                                    onClicked: {
-                                        subtitleModel.remove(model.index)
-                                    }
-                                }
-                            } // end row
-                        }
-
-                    }
-                    */
                 }
             }
 
             Row {
                 id: idToolsRowCollageImageExtract
-                visible: (idButtonCollage.down && idButtonCollageImageExtract.down )
+                visible: (mainToolbar.buttonCollage.selected && collageToolbar.buttonThumbnail.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 ComboBox {
@@ -5766,16 +4878,24 @@ Page {
                 }
             }
 
+            SecondaryToolbarFile {
+                id: fileToolbar
+
+                visible: mainToolbar.buttonFile.selected
+
+                onScroll: idTimerScrollToBottom.start()
+            }
+
             // more details FILE
             Item {
                 id: idToolsRowFileShare
-                visible: (idButtonFile.down && idButtonFileShare.down )
+                visible: (mainToolbar.buttonFile.selected && fileToolbar.buttonShare.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
                 height: idFileShareColumn.height
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Column {
@@ -5797,13 +4917,13 @@ Page {
             }
             Item {
                 id: idToolsRowFileInfo
-                visible: (idButtonFile.down && idButtonFileInfo.down )
+                visible: (mainToolbar.buttonFile.selected && fileToolbar.buttonInfo.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
                 height: idFileInfoColumn.height
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Column {
@@ -5873,13 +4993,13 @@ Page {
             }
             Row {
                 id: idToolsRowFileRename
-                visible: (idButtonFile.down && idButtonFileRename.down )
+                visible: (mainToolbar.buttonFile.selected && fileToolbar.buttonRename.selected )
                 x: spacerLandscapeLowerToolRow
-                width: idToolsCategoriesRow.width - 2 * spacerLandscapeLowerToolRow
+                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
                 height: idToolsRowFileRenameText.height
 
                 Item {
-                    width: idToolsCategoriesRow.x
+                    width: mainToolbar.x
                     height: standardDetailItemHeight
                 }
                 Item {
@@ -5889,7 +5009,7 @@ Page {
                     TextField {
                         id: idToolsRowFileRenameText
                         enabled: ( finishedLoading === true )
-                        visible: ( idButtonFile.down && idButtonFileRename.down )
+                        visible: ( mainToolbar.buttonFile.selected && fileToolbar.buttonRename.selected )
                         width: parent.width
                         textTopMargin: Theme.paddingLarge
                         inputMethodHints: Qt.ImhNoPredictiveText
@@ -5927,29 +5047,18 @@ Page {
                 }
             }
             Item {
-                visible: (idButtonFile.down && idButtonFileDelete.down )
+                visible: (mainToolbar.buttonFile.selected && fileToolbar.buttonDelete.selected )
                 width: parent.width
                 height: standardDetailItemHeight
             }
-
 
             Item {
                 id: idSpacerBottom
                 width: parent.width
                 height: Theme.paddingLarge
             }
-
-
-
-
         } // end column
     } // end flickable
-
-
-
-
-
-
 
 // *********************************************** useful functions *********************************************** //
 
