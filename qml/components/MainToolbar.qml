@@ -56,6 +56,9 @@ ToolbarBase {
         icon: "image://theme/icon-m-file-document-light"
         selected: root.selectedButton == buttonFile
 
-        onClicked: root.selectedButton = buttonFile
+        onClicked: {
+            root.selectedButton = buttonFile
+            fileFunctions.source  = "FileFunctions.qml"
+        }
     }
 }

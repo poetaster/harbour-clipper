@@ -25,6 +25,8 @@ SOURCES += src/harbour-clipper.cpp \
 
 DISTFILES += qml/harbour-clipper.qml \
     .gitignore \
+    qml/components/FileFunctions.qml \
+    qml/components/PythonHandler.qml \
     qml/cover/CoverPage.qml \
     qml/cover/harbour_clipper.svg \
     qml/pages/FirstPage.qml \
