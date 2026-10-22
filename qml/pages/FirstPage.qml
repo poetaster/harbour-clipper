@@ -3302,6 +3302,7 @@ Page {
             Loader {
                id: collageFunctions
                 anchors.top: collageToolbar.bottom
+                anchors.topMargin: Theme.paddingLarge
                 Connections {
                     target: collageFunctions.item
                 }
