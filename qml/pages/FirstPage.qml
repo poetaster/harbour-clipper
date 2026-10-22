@@ -1703,7 +1703,7 @@ Page {
 
                             if ( mainToolbar.buttonCollage.selected ) {
                                 if (collageToolbar.buttonSlideshow.selected && slideshowModel.count > 0 ) {
-                                    py.createSlideshowFunction()
+                                    collageFunctions.item.hello() //createSlideshowFunction()
                                 }
                                 if ( collageToolbar.buttonSplitScreen.selected && overlayFileLoaded === true ) {
                                     py.splitscreenFunction()

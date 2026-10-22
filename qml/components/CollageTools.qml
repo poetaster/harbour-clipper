@@ -1,11 +1,196 @@
 import QtQuick 2.6
 import Sailfish.Silica 1.0
 import QtQuick.Layouts 1.1
-
+import io.thp.pyotherside 1.5
 Item {
     Component.onCompleted:  {
-            console.debug(mainToolbar.width)
-            console.debug(collageToolbar.buttonStoryline.selected)
+        console.debug(mainToolbar.width)
+        console.debug(collageToolbar.buttonStoryline.selected)
+    }
+    function hello() {
+        py.createSlideshowFunction()
+    }
+
+    // Python
+    Python {
+        id: py
+        Component.onCompleted: {
+            addImportPath(Qt.resolvedUrl('../../py'));
+            importModule('videox', function () {});
+
+            // Handlers do something to QML with received infos from Pythonfile (=pyotherside.send)
+            setHandler('homePathFolder', function( homeDir ) {
+                tempMediaFolderPath = homeDir + "/.cache/de.poetaster/harbour-clipper/"
+                //tempMediaFolderPath =  StandardPaths.temporary
+                saveMediaFolderPath =  homeDir + "/Videos"
+                homeDirectory = homeDir
+                py.createTmpAndSaveFolder()
+                py.deleteAllTMPFunction()
+            });
+            setHandler('loadTempMedia', function( newFilePath ) {
+                idMediaPlayer.source = ""
+                idMediaPlayer.source = encodeURI( newFilePath )
+                py.getVideoInfo( newFilePath, "false" )
+                brandNewFile = false
+            });
+            setHandler('extractedAudio', function( targetPath ) {
+                finishedLoading = true
+                banner.notify( qsTr("Audio extracted to") + "\n" + " " + targetPath + " ", Theme.highlightDimmerColor, 10000 )
+            });
+            setHandler('finishedSavingRenaming', function( newFilePath, newFileName, newFileType ) {
+                idMediaPlayer.source = ""
+                idMediaPlayer.source = newFilePath
+                origMediaFilePath = newFilePath
+                origMediaFileName = newFileName + "." + newFileType
+                origMediaFolderPath = origMediaFilePath.replace(origMediaFileName, "")
+                var origMediaFileNameArray = origMediaFileName.split(".")
+                origMediaName = (origMediaFileNameArray.slice(0, origMediaFileNameArray.length-1)).join(".")
+                origMediaType = origMediaFileNameArray[origMediaFileNameArray.length - 1]
+                py.getVideoInfo( inputPathPy, "true" )
+                undoNr = 0
+                noFile = false
+                idTimerDelaySetCropmarkers.start()
+            });
+            setHandler('deletedFile', function() {
+                origMediaFilePath = ""
+                origMediaFileName = ""
+                origMediaFolderPath = ""
+                origMediaName = ""
+                origMediaType = "none"
+                origVideoWidth = 0
+                origVideoHeight = 0
+                origCodecVideo = "none"
+                origCodecAudio = "none"
+                origFrameRate = 0
+                origFileSize = 0
+                idMediaPlayer.source = ""
+                undoNr = 0
+                noFile = true
+            });
+            setHandler('deletedLastTmp', function() {
+                finishedLoading = true
+            });
+            setHandler('sourceVideoInfo', function( videoResolution, videoCodec, audioCodec, frameRate, pixelFormat, audioSamplerate, audioLayout, isOriginal, estimatedSize, videoRotation, playbackDuration, sampleAspectRatio, displayAspectRatio ) {
+                videoResolution = videoResolution.toString()
+                var videoResolutionArray= videoResolution.split("x")
+                sourceVideoWidth = parseInt(videoResolutionArray[0])
+                sourceVideoHeight = parseInt(videoResolutionArray[1])
+                sourceSampleAspectRatio = sampleAspectRatio.toString()
+                sourceDisplayAspectRatio = displayAspectRatio.toString()
+                origVideoRotation = parseInt(videoRotation)
+                if (origVideoRotation !== 90 && origVideoRotation !== -90 ) { origVideoRotation = 0 } // Patch: if no EXIF tag = 0
+                if (isOriginal === "true") {
+                    origFileSize =  ( parseInt(estimatedSize) / 1024 / 1024 ).toFixed(2)
+                    origVideoWidth = sourceVideoWidth
+                    origVideoHeight = sourceVideoHeight
+                    origCodecVideo = videoCodec.toString()
+                    origFrameRate = frameRate.toString()
+                    origPixelFormat = pixelFormat.toString()
+                    origCodecAudio = audioCodec.toString()
+                    origSAR = sourceSampleAspectRatio
+                    origDAR = sourceDisplayAspectRatio
+                    if (origCodecAudio === "vorbis") { origCodecAudio = "libvorbis" } // Patch: vorbis is experimental, use libvorbis instead
+                    origAudioLayout = audioLayout.toString()
+                    origAudioSamplerate = audioSamplerate.toString()
+                    origVideoDuration = new Date( (parseFloat(playbackDuration)*1000) ).toISOString().substr(11,8)
+                    if ( (origVideoWidth >= warningLargeSize || origVideoHeight >= warningLargeSize) && brandNewFile === true ) {
+                        banner.notify( qsTr("This seems to be a large file.") + "\n" + qsTr("For speed convenience you may scale it down first." ), Theme.highlightDimmerColor, 5000 )
+                    }
+                }
+                tmpVideoFileSize =  ( parseInt(estimatedSize) / 1024 / 1024 ).toFixed(2)
+            });
+            setHandler('overlayVideoInfo', function( videoResolution ) {
+                videoResolution = videoResolution.toString()
+                var videoResolutionArray= videoResolution.split("x")
+                previewVideoWidth = parseInt(videoResolutionArray[0])
+                previewVideoHeight = parseInt(videoResolutionArray[1])
+                croppingRatio = previewRatioFileVideo
+                setCropmarkersRatio()
+                idPreviewOverlayImage.source = ""
+                idPreviewOverlayImage.source = overlayThumbnailPath
+            });
+            setHandler('errorOccured', function( messageWarning ) {
+                finishedLoading = true
+                undoNr = undoNr - 1
+                banner.notify( qsTr("ERROR!") + "\n" + messageWarning, Theme.errorColor, 10000 )
+            });
+            setHandler('clearOverlayFilename', function() {
+                clearOverlayFunction()
+            });
+            setHandler('progressPercentage', function( percentDone ) {
+                processedPercent = percentDone
+            });
+            setHandler('previewImageCreated', function() {
+                idThumbnailOverlay.source = ""
+                idThumbnailOverlay.source = thumbnailPath
+                thumbnailVisible = true // show thumbnail preview
+            });
+            setHandler('switchToAlphaFullScreen', function() {
+                idComboBoxImageOverlayAlphaStretch.currentIndex = 0
+            });
+            setHandler('newClipCreated', function( newFilePath, newFileName ) {
+                idMediaPlayer.stop()
+                brandNewFile = true
+                origMediaFilePath = newFilePath.toString()
+                origMediaFileName = newFileName.toString()
+                origMediaFolderPath = origMediaFilePath.replace(origMediaFileName.fileName, "")
+                var origMediaFileNameArray = origMediaFileName.split(".")
+                origMediaName = (origMediaFileNameArray.slice(0, origMediaFileNameArray.length-1)).join(".")
+                origMediaType = origMediaFileNameArray[origMediaFileNameArray.length - 1]
+                idMediaPlayer.source = ""
+                idMediaPlayer.source = encodeURI( newFilePath )
+                py.deleteAllTMPFunction()
+                py.getVideoInfo( newFilePath, "true" )
+                undoNr = 0
+                noFile = false
+                brandNewFile = true
+                finishedLoading = true
+                subtitleModel.clear()
+            });
+            setHandler('playbackDurationParsed', function( playbackDuration, targetName ) {
+                if ( targetName === "previewAudioFile" ) {
+                    filePreviewDuration = parseFloat(playbackDuration) * 1000 // needs milliseconds
+                }
+                else if ( targetName === "addStorylineModel" ) {
+                    storylineAddFileDuration = (parseFloat(playbackDuration)).toFixed(1) // needs seconds
+                }
+            });
+            setHandler('subtitleFileParsed', function( subtitleText ) {
+                //console.log(subtitleText)
+            });
+            setHandler('imagesExtracted', function() {
+                finishedLoading = true
+                banner.notify( qsTr("Extracted to") + "\n" + " " + origMediaFolderPath + " ", Theme.highlightDimmerColor, 10000 )
+            });
+        }
+        function createSlideshowFunction() {
+            idMediaPlayer.stop()
+            finishedLoading = false
+            var newFileName = "slideshow_" + new Date().toLocaleString(Qt.locale("de_DE"), "yyyy-MM-dd_HH-mm-ss") + "." + tempMediaType
+            outputPathPy = homeDirectory + "/Videos/" + newFileName
+            allSelectedPathsSlideshow = ""
+            allSelectedDurationsSlideshow = ""
+            allSelectedTransitionsSlideshow = ""
+            allSelectedTransitionDurationsSlideshow = ""
+            for(var i = 0; i < slideshowModel.count; ++i) {
+                var addPath = (slideshowModel.get(i).path).toString()
+                var addDuration = (slideshowModel.get(i).duration).toString()
+                var addTransition = (slideshowModel.get(i).transition).toString()
+                var addTransitionDuration = (slideshowModel.get(i).transitionDuration).toString()
+
+                allSelectedPathsSlideshow = allSelectedPathsSlideshow + addPath + ";;"
+                allSelectedDurationsSlideshow = allSelectedDurationsSlideshow + addDuration + ";;"
+                allSelectedTransitionsSlideshow = allSelectedTransitionsSlideshow + addTransition + ";;"
+                allSelectedTransitionDurationsSlideshow = allSelectedTransitionDurationsSlideshow + addTransitionDuration + ";;"
+            }
+            var targetWidth = (idToolsCollageTargetWidth.text).toString()
+            var targetHeight = (idToolsCollageTargetHeight.text).toString()
+
+            if (idComboBoxCollageSlideshowEffect.currentIndex === 0 ) { var panZoom = "still_images" }
+            else if (idComboBoxCollageSlideshowEffect.currentIndex === 1 ) { panZoom = "pan_and_zoom" }
+
+            call("videox.createSlideshowFunction", [ ffmpeg_staticPath, outputPathPy, allSelectedPathsSlideshow, allSelectedDurationsSlideshow, allSelectedTransitionsSlideshow, allSelectedTransitionDurationsSlideshow, targetWidth, targetHeight, newFileName, panZoom ])
+        }
     }
 
     function prepareCollageModel( targetModel) {
@@ -68,21 +253,21 @@ Item {
 
         if ( targetModel === "slideshow" ) {
             slideshowModel.append({
-                file: slideshowAddFileName,
-                path: slideshowAddFilePath.toString().replace(/^(file:\/{3})|(qrc:\/{2})|(http:\/{2})/,""),
-                duration: ( idToolsCollageImageDuration.text === "0" ) ? "1" : idToolsCollageImageDuration.text,
-                transition: transitionType,
-                transitionDuration : (idComboBoxCollageStoryTransition.currentIndex === 0) ? "0" : (idToolsCollageImageTransitionDuration.text) // in case of "no transition, just use a duration of 0 sec
-            })
+                                      file: slideshowAddFileName,
+                                      path: slideshowAddFilePath.toString().replace(/^(file:\/{3})|(qrc:\/{2})|(http:\/{2})/,""),
+                                      duration: ( idToolsCollageImageDuration.text === "0" ) ? "1" : idToolsCollageImageDuration.text,
+                                      transition: transitionType,
+                                      transitionDuration : (idComboBoxCollageStoryTransition.currentIndex === 0) ? "0" : (idToolsCollageImageTransitionDuration.text) // in case of "no transition, just use a duration of 0 sec
+                                  })
         }
         else if ( targetModel === "storyline" ) {
             storylineModel.append({
-                file: storylineAddFileName,
-                path: storylineAddFilePath.toString().replace(/^(file:\/{3})|(qrc:\/{2})|(http:\/{2})/,""),
-                duration: storylineAddFileDuration,
-                transition: transitionType,
-                transitionDuration : (idComboBoxCollageStoryTransition.currentIndex === 0) ? "0" : (idToolsCollageImageTransitionDuration.text) // in case of "no transition, just use a duration of 0 sec
-            })
+                                      file: storylineAddFileName,
+                                      path: storylineAddFilePath.toString().replace(/^(file:\/{3})|(qrc:\/{2})|(http:\/{2})/,""),
+                                      duration: storylineAddFileDuration,
+                                      transition: transitionType,
+                                      transitionDuration : (idComboBoxCollageStoryTransition.currentIndex === 0) ? "0" : (idToolsCollageImageTransitionDuration.text) // in case of "no transition, just use a duration of 0 sec
+                                  })
         }
         idTimerScrollToBottom.start()
     }
@@ -90,9 +275,9 @@ Item {
     function prepareSubtitleModel( targetModel) {
         idSubtitleTextInput.focus = false
         subtitleModel.append({
-            timestamp: ( fromTimestampPy + " --> " + toTimestampPy ).replace(".", ",").replace(".", ","),
-            text: idSubtitleTextInput.text
-        })
+                                 timestamp: ( fromTimestampPy + " --> " + toTimestampPy ).replace(".", ",").replace(".", ","),
+                                 text: idSubtitleTextInput.text
+                             })
     }
 
     Timer {
