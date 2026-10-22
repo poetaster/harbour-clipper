@@ -122,57 +122,24 @@ Item {
             oldSubtitleHeight = listView3.contentHeight
         }
     }
+
     Row {
-        width: mainToolbar.width
-        height: 500//Theme.paddingLarge
-    }
-
-
-    Grid {
-        columns: 5
-        spacing: 200
-        Rectangle { color: "red"; width: parent.width/2; height: 20}
-        Rectangle { color: "green"; width: parent.width/2; height:20 }
-        Rectangle { color: "blue";  width: parent.width/2;height:20}
-        Rectangle { color: "cyan";  width: parent.width/2;height:20}
-        Rectangle { color: "magenta"; width: parent.width/2;height:20}
-    }
-
-    Separator {
-        width: mainToolbar.width
-        visible: (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected ) )
-        horizontalAlignment: Qt.AlignHCenter
-        color: Theme.primaryColor
-    }
-
-    RowLayout {
         id: idToolsRowCollage1
         visible: (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected ) )
         x: spacerLandscapeLowerToolRow
         width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
-        ComboBox {
-            id: idComboBoxCollageSlideshowEffect
-            visible: collageToolbar.buttonSlideshow.selected
-            width: parent.width / 6 * 3
-            description: (currentIndex === 0) ? qsTr("no camera movement") : qsTr("camera movement")
-            menu: ContextMenu {
-                MenuItem { text: qsTr("still images") }
-                MenuItem { text: qsTr("random pan & zoom") }
-            }
-        }
         ValueButton {
             id: idComboBoxCollageStorylineEffect
-            visible: collageToolbar.buttonStoryline.selected
             width: parent.width / 6 * 3
             height: standardDetailItemHeight
             value: qsTr("target resolution")
             valueColor: Theme.primaryColor
-            description: qsTr("keep low on phones")
+            description: qsTr("storyline keep low ")
         }
         TextField {
             id: idToolsCollageTargetWidth
-            //width: parent.width / 6 * 1.5
+            width: parent.width / 6 * 1.5
             height: Theme.itemSizeMedium
             textTopMargin: Theme.paddingMedium
             text: "960"
@@ -215,40 +182,33 @@ Item {
             }
         }
     }
-
-    RowLayout {
+    Row {
+        id: idToolsRowCollage11
+        visible:  (mainToolbar.buttonCollage.selected && collageToolbar.buttonSlideshow.selected )
         anchors.top: idToolsRowCollage1.bottom
-        id: idToolsRowCollage2TransitionDuration
-        visible: (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected ) )
         x: spacerLandscapeLowerToolRow
-        //width: mainToolbar.width //- 2 * spacerLandscapeLowerToolRow
+        width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
-        Item {
-            width: mainToolbar.x
-            height: standardDetailItemHeight
+        ComboBox {
+            id: idComboBoxCollageSlideshowEffect
+            width: parent.width /  3
+            description: (currentIndex === 0) ? qsTr("no camera movement") : qsTr("camera movement")
+            menu: ContextMenu {
+                MenuItem { text: qsTr("still images") }
+                MenuItem { text: qsTr("random pan & zoom") }
+            }
         }
         ValueButton {
-            visible: collageToolbar.buttonSlideshow.selected
-            width: parent.width / 6 * 1.5
-            //enabled: ( finishedLoading === true )
+            width: parent.width / 3
+            enabled: ( finishedLoading === true )
             height: standardDetailItemHeight
             value: (slideshowAddFileLoaded === false ) ? qsTr("[none]"): ( slideshowAddFileName )
             description: qsTr("image")
             onClicked: { pageStack.push(slideshowImagePicker) }
         }
-        ValueButton {
-            visible: collageToolbar.buttonStoryline.selected
-            width: parent.width / 6 * 3
-            //enabled: ( finishedLoading === true )
-            height: standardDetailItemHeight
-            value: (storylineAddFileLoaded === false ) ? qsTr("[none]"): ( storylineAddFileName )
-            description: qsTr("video")
-            onClicked: { pageStack.push(storylineVideoPicker) }
-        }
         TextField {
             id: idToolsCollageImageDuration
-            visible: collageToolbar.buttonSlideshow.selected
-            width: parent.width / 6 * 1.5
+            width: parent.width / 3
             height: Theme.itemSizeMedium
             textTopMargin: Theme.paddingMedium
             text: "5"
@@ -283,9 +243,33 @@ Item {
                 text: qsTr("duration")
             }
         }
+    }
+
+    Row {
+        anchors.top: idToolsRowCollage11.bottom
+        id: idToolsRowCollage2TransitionDuration
+        visible: (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected ) )
+        x: spacerLandscapeLowerToolRow
+        //width: mainToolbar.width //- 2 * spacerLandscapeLowerToolRow
+
+        Item {
+            width: mainToolbar.x
+            height: standardDetailItemHeight
+        }
+
+        ValueButton {
+            visible: collageToolbar.buttonStoryline.selected
+            width: parent.width /3
+            enabled: ( finishedLoading === true )
+            height: standardDetailItemHeight
+            value: (storylineAddFileLoaded === false ) ? qsTr("[none]"): ( storylineAddFileName )
+            description: qsTr("video")
+            onClicked: { pageStack.push(storylineVideoPicker) }
+        }
+
         ComboBox {
             id: idComboBoxCollageStoryTransition
-            width: parent.width / 6 * 1.5
+            width: parent.width / 3
             description:  qsTr("transition")
             menu: ContextMenu {
                 MenuItem { text: qsTr("none") } // use any other, e.g. fade, but set transition-duration to 0 seconds
@@ -350,7 +334,7 @@ Item {
         TextField {
             id: idToolsCollageImageTransitionDuration
             enabled: idComboBoxCollageStoryTransition.currentIndex !== 0
-            width: parent.width / 6 * 1.5
+            width: parent.width / 3
             height: Theme.itemSizeMedium
             textTopMargin: Theme.paddingMedium
             text: "1"
@@ -387,8 +371,53 @@ Item {
         }
     }
 
-    RowLayout {
-        anchors.top: idToolsRowCollage2TransitionDuration.bottom
+    Separator {
+        id: sep
+        anchors.top: idToolsRowCollage3AddButton.bottom
+        width: mainToolbar.width
+        visible: (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected ) )
+        horizontalAlignment: Qt.AlignHCenter
+        color: Theme.primaryColor
+    }
+
+    Row {
+        id: idToolsRowCollage3AddButton
+        anchors.top: sep.bottom
+        visible: (mainToolbar.buttonCollage.selected && (collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected) )
+        x: spacerLandscapeLowerToolRow
+        topPadding: -Theme.paddingMedium
+        width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
+
+        Item {
+            width: mainToolbar.x
+            height: standardDetailItemHeight
+        }
+        Item {
+            width: parent.width / 6 * 2
+            height: standardDetailItemHeight
+        }
+        IconButton {
+            width: parent.width / 6 * 2
+            height: standardDetailItemHeight * 1.3
+            enabled: ( ( (collageToolbar.buttonSlideshow.selected && slideshowAddFileLoaded === true) || ( collageToolbar.buttonStoryline.selected && storylineAddFileLoaded === true) ) && idToolsCollageImageDuration.focus === false && idToolsCollageImageTransitionDuration.focus === false )
+            icon.source: "image://theme/icon-m-add?"
+            icon.width: Theme.iconSizeMedium * 1.35
+            icon.height: icon.width
+            onClicked: {
+                idToolsCollageImageDuration.focus = false
+                idToolsCollageImageTransitionDuration.focus = false
+                if ( collageToolbar.buttonSlideshow.selected ) { var targetModel = "slideshow" }
+                else if ( collageToolbar.buttonStoryline.selected ) { targetModel = "storyline" }
+                prepareCollageModel( targetModel )
+            }
+        }
+        Item {
+            width: parent.width / 6 * 2
+            height: standardDetailItemHeight
+        }
+    }
+    Row {
+        anchors.top:idToolsRowCollage3AddButton.bottom
         id: idToolsRowCollage4Slideshow
         visible:  (mainToolbar.buttonCollage.selected && collageToolbar.buttonSlideshow.selected )
         x: spacerLandscapeLowerToolRow
@@ -481,12 +510,12 @@ Item {
             } // end listView
         } // end rectangle
     }
-    RowLayout {
-        anchors.top: idToolsRowCollage2TransitionDuration.bottom
+    Row {
+        anchors.top:idToolsRowCollage3AddButton.bottom
         id: idToolsRowCollage4Storyline
         visible: (mainToolbar.buttonCollage.selected && collageToolbar.buttonStoryline.selected )
         x: spacerLandscapeLowerToolRow
-        width: mainToolbar.width //- 2 * spacerLandscapeLowerToolRow
+        width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
         Item {
             width: mainToolbar.x
@@ -576,48 +605,6 @@ Item {
         } // end rectangle
     }
 
-    Separator {
-        width: mainToolbar.width
-        visible: (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected ) )
-        horizontalAlignment: Qt.AlignHCenter
-        color: Theme.primaryColor
-    }
-
-    Row {
-        id: idToolsRowCollage3AddButton
-        visible: false //(mainToolbar.buttonCollage.selected && (collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected) )
-        x: spacerLandscapeLowerToolRow
-        topPadding: -Theme.paddingMedium
-        width: mainToolbar.width //- 2 * spacerLandscapeLowerToolRow
-
-        Item {
-            width: mainToolbar.x
-            height: standardDetailItemHeight
-        }
-        Item {
-            width: parent.width / 6 * 2
-            height: standardDetailItemHeight
-        }
-        IconButton {
-            width: parent.width / 6 * 2
-            height: standardDetailItemHeight * 1.3
-            enabled: ( ( (collageToolbar.buttonSlideshow.selected && slideshowAddFileLoaded === true) || ( collageToolbar.buttonStoryline.selected && storylineAddFileLoaded === true) ) && idToolsCollageImageDuration.focus === false && idToolsCollageImageTransitionDuration.focus === false )
-            icon.source: "image://theme/icon-m-add?"
-            icon.width: Theme.iconSizeMedium * 1.35
-            icon.height: icon.width
-            onClicked: {
-                idToolsCollageImageDuration.focus = false
-                idToolsCollageImageTransitionDuration.focus = false
-                if ( collageToolbar.buttonSlideshow.selected ) { var targetModel = "slideshow" }
-                else if ( collageToolbar.buttonStoryline.selected ) { targetModel = "storyline" }
-                prepareCollageModel( targetModel )
-            }
-        }
-        Item {
-            width: parent.width / 6 * 2
-            height: standardDetailItemHeight
-        }
-    }
 
     Row {
         id: idToolsRowCollageSubtitles
