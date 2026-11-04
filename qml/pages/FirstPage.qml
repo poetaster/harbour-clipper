@@ -197,7 +197,7 @@ Page {
     property bool addSubtitleLoaded : false
 
     property bool recordingAudioState : false
-    property var recordingOverlayStart : 0
+    property real recordingOverlayStart : 0
 
     // overlayPreviewVariables
     property var previewImageWidth : idPreviewOverlayImage.sourceSize.width
@@ -328,6 +328,7 @@ Page {
         interval: 450
         running: false
         repeat: false
+
         onTriggered: {
             recordingOverlayStart = (idMediaPlayer.position/1000).toString()
             recordingAudioState = true
@@ -1535,8 +1536,8 @@ Page {
                             idMediaPlayer.pause() // in case it did not pause yet
 
                             // this makes no sense since we have to mute to record
-                            //recordingBeepStart.play()
-                            //idTimerDelayRecording.start() // records, commands are issued when beep sound has finished
+                            recordingBeepStart.play()
+                            idTimerDelayRecording.start() // records, commands are issued when beep sound has finished
 
                             recordingOverlayStart = (idMediaPlayer.position/1000).toString()
                             recordingAudioState = true
@@ -1703,19 +1704,19 @@ Page {
 
                             if ( mainToolbar.buttonCollage.selected ) {
                                 if (collageToolbar.buttonSlideshow.selected && slideshowModel.count > 0 ) {
-                                    collageFunctions.item.hello() //createSlideshowFunction()
+                                    collageFunctions.item.createSlideshowFunction()
                                 }
                                 if ( collageToolbar.buttonSplitScreen.selected && overlayFileLoaded === true ) {
-                                    py.splitscreenFunction()
+                                    collageFunctions.item.splitscreenFunction()
                                 }
                                 if ( collageToolbar.buttonStoryline.selected && storylineModel.count > 0 ) {
-                                    py.createStorylineFunction()
+                                    collageFunctions.item.createStorylineFunction()
                                 }
                                 if ( collageToolbar.buttonSubtitles.selected && ( (idComboBoxCollageSubtitleAdd.currentIndex === 0 && addSubtitleLoaded === true) || (idComboBoxCollageSubtitleAdd.currentIndex === 1 && subtitleModel.count > 0 ) )) {
-                                    py.overlaySubtitleFunction()
+                                    collageFunctions.item.overlaySubtitleFunction()
                                 }
                                 if ( collageToolbar.buttonThumbnail.selected ) {
-                                    py.extractImagesFunction()
+                                    collageFunctions.item.extractImagesFunction()
                                 }
                             }
 
@@ -4046,107 +4047,7 @@ Page {
         }
 
 
-        //collage manipulations
-        function splitscreenFunction() {
-            preparePathAndUndo()
-            var secondClipPath = overlayFilePath.toString().replace(/^(file:\/{3})|(qrc:\/{2})|(http:\/{2})/,"")
-            if (idComboBoxCollageSplitscreen.currentIndex === 0) { var stackDirection = "above" }
-            else if (idComboBoxCollageSplitscreen.currentIndex === 1) { stackDirection = "below" }
-            else if (idComboBoxCollageSplitscreen.currentIndex === 2) { stackDirection = "left" }
-            else if (idComboBoxCollageSplitscreen.currentIndex === 3) { stackDirection = "right" }
-            if (idComboBoxCollageSplitscreenAudio.currentIndex === 0) { var useAudioFrom = "first" }
-            else if (idComboBoxCollageSplitscreenAudio.currentIndex === 1) { useAudioFrom = "second" }
-            else if (idComboBoxCollageSplitscreenAudio.currentIndex === 2) { useAudioFrom = "none" }
-            else if (idComboBoxCollageSplitscreenAudio.currentIndex === 3) { useAudioFrom = "both" }
-            var sizeDevider = 2
-            call("videox.splitscreenFunction", [ ffmpeg_staticPath, inputPathPy, outputPathPy, sourceVideoWidth, sourceVideoHeight, sizeDevider, secondClipPath, stackDirection, useAudioFrom ])
-        }
-        function createSlideshowFunction() {
-            idMediaPlayer.stop()
-            finishedLoading = false
-            var newFileName = "slideshow_" + new Date().toLocaleString(Qt.locale("de_DE"), "yyyy-MM-dd_HH-mm-ss") + "." + tempMediaType
-            outputPathPy = homeDirectory + "/Videos/" + newFileName
-            allSelectedPathsSlideshow = ""
-            allSelectedDurationsSlideshow = ""
-            allSelectedTransitionsSlideshow = ""
-            allSelectedTransitionDurationsSlideshow = ""
-            for(var i = 0; i < slideshowModel.count; ++i) {
-                var addPath = (slideshowModel.get(i).path).toString()
-                var addDuration = (slideshowModel.get(i).duration).toString()
-                var addTransition = (slideshowModel.get(i).transition).toString()
-                var addTransitionDuration = (slideshowModel.get(i).transitionDuration).toString()
 
-                allSelectedPathsSlideshow = allSelectedPathsSlideshow + addPath + ";;"
-                allSelectedDurationsSlideshow = allSelectedDurationsSlideshow + addDuration + ";;"
-                allSelectedTransitionsSlideshow = allSelectedTransitionsSlideshow + addTransition + ";;"
-                allSelectedTransitionDurationsSlideshow = allSelectedTransitionDurationsSlideshow + addTransitionDuration + ";;"
-            }
-            var targetWidth = (idToolsCollageTargetWidth.text).toString()
-            var targetHeight = (idToolsCollageTargetHeight.text).toString()
-
-            if (idComboBoxCollageSlideshowEffect.currentIndex === 0 ) { var panZoom = "still_images" }
-            else if (idComboBoxCollageSlideshowEffect.currentIndex === 1 ) { panZoom = "pan_and_zoom" }
-
-            call("videox.createSlideshowFunction", [ ffmpeg_staticPath, outputPathPy, allSelectedPathsSlideshow, allSelectedDurationsSlideshow, allSelectedTransitionsSlideshow, allSelectedTransitionDurationsSlideshow, targetWidth, targetHeight, newFileName, panZoom ])
-        }
-        function createStorylineFunction() {
-            idMediaPlayer.stop()
-            finishedLoading = false
-            var newFileName = "story_" + new Date().toLocaleString(Qt.locale("de_DE"), "yyyy-MM-dd_HH-mm-ss") + "." + tempMediaType
-            outputPathPy = homeDirectory + "/Videos/"  + newFileName
-            allSelectedPathsStoryline = ""
-            allSelectedTransitionsStoryline = ""
-            allSelectedTransitionDurationsStoryline = ""
-            for(var i = 0; i < storylineModel.count; ++i) {
-                var addPath = (storylineModel.get(i).path).toString()
-                var addTransition = (storylineModel.get(i).transition).toString()
-                var addTransitionDuration = (storylineModel.get(i).transitionDuration).toString()
-                allSelectedPathsStoryline = allSelectedPathsStoryline + addPath + ";;"
-                allSelectedTransitionsStoryline = allSelectedTransitionsStoryline + addTransition + ";;"
-                allSelectedTransitionDurationsStoryline = allSelectedTransitionDurationsStoryline + addTransitionDuration + ";;"
-            }
-            var targetWidth = (idToolsCollageTargetWidth.text).toString()
-            var targetHeight = (idToolsCollageTargetHeight.text).toString()
-            call("videox.createStorylineFunction", [ ffmpeg_staticPath, outputPathPy, allSelectedPathsStoryline, allSelectedTransitionsStoryline, allSelectedTransitionDurationsStoryline, targetWidth, targetHeight, newFileName ])
-        }
-        function overlaySubtitleFunction() {
-            preparePathAndUndo()
-            showHintSavingSubtitles = true
-            if ( idComboBoxCollageSubtitleMethod.currentIndex === 0 ) { var addMethod = "burn" }
-            else if ( idComboBoxCollageSubtitleMethod.currentIndex === 1 ) { addMethod = "selectable" }
-            var textFileText = ""
-            if (idComboBoxCollageSubtitleAdd.currentIndex === 0) { // get from file
-                var createTextfile = "false"
-                var subtitlePath = "/" + addSubtitlePath.toString().replace(/^(file:\/{3})|(qrc:\/{2})|(http:\/{2})/,"")
-            }
-            else if (idComboBoxCollageSubtitleAdd.currentIndex === 1) { // get from manual input
-                createTextfile = "true"
-                subtitlePath = subtitleTempPath
-                for(var i = 0; i < subtitleModel.count; ++i) {
-                    var addSceneNr = (i+1).toString()
-                    var addDuration = (subtitleModel.get(i).timestamp).toString()
-                    var addText = (subtitleModel.get(i).text).toString()
-                    textFileText = textFileText + addSceneNr + "\n" + addDuration + "\n" + addText + "\n"
-                }
-                addSubtitleContainer = "srt"
-            }
-            call("videox.overlaySubtitleFunction", [ ffmpeg_staticPath, inputPathPy, tempMediaFolderPath, outputPathPy, subtitlePath, addSubtitleContainer, addMethod, createTextfile, textFileText ])
-        }
-        function parseSubtitleFile( pathToFile ) {
-            var subtitlePath = "/" + pathToFile.toString().replace(/^(file:\/{3})|(qrc:\/{2})|(http:\/{2})/,"")
-            call("videox.parseSubtitleFile", [ ffmpeg_staticPath, subtitlePath ])
-        }
-        function extractImagesFunction() {
-            idMediaPlayer.stop()
-            finishedLoading = false
-            var thumbnailSec = new Date(idMediaPlayer.position).toISOString().substr(11,12)
-            var thumbnailSecFileName = thumbnailSec//.replace(":", "-").replace(":", "-").replace(".", "-")
-            var imageInterval = (idToolsRowCollageImageExtractIntervall.value).toString()
-            if ( idComboBoxCollageImageExtract.currentIndex === 0 ) { var modeExtractImg = "thumbnails" }
-            else if ( idComboBoxCollageImageExtract.currentIndex === 1 ) { modeExtractImg = "iFrames" }
-            else if ( idComboBoxCollageImageExtract.currentIndex === 2 ) { modeExtractImg = "singleImage" }
-            call("videox.extractImagesFunction", [ ffmpeg_staticPath, inputPathPy, modeExtractImg, thumbnailSec, thumbnailSecFileName, imageInterval, origMediaFolderPath ])
-        }
         onError: {
             // when an exception is raised, this error handler will be called
             if (debug) {
