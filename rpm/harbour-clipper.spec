@@ -15,7 +15,7 @@ Version:    0.4.6
 Release:    1
 Group:      Qt/Qt
 License:    GPLv3
-URL:        https://github.com/poetater/harbour-clipper
+URL:        https://github.com/poetaster/harbour-clipper
 Source0:    %{name}-%{version}.tar.bz2
 Requires:   sailfishsilica-qt5 >= 0.10.9
 Requires:   pyotherside-qml-plugin-python3-qt5
