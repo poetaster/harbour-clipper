@@ -26,6 +26,9 @@ Item {
         py.audioEffectsFilters()
     }
     property int fadeDir: 0
+    property int filtType: 0
+    property int audioNewLen: -1
+
 
     Python {
         id: py
@@ -392,219 +395,6 @@ Item {
         }
     }
     Row {
-        id: idToolsRowAudioExtract
-        visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonExtract.selected )
-        x: spacerLandscapeLowerToolRow
-        width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
-
-        Item {
-            width: mainToolbar.x
-            height: standardDetailItemHeight
-        }
-        ComboBox {
-            id: idComboBoxAudioExtract
-            width: parent.width
-            description: qsTr("codec")
-            menu: ContextMenu {
-                MenuItem { text: qsTr("source") + " [" + origCodecAudio  + "]" }
-                MenuItem { text: qsTr("flac") }
-                MenuItem { text: qsTr("wav") }
-                MenuItem { text: qsTr("mp3") }
-                MenuItem { text: qsTr("acc") }
-            }
-        }
-    }
-    Row {
-        id: idToolsRowAudioMixer1a
-        visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected )
-        x: spacerLandscapeLowerToolRow
-        width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
-
-        Item {
-            width: mainToolbar.x
-            height: standardDetailItemHeight
-        }
-        ComboBox {
-            id: idComboBoxAudioNewLength
-            width: parent.width / 6 * 3
-            description: (currentIndex === 0 ) ? qsTr("use overlay duration") : qsTr("cut or loop overlay to fill")
-            menu: ContextMenu {
-                MenuItem { text: qsTr("start at cursor") }
-                MenuItem { text: qsTr("between markers") }
-            }
-        }
-        TextField {
-            id: idToolsAudioMixereFadeIn
-            width: parent.width / 6 * 1.5
-            height: Theme.itemSizeMedium
-            textTopMargin: Theme.paddingMedium
-            text: "0"
-            color: Theme.highlightColor
-            inputMethodHints: Qt.ImhDigitsOnly
-            validator: IntValidator { bottom: 0; top: 99 }
-            EnterKey.onClicked: {
-                if (idToolsAudioMixereFadeIn.text.length < 1 || idToolsAudioMixereFadeIn.text < 0 ) {
-                    idToolsAudioMixereFadeIn.text = "0"
-                }
-                idToolsAudioMixereFadeIn.focus = false
-            }
-            Label {
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.verticalCenterOffset: Theme.paddingSmall / 4 * 3
-                font.pixelSize: Theme.fontSizeExtraSmall
-                color: Theme.secondaryColor
-                text: "sec"
-            }
-            Label {
-                anchors.top: parent.bottom
-                font.pixelSize: Theme.fontSizeExtraSmall
-                color: Theme.secondaryColor
-                text: qsTr("fade in")
-            }
-        }
-        TextField {
-            id: idToolsAudioMixereFadeOut
-            width: parent.width / 6 * 1.5
-            height: Theme.itemSizeMedium
-            textTopMargin: Theme.paddingMedium
-            text: "0"
-            color: Theme.highlightColor
-            inputMethodHints: Qt.ImhDigitsOnly
-            validator: IntValidator { bottom: 0; top: 99 }
-            EnterKey.onClicked: {
-                if (idToolsAudioMixereFadeOut.text.length < 1 || idToolsAudioMixereFadeOut.text < 0 ) {
-                    idToolsAudioMixereFadeOut.text = "0"
-                }
-                idToolsAudioMixereFadeOut.focus = false
-            }
-            Label {
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.verticalCenterOffset: Theme.paddingSmall / 4 * 3
-                font.pixelSize: Theme.fontSizeExtraSmall
-                color: Theme.secondaryColor
-                text: "sec"
-            }
-            Label {
-                anchors.top: parent.bottom
-                font.pixelSize: Theme.fontSizeExtraSmall
-                color: Theme.secondaryColor
-                text: qsTr("fade out")
-            }
-        }
-    }
-    Row {
-        id: idToolsRowAudioMixer1bRecorder
-        visible: ( mainToolbar.buttonAudio.selected && audioToolbar.buttonRecorder.selected )
-        x: spacerLandscapeLowerToolRow
-        width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
-
-        Item {
-            width: mainToolbar.x
-            height: standardDetailItemHeight
-        }
-
-        Label {
-            width: parent.width
-            height: standardDetailItemHeight
-            font.pixelSize: Theme.fontSizeExtraSmall
-            color: Theme.secondaryColor
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            wrapMode: Label.WordWrap
-            text:  qsTr("Manually mute device speaker if you do not use headsets. Otherwise speaker output will be re-recorded.")
-        }
-    }
-    Row {
-        id: idToolsRowAudioMixer2
-        visible: (mainToolbar.buttonAudio.selected && (audioToolbar.buttonMixer.selected || audioToolbar.buttonRecorder.selected) )
-        x: spacerLandscapeLowerToolRow
-        width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
-
-        Item {
-            width: mainToolbar.x
-            height: standardDetailItemHeight
-        }
-        ValueButton {
-            visible: audioToolbar.buttonRecorder.selected
-            width: parent.width / 6 * 2
-            height: standardDetailItemHeight
-            value: qsTr("recording")
-            valueColor: Theme.primaryColor //highlightColor
-            description: qsTr("overlay audio")
-        }
-        ValueButton {
-            visible: audioToolbar.buttonMixer.selected
-            width: parent.width / 6 * 2
-            enabled: ( noFile === false && finishedLoading === true )
-            height: standardDetailItemHeight
-            value: (addAudioLoaded === false) ? qsTr("[none]"): ( addAudioName )
-            description: qsTr("overlay audio")
-            onClicked: { pageStack.push( addFilePickerPageAudio ) }
-        }
-        Slider {
-            id: idToolsRowAudioMixerVolumeSliderOver
-            width: parent.width / 6 * 4
-            leftMargin: Theme.paddingMedium * 1.1
-            rightMargin: leftMargin
-            minimumValue: 0
-            maximumValue: 2
-            value: 1
-            stepSize: 0.01
-            handleVisible: false
-            color: Theme.primaryColor
-
-            Label {
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: -Theme.paddingSmall / 2
-                anchors.horizontalCenter: parent.horizontalCenter
-                font.pixelSize: Theme.fontSizeExtraSmall
-                color: Theme.secondaryColor //highlightColor
-                text: qsTr("volume") + " " + Math.round(parent.value * 100) + " %"
-            }
-        }
-    }
-    Row {
-        id: idToolsRowAudioMixer3
-        visible: (mainToolbar.buttonAudio.selected && (audioToolbar.buttonMixer.selected || audioToolbar.buttonRecorder.selected) )
-        x: spacerLandscapeLowerToolRow
-        width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
-
-        Item {
-            width: mainToolbar.x
-            height: standardDetailItemHeight
-        }
-        ValueButton {
-            width: parent.width / 6 * 2
-            height: standardDetailItemHeight
-            value: qsTr("source")
-            valueColor: Theme.primaryColor
-            description: qsTr("current audio")
-        }
-        Slider {
-            id: idToolsRowAudioMixerVolumeSliderBase
-            width: parent.width / 6 * 4
-            leftMargin: Theme.paddingMedium * 1.1
-            rightMargin: leftMargin
-            minimumValue: 0
-            maximumValue: 2
-            value: 0.5
-            stepSize: 0.01
-            handleVisible: false
-            color: Theme.primaryColor
-
-            Label {
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: -Theme.paddingSmall / 2
-                anchors.horizontalCenter: parent.horizontalCenter
-                font.pixelSize: Theme.fontSizeExtraSmall
-                color: Theme.secondaryColor //highlightColor
-                text: qsTr("volume") + " " + Math.round(parent.value * 100) + " %"
-            }
-        }
-    }
-    Row {
         id: idToolsRowAudioFilters
         visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonFilters.selected )
         x: spacerLandscapeLowerToolRow
@@ -623,6 +413,9 @@ Item {
                 MenuItem { text: qsTr("add echo") }
                 MenuItem { text: qsTr("high pass") }
                 MenuItem { text: qsTr("low pass") }
+            }
+            onClicked: {
+                filtType = currentIndex
             }
         }
         ComboBox {
@@ -691,6 +484,229 @@ Item {
                 font.pixelSize: Theme.fontSizeExtraSmall
                 color: Theme.secondaryColor
                 text: qsTr("remove above frequency (Hz)")
+            }
+        }
+    }
+    Row {
+        id: idToolsRowAudioExtract
+        visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonExtract.selected )
+        x: spacerLandscapeLowerToolRow
+        width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
+
+        Item {
+            width: mainToolbar.x
+            height: standardDetailItemHeight
+        }
+        ComboBox {
+            id: idComboBoxAudioExtract
+            width: parent.width
+            description: qsTr("codec")
+            menu: ContextMenu {
+                MenuItem { text: qsTr("source") + " [" + origCodecAudio  + "]" }
+                MenuItem { text: qsTr("flac") }
+                MenuItem { text: qsTr("wav") }
+                MenuItem { text: qsTr("mp3") }
+                MenuItem { text: qsTr("acc") }
+            }
+        }
+    }
+
+    Row {
+        id: idToolsRowAudioMixer1a
+        visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected )
+        x: spacerLandscapeLowerToolRow
+        width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
+        //anchors.bottom:	idToolsRowAudioMixer1bRecorder.top
+        anchors.top:	idToolsRowAudioExtract.top
+
+        Item {
+            width: mainToolbar.x
+            height: standardDetailItemHeight
+        }
+        ComboBox {
+            id: idComboBoxAudioNewLength
+            width: parent.width / 6 * 3
+            description: (currentIndex === 0 ) ? qsTr("use overlay duration") : qsTr("cut or loop overlay to fill")
+            menu: ContextMenu {
+                MenuItem { text: qsTr("start at cursor") }
+                MenuItem { text: qsTr("between markers") }
+            }
+            onClicked: {
+                audioNewLen = currentIndex
+            }
+        }
+        TextField {
+            id: idToolsAudioMixereFadeIn
+            width: parent.width / 6 * 1.5
+            height: Theme.itemSizeMedium
+            textTopMargin: Theme.paddingMedium
+            text: "0"
+            color: Theme.highlightColor
+            inputMethodHints: Qt.ImhDigitsOnly
+            validator: IntValidator { bottom: 0; top: 99 }
+            EnterKey.onClicked: {
+                if (idToolsAudioMixereFadeIn.text.length < 1 || idToolsAudioMixereFadeIn.text < 0 ) {
+                    idToolsAudioMixereFadeIn.text = "0"
+                }
+                idToolsAudioMixereFadeIn.focus = false
+            }
+            Label {
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.verticalCenterOffset: Theme.paddingSmall / 4 * 3
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryColor
+                text: "sec"
+            }
+            Label {
+                anchors.top: parent.bottom
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryColor
+                text: qsTr("fade in")
+            }
+        }
+        TextField {
+            id: idToolsAudioMixereFadeOut
+            width: parent.width / 6 * 1.5
+            height: Theme.itemSizeMedium
+            textTopMargin: Theme.paddingMedium
+            text: "0"
+            color: Theme.highlightColor
+            inputMethodHints: Qt.ImhDigitsOnly
+            validator: IntValidator { bottom: 0; top: 99 }
+            EnterKey.onClicked: {
+                if (idToolsAudioMixereFadeOut.text.length < 1 || idToolsAudioMixereFadeOut.text < 0 ) {
+                    idToolsAudioMixereFadeOut.text = "0"
+                }
+                idToolsAudioMixereFadeOut.focus = false
+            }
+            Label {
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.verticalCenterOffset: Theme.paddingSmall / 4 * 3
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryColor
+                text: "sec"
+            }
+            Label {
+                anchors.top: parent.bottom
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryColor
+                text: qsTr("fade out")
+            }
+        }
+    }
+    Row {
+        id: idToolsRowAudioMixer1bRecorder
+        visible: ( mainToolbar.buttonAudio.selected && audioToolbar.buttonRecorder.selected )
+        x: spacerLandscapeLowerToolRow
+        width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
+        anchors.top: idToolsRowAudioMixer1a.bottom
+
+        Item {
+            width: mainToolbar.x
+            height: standardDetailItemHeight
+        }
+
+        Label {
+            width: parent.width
+            height: standardDetailItemHeight
+            font.pixelSize: Theme.fontSizeExtraSmall
+            color: Theme.secondaryColor
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            wrapMode: Label.WordWrap
+            text:  qsTr("Manually mute device speaker if you do not use headsets. Otherwise speaker output will be re-recorded.")
+        }
+    }
+
+    Row {
+        id: idToolsRowAudioMixer2
+        visible: (mainToolbar.buttonAudio.selected && (audioToolbar.buttonMixer.selected || audioToolbar.buttonRecorder.selected) )
+        x: spacerLandscapeLowerToolRow
+        width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
+        anchors.top: idToolsRowAudioMixer1bRecorder.bottom
+
+        Item {
+            width: mainToolbar.x
+            height: standardDetailItemHeight
+        }
+        ValueButton {
+            visible: audioToolbar.buttonRecorder.selected
+            width: parent.width / 6 * 2
+            height: standardDetailItemHeight
+            value: qsTr("recording")
+            valueColor: Theme.primaryColor //highlightColor
+            description: qsTr("overlay audio")
+        }
+        ValueButton {
+            visible: audioToolbar.buttonMixer.selected
+            width: parent.width / 6 * 2
+            enabled: ( noFile === false && finishedLoading === true )
+            height: standardDetailItemHeight
+            value: (addAudioLoaded === false) ? qsTr("[none]"): ( addAudioName )
+            description: qsTr("overlay audio")
+            onClicked: { pageStack.push( addFilePickerPageAudio ) }
+        }
+        Slider {
+            id: idToolsRowAudioMixerVolumeSliderOver
+            width: parent.width / 6 * 4
+            leftMargin: Theme.paddingMedium * 1.1
+            rightMargin: leftMargin
+            minimumValue: 0
+            maximumValue: 2
+            value: 1
+            stepSize: 0.01
+            handleVisible: false
+            color: Theme.primaryColor
+
+            Label {
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: -Theme.paddingSmall / 2
+                anchors.horizontalCenter: parent.horizontalCenter
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryColor //highlightColor
+                text: qsTr("volume") + " " + Math.round(parent.value * 100) + " %"
+            }
+        }
+    }
+
+    Row {
+        id: idToolsRowAudioMixer3
+        visible: (mainToolbar.buttonAudio.selected && (audioToolbar.buttonMixer.selected || audioToolbar.buttonRecorder.selected) )
+        x: spacerLandscapeLowerToolRow
+        width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
+        anchors.top:idToolsRowAudioMixer2.bottom
+        Item {
+            width: mainToolbar.x
+            height: standardDetailItemHeight
+        }
+        ValueButton {
+            width: parent.width / 6 * 2
+            height: standardDetailItemHeight
+            value: qsTr("source")
+            valueColor: Theme.primaryColor
+            description: qsTr("current audio")
+        }
+        Slider {
+            id: idToolsRowAudioMixerVolumeSliderBase
+            width: parent.width / 6 * 4
+            leftMargin: Theme.paddingMedium * 1.1
+            rightMargin: leftMargin
+            minimumValue: 0
+            maximumValue: 2
+            value: 0.5
+            stepSize: 0.01
+            handleVisible: false
+            color: Theme.primaryColor
+
+            Label {
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: -Theme.paddingSmall / 2
+                anchors.horizontalCenter: parent.horizontalCenter
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryColor //highlightColor
+                text: qsTr("volume") + " " + Math.round(parent.value * 100) + " %"
             }
         }
     }

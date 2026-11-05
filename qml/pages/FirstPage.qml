@@ -96,8 +96,8 @@ Page {
                                                                                                  )) //reverse only works for whole clip
                                                                      || imageToolbar.buttonGeometry.selected) )
                                           || (mainToolbar.buttonAudio.selected && (audioToolbar.buttonFade.selected || audioToolbar.buttonRecorder.selected) )
-                                          || (mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected && idComboBoxAudioNewLength.currentIndex === 0 )
-                                          || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFilters.selected && audioFunctions.item.idToolsRowAudioFilters.idComboBoxAudioFilters.currentIndex === 1 ) // echo effects do not support yet timeline editing
+                                          || (mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected && audioFunctions.item.audioNewLen.currentIndex === 0 )
+                                          || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFilters.selected && audioFunctions.item.filtType === 1 ) // echo effects do not support yet timeline editing
                                           || (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSubtitles.selected === false || (collageToolbar.buttonSubtitles.selected === true && idComboBoxCollageSubtitleAdd.currentIndex === 0) ) )
                                           || mainToolbar.buttonFile.selected
                                          ) ? true : false
@@ -1287,7 +1287,7 @@ Page {
 
                 Rectangle {
                     id: idRectangleMixer
-                    visible: ( finishedLoading === true && noFile === false && mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected && audioFunctions.item.idToolsRowAudioMixer1a.idComboBoxAudioNewLength.currentIndex === 0 && addAudioLoaded === true )
+                    visible: ( finishedLoading === true && noFile === false && mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected && audioFunctions.item.audioNewLen === 0 && addAudioLoaded === true )
                     z: -1
                     y: Theme.paddingMedium
                     height: parent.height - 2 * y
@@ -1550,10 +1550,10 @@ Page {
                             audioRecorder_Sample.stop()
                             recordingAudioState = false
                             idMediaPlayer.pause()
-                            //thumbnailVisible = false
+                            thumbnailVisible = false
                             // this makes no sense since we have to mute to record
-                            //recordingBeepStop.play()
-                            py.recordAudioFunction()
+                            recordingBeepStop.play()
+                            audioFunctions.item.recordAudioFunction()
                         }
                     }
 
