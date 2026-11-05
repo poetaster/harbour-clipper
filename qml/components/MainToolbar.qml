@@ -38,7 +38,10 @@ ToolbarBase {
         icon: "image://theme/icon-m-sounds"
         selected: root.selectedButton == buttonAudio
 
-        onClicked: root.selectedButton = buttonAudio
+        onClicked: {
+            root.selectedButton = buttonAudio
+            audioFunctions.source  = "AudioTools.qml"
+        }
     }
 
     MainToolbarItem {

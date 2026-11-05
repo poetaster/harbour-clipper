@@ -97,7 +97,7 @@ Page {
                                                                      || imageToolbar.buttonGeometry.selected) )
                                           || (mainToolbar.buttonAudio.selected && (audioToolbar.buttonFade.selected || audioToolbar.buttonRecorder.selected) )
                                           || (mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected && idComboBoxAudioNewLength.currentIndex === 0 )
-                                          || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFilters.selected && idComboBoxAudioFilters.currentIndex === 1 ) // echo effects do not support yet timeline editing
+                                          || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFilters.selected && audioFunctions.item.idComboBoxAudioFilters.currentIndex === 1 ) // echo effects do not support yet timeline editing
                                           || (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSubtitles.selected === false || (collageToolbar.buttonSubtitles.selected === true && idComboBoxCollageSubtitleAdd.currentIndex === 0) ) )
                                           || mainToolbar.buttonFile.selected
                                          ) ? true : false
@@ -1683,22 +1683,19 @@ Page {
                             }
                             if ( mainToolbar.buttonAudio.selected ) {
                                 if (audioToolbar.buttonFade.selected === true) {
-                                    py.audioFadeFunction()
+                                    audioFunctions.item.audioFadeFunction()
                                 }
                                 if (audioToolbar.buttonVolume.selected === true) {
-                                    py.audioVolumeFunction()
+                                    audioFunctions.item.audioVolumeFunction()
                                 }
                                 if (audioToolbar.buttonExtract.selected === true) {
-                                    py.audioExtractFunction()
+                                    audioFunctions.item.audioExtractFunction()
                                 }
                                 if (audioToolbar.buttonMixer.selected === true && addAudioLoaded === true) {
-                                    py.audioMixerFunction()
+                                    audioFunctions.item.audioMixerFunction()
                                 }
                                 if (audioToolbar.buttonFilters.selected === true) {
-                                    if ( idComboBoxAudioFilters.currentIndex === 0 ) { py.audioEffectsFilters( "denoise" ) }
-                                    if ( idComboBoxAudioFilters.currentIndex === 1 ) { py.audioEffectsFilters( "echo" ) }
-                                    if ( idComboBoxAudioFilters.currentIndex === 2 ) { py.audioEffectsFilters( "highpass" ) }
-                                    if ( idComboBoxAudioFilters.currentIndex === 3 ) { py.audioEffectsFilters( "lowpass" ) }
+                                    audioFunctions.item.audioEffectsFilters();
                                 }
                             }
 
@@ -2920,377 +2917,17 @@ Page {
 
             SecondaryToolbarAudio {
                 id: audioToolbar
-
                 visible: mainToolbar.buttonAudio.selected
             }
-
-            // more details AUDIO
-            Row {
-                id: idToolsRowAudioFade
-                visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonFade.selected )
-                x: spacerLandscapeLowerToolRow
-                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
-
-                Item {
-                    width: mainToolbar.x
-                    height: standardDetailItemHeight
-                }
-                ComboBox {
-                    id: idComboBoxAudioFade
-                    width: parent.width
-                    description: qsTr("direction")
-                    menu: ContextMenu {
-                        MenuItem { text: qsTr("in - louder") }
-                        MenuItem { text: qsTr("out - mute") }
-                    }
+            Loader {
+               id: audioFunctions
+                anchors.top: audioToolbar.bottom
+                anchors.topMargin: Theme.paddingLarge
+                Connections {
+                    target: audioFunctions.item
                 }
             }
-            Row {
-                id: idToolsRowAudioVolume
-                visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonVolume.selected )
-                x: spacerLandscapeLowerToolRow
-                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
 
-                Item {
-                    width: mainToolbar.x
-                    height: standardDetailItemHeight
-                }
-                ComboBox {
-                    id: idComboBoxAudioVolume
-                    width: ( currentIndex !== 0 ) ? parent.width : (parent.width / 6 * 2)
-                    description: qsTr("adjustment")
-                    menu: ContextMenu {
-                        MenuItem { text: qsTr("manual") }
-                        MenuItem { text: qsTr("normalize") }
-                        MenuItem { text: qsTr("mute") }
-                    }
-                }
-                Slider {
-                    id: idToolsRowAudioVolumeSlider
-                    visible: ( idComboBoxAudioVolume.currentIndex === 0 )
-                    width: parent.width / 6 * 4
-                    leftMargin: Theme.paddingMedium * 1.1
-                    rightMargin: leftMargin
-                    minimumValue: -10
-                    maximumValue: 10
-                    value: 0
-                    stepSize: 0.5
-                    handleVisible: false
-                    color: Theme.primaryColor
-
-                    Label {
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: -Theme.paddingSmall / 2
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        color: Theme.secondaryColor //highlightColor
-                        text: (idToolsRowAudioVolumeSlider.value >= 0) ? ("+" + idToolsRowAudioVolumeSlider.value + " " + qsTr(" dB")) : (idToolsRowAudioVolumeSlider.value + " " + qsTr(" dB"))
-                    }
-                }
-            }
-            Row {
-                id: idToolsRowAudioExtract
-                visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonExtract.selected )
-                x: spacerLandscapeLowerToolRow
-                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
-
-                Item {
-                    width: mainToolbar.x
-                    height: standardDetailItemHeight
-                }
-                ComboBox {
-                    id: idComboBoxAudioExtract
-                    width: parent.width
-                    description: qsTr("codec")
-                    menu: ContextMenu {
-                        MenuItem { text: qsTr("source") + " [" + origCodecAudio  + "]" }
-                        MenuItem { text: qsTr("flac") }
-                        MenuItem { text: qsTr("wav") }
-                        MenuItem { text: qsTr("mp3") }
-                        MenuItem { text: qsTr("acc") }
-                    }
-                }
-            }
-            Row {
-                id: idToolsRowAudioMixer1a
-                visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected )
-                x: spacerLandscapeLowerToolRow
-                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
-
-                Item {
-                    width: mainToolbar.x
-                    height: standardDetailItemHeight
-                }
-                ComboBox {
-                    id: idComboBoxAudioNewLength
-                    width: parent.width / 6 * 3
-                    description: (currentIndex === 0 ) ? qsTr("use overlay duration") : qsTr("cut or loop overlay to fill")
-                    menu: ContextMenu {
-                        MenuItem { text: qsTr("start at cursor") }
-                        MenuItem { text: qsTr("between markers") }
-                    }
-                }
-                TextField {
-                    id: idToolsAudioMixereFadeIn
-                    width: parent.width / 6 * 1.5
-                    height: Theme.itemSizeMedium
-                    textTopMargin: Theme.paddingMedium
-                    text: "0"
-                    color: Theme.highlightColor
-                    inputMethodHints: Qt.ImhDigitsOnly
-                    validator: IntValidator { bottom: 0; top: 99 }
-                    EnterKey.onClicked: {
-                        if (idToolsAudioMixereFadeIn.text.length < 1 || idToolsAudioMixereFadeIn.text < 0 ) {
-                            idToolsAudioMixereFadeIn.text = "0"
-                        }
-                        idToolsAudioMixereFadeIn.focus = false
-                    }
-                    Label {
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.verticalCenterOffset: Theme.paddingSmall / 4 * 3
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        color: Theme.secondaryColor
-                        text: "sec"
-                    }
-                    Label {
-                        anchors.top: parent.bottom
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        color: Theme.secondaryColor
-                        text: qsTr("fade in")
-                    }
-                }
-                TextField {
-                    id: idToolsAudioMixereFadeOut
-                    width: parent.width / 6 * 1.5
-                    height: Theme.itemSizeMedium
-                    textTopMargin: Theme.paddingMedium
-                    text: "0"
-                    color: Theme.highlightColor
-                    inputMethodHints: Qt.ImhDigitsOnly
-                    validator: IntValidator { bottom: 0; top: 99 }
-                    EnterKey.onClicked: {
-                        if (idToolsAudioMixereFadeOut.text.length < 1 || idToolsAudioMixereFadeOut.text < 0 ) {
-                            idToolsAudioMixereFadeOut.text = "0"
-                        }
-                        idToolsAudioMixereFadeOut.focus = false
-                    }
-                    Label {
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.verticalCenterOffset: Theme.paddingSmall / 4 * 3
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        color: Theme.secondaryColor
-                        text: "sec"
-                    }
-                    Label {
-                        anchors.top: parent.bottom
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        color: Theme.secondaryColor
-                        text: qsTr("fade out")
-                    }
-                }
-            }
-            Row {
-                id: idToolsRowAudioMixer1bRecorder
-                visible: ( mainToolbar.buttonAudio.selected && audioToolbar.buttonRecorder.selected )
-                x: spacerLandscapeLowerToolRow
-                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
-
-                Item {
-                    width: mainToolbar.x
-                    height: standardDetailItemHeight
-                }
-
-                Label {
-                    width: parent.width
-                    height: standardDetailItemHeight
-                    font.pixelSize: Theme.fontSizeExtraSmall
-                    color: Theme.secondaryColor
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    wrapMode: Label.WordWrap
-                    text:  qsTr("Manually mute device speaker if you do not use headsets. Otherwise speaker output will be re-recorded.")
-                }
-            }
-            Row {
-                id: idToolsRowAudioMixer2
-                visible: (mainToolbar.buttonAudio.selected && (audioToolbar.buttonMixer.selected || audioToolbar.buttonRecorder.selected) )
-                x: spacerLandscapeLowerToolRow
-                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
-
-                Item {
-                    width: mainToolbar.x
-                    height: standardDetailItemHeight
-                }
-                ValueButton {
-                    visible: audioToolbar.buttonRecorder.selected
-                    width: parent.width / 6 * 2
-                    height: standardDetailItemHeight
-                    value: qsTr("recording")
-                    valueColor: Theme.primaryColor //highlightColor
-                    description: qsTr("overlay audio")
-                }
-                ValueButton {
-                    visible: audioToolbar.buttonMixer.selected
-                    width: parent.width / 6 * 2
-                    enabled: ( noFile === false && finishedLoading === true )
-                    height: standardDetailItemHeight
-                    value: (addAudioLoaded === false) ? qsTr("[none]"): ( addAudioName )
-                    description: qsTr("overlay audio")
-                    onClicked: { pageStack.push( addFilePickerPageAudio ) }
-                }
-                Slider {
-                    id: idToolsRowAudioMixerVolumeSliderOver
-                    width: parent.width / 6 * 4
-                    leftMargin: Theme.paddingMedium * 1.1
-                    rightMargin: leftMargin
-                    minimumValue: 0
-                    maximumValue: 2
-                    value: 1
-                    stepSize: 0.01
-                    handleVisible: false
-                    color: Theme.primaryColor
-
-                    Label {
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: -Theme.paddingSmall / 2
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        color: Theme.secondaryColor //highlightColor
-                        text: qsTr("volume") + " " + Math.round(parent.value * 100) + " %"
-                    }
-                }
-            }
-            Row {
-                id: idToolsRowAudioMixer3
-                visible: (mainToolbar.buttonAudio.selected && (audioToolbar.buttonMixer.selected || audioToolbar.buttonRecorder.selected) )
-                x: spacerLandscapeLowerToolRow
-                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
-
-                Item {
-                    width: mainToolbar.x
-                    height: standardDetailItemHeight
-                }
-                ValueButton {
-                    width: parent.width / 6 * 2
-                    height: standardDetailItemHeight
-                    value: qsTr("source")
-                    valueColor: Theme.primaryColor
-                    description: qsTr("current audio")
-                }
-                Slider {
-                    id: idToolsRowAudioMixerVolumeSliderBase
-                    width: parent.width / 6 * 4
-                    leftMargin: Theme.paddingMedium * 1.1
-                    rightMargin: leftMargin
-                    minimumValue: 0
-                    maximumValue: 2
-                    value: 0.5
-                    stepSize: 0.01
-                    handleVisible: false
-                    color: Theme.primaryColor
-
-                    Label {
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: -Theme.paddingSmall / 2
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        color: Theme.secondaryColor //highlightColor
-                        text: qsTr("volume") + " " + Math.round(parent.value * 100) + " %"
-                    }
-                }
-            }
-            Row {
-                id: idToolsRowAudioFilters
-                visible: (mainToolbar.buttonAudio.selected && audioToolbar.buttonFilters.selected )
-                x: spacerLandscapeLowerToolRow
-                width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
-
-                Item {
-                    width: mainToolbar.x
-                    height: standardDetailItemHeight
-                }
-                ComboBox {
-                    id: idComboBoxAudioFilters
-                    width: parent.width / 6 * 2
-                    description: qsTr("effects")
-                    menu: ContextMenu {
-                        MenuItem { text: qsTr("denoise") }
-                        MenuItem { text: qsTr("add echo") }
-                        MenuItem { text: qsTr("high pass") }
-                        MenuItem { text: qsTr("low pass") }
-                    }
-                }
-                ComboBox {
-                    id: idComboBoxAudioFiltersDenoise
-                    visible: idComboBoxAudioFilters.currentIndex === 0
-                    width: parent.width / 6 * 4
-                    description: qsTr("denoiser type")
-                    menu: ContextMenu {
-                        MenuItem { text: qsTr("afftdn") }
-                        MenuItem { text: qsTr("anlmdn") }
-                    }
-                }
-                ComboBox {
-                    id: idComboBoxAudioFiltersEcho
-                    visible: idComboBoxAudioFilters.currentIndex === 1
-                    width: parent.width / 6 * 4
-                    description: qsTr("echo type")
-                    menu: ContextMenu {
-                        MenuItem { text: qsTr("standard") }
-                        MenuItem { text: qsTr("double instuments") }
-                        MenuItem { text: qsTr("mountain concert") }
-                        MenuItem { text: qsTr("robot style") }
-                    }
-                }
-                TextField {
-                    id: idToolsAudioFiltersFrequencyHighpass
-                    visible: idComboBoxAudioFilters.currentIndex === 2
-                    width: parent.width / 6 * 4
-                    height: Theme.itemSizeMedium
-                    textTopMargin: Theme.paddingMedium
-                    text: "200" // highpass removes bass < 200 Hz
-                    color: Theme.highlightColor
-                    inputMethodHints: Qt.ImhDigitsOnly
-                    validator: IntValidator { bottom: 0; top: 20000 }
-                    EnterKey.onClicked: {
-                        if (idToolsAudioFiltersFrequencyHighpass.text.length < 1 || idToolsAudioFiltersFrequencyHighpass.text < 0 ) {
-                            idToolsAudioFiltersFrequencyHighpass.text = "200"
-                        }
-                        idToolsAudioFiltersFrequencyHighpass.focus = false
-                    }
-                    Label {
-                        anchors.top: parent.bottom
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        color: Theme.secondaryColor
-                        text: qsTr("remove below frequency (Hz)")
-                    }
-                }
-                TextField {
-                    id: idToolsAudioFiltersFrequencyLowpass
-                    visible: idComboBoxAudioFilters.currentIndex === 3
-                    width: parent.width / 6 * 4
-                    height: Theme.itemSizeMedium
-                    textTopMargin: Theme.paddingMedium
-                    text: "2000" // lowpass removes heights > 2000 Hz
-                    color: Theme.highlightColor
-                    inputMethodHints: Qt.ImhDigitsOnly
-                    validator: IntValidator { bottom: 0; top: 20000 }
-                    EnterKey.onClicked: {
-                        if (idToolsAudioFiltersFrequencyLowpass.text.length < 1 || idToolsAudioFiltersFrequencyLowpass.text < 0 ) {
-                            idToolsAudioFiltersFrequencyLowpass.text = "2000"
-                        }
-                        idToolsAudioFiltersFrequencyLowpass.focus = false
-                    }
-                    Label {
-                        anchors.top: parent.bottom
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        color: Theme.secondaryColor
-                        text: qsTr("remove above frequency (Hz)")
-                    }
-                }
-            }
 
             SecondaryToolbarCollage {
                 id: collageToolbar
@@ -3321,6 +2958,7 @@ Page {
                 anchors.top: fileToolbar.bottom
                 Connections {
                     target: fileFunctions.item
+                    // move to the same approach as collageFunctions
                     onFilenameChanged:{
                        console.log(msg)
                         py.renameOriginal(msg)
@@ -3856,124 +3494,6 @@ Page {
         }
 
 
-        //audio manipulations
-        function audioFadeFunction() {
-            preparePathAndUndo()
-            if ( idComboBoxAudioFade.currentIndex === 0 ) {var fadeDirection = "in" }
-            else if ( idComboBoxAudioFade.currentIndex === 1 ) {fadeDirection = "out" }
-            if (fadeDirection === "in") {
-                var fadeFrom = "0"
-                var fadeLength = ((idMediaPlayer.position)/1000).toString()
-            }
-            if (fadeDirection === "out") {
-                fadeFrom = (idMediaPlayer.position/1000).toString()
-                fadeLength = ((idMediaPlayer.duration - idMediaPlayer.position)/1000).toString()
-            }
-            call("videox.audioFadeFunction", [ ffmpeg_staticPath, inputPathPy, outputPathPy, fadeFrom , fadeLength, fadeDirection ])
-        }
-        function audioVolumeFunction() {
-            preparePathAndUndo()
-            var fromSec = ((fromPosMillisecond/1000)).toString()
-            var toSec = ((toPosMillisecond/1000)).toString()
-            if ( idComboBoxAudioVolume.currentIndex === 0 ) {var actionDB = "slider" }
-            else if ( idComboBoxAudioVolume.currentIndex === 1 ) {actionDB = "normalize" }
-            else if ( idComboBoxAudioVolume.currentIndex === 2 ) {actionDB = "mute" }
-            var addVolumeDB = (idToolsRowAudioVolumeSlider.value).toString()
-            call("videox.audioVolumeFunction", [ ffmpeg_staticPath, inputPathPy, outputPathPy, actionDB, addVolumeDB, fromSec, toSec ])
-        }
-        function audioExtractFunction() {
-            finishedLoading = false // since no preparePathAndUndo() we need to activate the waiting icon
-            if ( idComboBoxAudioExtract.currentIndex === 0 ) {var targetCodec = "original" }
-            else if ( idComboBoxAudioExtract.currentIndex === 1 ) {targetCodec = "flac" }
-            else if ( idComboBoxAudioExtract.currentIndex === 2 ) {targetCodec = "wav" }
-            else if ( idComboBoxAudioExtract.currentIndex === 3 ) {targetCodec = "mp3" }
-            else if ( idComboBoxAudioExtract.currentIndex === 4 ) {targetCodec = "aac" }
-            var targetFolderPath = origMediaFolderPath
-            if (targetCodec !== "original") {
-                var targetPath = origMediaFolderPath + origMediaName + "_audio" + "." + targetCodec
-            }
-            else {
-                targetCodec = origCodecAudio.toString()
-                if ( targetCodec !== "flac" && targetCodec !== "wav" && targetCodec !== "mp3" && targetCodec !== "aac" ) {
-                    targetCodec = "flac"
-                }
-                targetPath = origMediaFolderPath + origMediaName + "_audio" + "." + targetCodec // origCodecAudio.toString()
-            }
-            var helperPathWav = origMediaFolderPath + origMediaName + "_audio" + ".flac"
-            var mp3CompressBitrateType = "-V2"
-            call("videox.audioExtractFunction", [ ffmpeg_staticPath, inputPathPy, targetPath, targetFolderPath, targetCodec, helperPathWav, mp3CompressBitrateType, fromTimestampPy, toTimestampPy ])
-        }
-        function audioMixerFunction() {
-            preparePathAndUndo()
-            var fromSec = ((fromPosMillisecond/1000)).toString()
-            var toSec = ((toPosMillisecond/1000)).toString()
-            var overlayDuration = (toPosMillisecond/1000 - fromPosMillisecond/1000).toString()
-            var volumeFactorBase = (idToolsRowAudioMixerVolumeSliderBase.value).toString()
-            var volumeFactorOver = (idToolsRowAudioMixerVolumeSliderOver.value).toString()
-            var audioDelayMS = (fromPosMillisecond).toString()
-            var fadeDurationIn = (idToolsAudioMixereFadeIn.text).toString()
-            var fadeDurationOut = (idToolsAudioMixereFadeOut.text).toString()
-            var currentPosition = (idMediaPlayer.position/1000).toString()
-            var currentFileLength = (idMediaPlayer.duration/1000).toString()
-            if ( idComboBoxAudioNewLength.currentIndex === 0 ) { var getLengthFrom = "newFile" }
-            else if ( idComboBoxAudioNewLength.currentIndex === 1 ) { getLengthFrom = "betweenMarkers" }
-            call("videox.audioMixerFunction", [ ffmpeg_staticPath, inputPathPy, outputPathPy, addAudioPath, origCodecAudio, fromSec, toSec, overlayDuration, volumeFactorBase, volumeFactorOver, audioDelayMS, fadeDurationIn, fadeDurationOut, currentPosition, getLengthFrom, currentFileLength ])
-        }
-        function recordAudioFunction() {
-            preparePathAndUndo()
-            var currentFileLength = (idMediaPlayer.duration/1000).toString()
-            var currentPosition = recordingOverlayStart // get info from idWatchdog_recordAudio
-            var volumeFactorBase = (idToolsRowAudioMixerVolumeSliderBase.value).toString()
-            var volumeFactorOver = (idToolsRowAudioMixerVolumeSliderOver.value * 2).toString()
-            var fadeDurationIn = "0.25" // (idToolsAudioMixereFadeIn.text).toString()
-            var fadeDurationOut = "0.25" // (idToolsAudioMixereFadeOut.text).toString()
-            call("videox.recordAudioFunction", [ ffmpeg_staticPath, inputPathPy, outputPathPy, recordAudioPath, currentFileLength, currentPosition, origCodecAudio, fadeDurationIn, fadeDurationOut, volumeFactorBase, volumeFactorOver ])
-        }
-        function audioEffectsFilters( filterType ) {
-            preparePathAndUndo()
-            var fromSec = ((fromPosMillisecond/1000)).toString()
-            var toSec = ((toPosMillisecond/1000)).toString()
-            if ( filterType === "denoise" ) {
-                if (idComboBoxAudioFiltersDenoise.currentIndex === 0) { var effectTypeValue = "afftdn=nt=w:om=o" } // ToDo: more options, see documentation
-                else if (idComboBoxAudioFiltersDenoise.currentIndex === 1) { effectTypeValue = "anlmdn=o=o" } // ToDo: more options, see documentation
-            }
-            else if (filterType === "highpass") {
-                effectTypeValue = "highpass=f=" + (idToolsAudioFiltersFrequencyHighpass.text).toString()
-            }
-            else if (filterType === "lowpass") {
-                effectTypeValue = "lowpass=f=" + (idToolsAudioFiltersFrequencyLowpass.text).toString()
-            }
-            else if (filterType === "echo") {
-                if (idComboBoxAudioFiltersEcho.currentIndex === 0) { // standard
-                    var in_gain = "0.6"
-                    var out_gain = "0.3"
-                    var delays = "1000"
-                    var decays = "0.5"
-                }
-                else if (idComboBoxAudioFiltersEcho.currentIndex === 1) { // double instruments
-                    in_gain = "0.8"
-                    out_gain = "0.88"
-                    delays = "60"
-                    decays = "0.4"
-                }
-                else if (idComboBoxAudioFiltersEcho.currentIndex === 2) { // mountain concert
-                    in_gain = "0.8"
-                    out_gain = "0.9"
-                    delays = "1000"
-                    decays = "0.3"
-                }
-                else if (idComboBoxAudioFiltersEcho.currentIndex === 3) { // robot style
-                    in_gain = "0.8"
-                    out_gain = "0.88"
-                    delays = "6"
-                    decays = "0.4"
-                }
-                effectTypeValue = "aecho=in_gain=" + in_gain + ":out_gain=" + out_gain + ":delays=" + delays + ":decays=" + decays
-            }
-            console.log(filterType)
-            console.log(effectTypeValue)
-            call("videox.audioEffectsFilters", [ ffmpeg_staticPath, inputPathPy, outputPathPy, fromSec, toSec, effectTypeValue, origCodecAudio, filterType ])
-        }
 
 
         //adding manipulations

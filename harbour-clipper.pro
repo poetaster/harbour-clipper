@@ -25,6 +25,7 @@ SOURCES += src/harbour-clipper.cpp \
 
 DISTFILES += qml/harbour-clipper.qml \
     .gitignore \
+    qml/components/AudioTools.qml \
     qml/components/CollageTools.qml \
     qml/components/DraggableItem.qml \
     qml/components/DraggableItemDropArea.qml \
