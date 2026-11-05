@@ -97,7 +97,7 @@ Page {
                                                                      || imageToolbar.buttonGeometry.selected) )
                                           || (mainToolbar.buttonAudio.selected && (audioToolbar.buttonFade.selected || audioToolbar.buttonRecorder.selected) )
                                           || (mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected && idComboBoxAudioNewLength.currentIndex === 0 )
-                                          || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFilters.selected && audioFunctions.item.idComboBoxAudioFilters.currentIndex === 1 ) // echo effects do not support yet timeline editing
+                                          || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFilters.selected && audioFunctions.item.idToolsRowAudioFilters.idComboBoxAudioFilters.currentIndex === 1 ) // echo effects do not support yet timeline editing
                                           || (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSubtitles.selected === false || (collageToolbar.buttonSubtitles.selected === true && idComboBoxCollageSubtitleAdd.currentIndex === 0) ) )
                                           || mainToolbar.buttonFile.selected
                                          ) ? true : false
@@ -1243,7 +1243,7 @@ Page {
 
                 Rectangle {
                     id: idLabelFromToLeft
-                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 0) || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFade.selected &&  idComboBoxAudioFade.currentIndex === 0 ) ) )
+                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 0) || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFade.selected &&  audioFunctions.item.fadeDir === 0 ) ) )
                     z: -1
                     y: Theme.paddingMedium
                     height: parent.height - 2 * y
@@ -1265,7 +1265,7 @@ Page {
 
                 Rectangle {
                     id: idLabelFromToRight
-                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 1) || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFade.selected &&  idComboBoxAudioFade.currentIndex === 1 ) ) )
+                    visible: ( (finishedLoading === true && noFile === false) && ( (mainToolbar.buttonImage.selected && imageToolbar.buttonEffects.selected && idComboBoxImageEffects.currentIndex === 0 && idComboBoxImageEffectsBasics.currentIndex === 0 && idComboBoxImageEffectsFade.currentIndex === 1) || (mainToolbar.buttonAudio.selected && audioToolbar.buttonFade.selected &&  audioFunctions.item.fadeDir === 1 ) ) )
                     z: -1
                     y: Theme.paddingMedium
                     height: parent.height - 2 * y
@@ -1287,7 +1287,7 @@ Page {
 
                 Rectangle {
                     id: idRectangleMixer
-                    visible: ( finishedLoading === true && noFile === false && mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected && idComboBoxAudioNewLength.currentIndex === 0 && addAudioLoaded === true )
+                    visible: ( finishedLoading === true && noFile === false && mainToolbar.buttonAudio.selected && audioToolbar.buttonMixer.selected && audioFunctions.item.idToolsRowAudioMixer1a.idComboBoxAudioNewLength.currentIndex === 0 && addAudioLoaded === true )
                     z: -1
                     y: Theme.paddingMedium
                     height: parent.height - 2 * y
