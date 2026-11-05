@@ -220,34 +220,6 @@ Item {
             var sizeDevider = 2
             call("videox.splitscreenFunction", [ ffmpeg_staticPath, inputPathPy, outputPathPy, sourceVideoWidth, sourceVideoHeight, sizeDevider, secondClipPath, stackDirection, useAudioFrom ])
         }
-        function createSlideshowFunction() {
-            idMediaPlayer.stop()
-            finishedLoading = false
-            var newFileName = "slideshow_" + new Date().toLocaleString(Qt.locale("de_DE"), "yyyy-MM-dd_HH-mm-ss") + "." + tempMediaType
-            outputPathPy = homeDirectory + "/Videos/" + newFileName
-            allSelectedPathsSlideshow = ""
-            allSelectedDurationsSlideshow = ""
-            allSelectedTransitionsSlideshow = ""
-            allSelectedTransitionDurationsSlideshow = ""
-            for(var i = 0; i < slideshowModel.count; ++i) {
-                var addPath = (slideshowModel.get(i).path).toString()
-                var addDuration = (slideshowModel.get(i).duration).toString()
-                var addTransition = (slideshowModel.get(i).transition).toString()
-                var addTransitionDuration = (slideshowModel.get(i).transitionDuration).toString()
-
-                allSelectedPathsSlideshow = allSelectedPathsSlideshow + addPath + ";;"
-                allSelectedDurationsSlideshow = allSelectedDurationsSlideshow + addDuration + ";;"
-                allSelectedTransitionsSlideshow = allSelectedTransitionsSlideshow + addTransition + ";;"
-                allSelectedTransitionDurationsSlideshow = allSelectedTransitionDurationsSlideshow + addTransitionDuration + ";;"
-            }
-            var targetWidth = (idToolsCollageTargetWidth.text).toString()
-            var targetHeight = (idToolsCollageTargetHeight.text).toString()
-
-            if (idComboBoxCollageSlideshowEffect.currentIndex === 0 ) { var panZoom = "still_images" }
-            else if (idComboBoxCollageSlideshowEffect.currentIndex === 1 ) { panZoom = "pan_and_zoom" }
-
-            call("videox.createSlideshowFunction", [ ffmpeg_staticPath, outputPathPy, allSelectedPathsSlideshow, allSelectedDurationsSlideshow, allSelectedTransitionsSlideshow, allSelectedTransitionDurationsSlideshow, targetWidth, targetHeight, newFileName, panZoom ])
-        }
         function createStorylineFunction() {
             idMediaPlayer.stop()
             finishedLoading = false
@@ -305,6 +277,15 @@ Item {
             else if ( idComboBoxCollageImageExtract.currentIndex === 1 ) { modeExtractImg = "iFrames" }
             else if ( idComboBoxCollageImageExtract.currentIndex === 2 ) { modeExtractImg = "singleImage" }
             call("videox.extractImagesFunction", [ ffmpeg_staticPath, inputPathPy, modeExtractImg, thumbnailSec, thumbnailSecFileName, imageInterval, origMediaFolderPath ])
+        }
+        function deleteAllTMPFunction() {
+            undoNr = 0
+            call("videox.deleteAllTMPFunction", [ tempMediaFolderPath ])
+        }
+        function getVideoInfo( pathToFile, isOriginal ) {
+            var thumbnailSec = "0.25"
+            if (undoNr === 0) { isOriginal = "true" } // Patch for undo when back to first
+            call("videox.getVideoInfo", [ pathToFile, isOriginal, thumbnailPath, thumbnailSec ])
         }
         onError: {
             // when an exception is raised, this error handler will be called
