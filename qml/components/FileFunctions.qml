@@ -177,6 +177,7 @@ Item {
     height: standardDetailItemHeight
 }*/
     IconButton {
+    visible: (mainToolbar.buttonFile.selected && fileToolbar.buttonDelete.selected )
         id: confirmButton
         anchors {
             left: idToolsRowFileRename.right

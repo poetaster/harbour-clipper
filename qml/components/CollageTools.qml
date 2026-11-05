@@ -542,7 +542,7 @@ Item {
         id: idToolsRowCollage2TransitionDuration
         visible: (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected ) )
         x: spacerLandscapeLowerToolRow
-        //width: mainToolbar.width //- 2 * spacerLandscapeLowerToolRow
+        width: mainToolbar.width //- 2 * spacerLandscapeLowerToolRow
 
         Item {
             width: mainToolbar.x
@@ -663,51 +663,6 @@ Item {
         }
     }
 
-    Separator {
-        id: sep
-        anchors.top: idToolsRowCollage3AddButton.bottom
-        width: mainToolbar.width
-        visible: (mainToolbar.buttonCollage.selected && ( collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected ) )
-        horizontalAlignment: Qt.AlignHCenter
-        color: Theme.primaryColor
-    }
-
-    Row {
-        id: idToolsRowCollage3AddButton
-        anchors.top: sep.bottom
-        visible: (mainToolbar.buttonCollage.selected && (collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected) )
-        x: spacerLandscapeLowerToolRow
-        topPadding: -Theme.paddingMedium
-        width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
-
-        Item {
-            width: mainToolbar.x
-            height: standardDetailItemHeight
-        }
-        Item {
-            width: parent.width / 6 * 2
-            height: standardDetailItemHeight
-        }
-        IconButton {
-            width: parent.width / 6 * 2
-            height: standardDetailItemHeight * 1.3
-            enabled: ( ( (collageToolbar.buttonSlideshow.selected && slideshowAddFileLoaded === true) || ( collageToolbar.buttonStoryline.selected && storylineAddFileLoaded === true) ) && idToolsCollageImageDuration.focus === false && idToolsCollageImageTransitionDuration.focus === false )
-            icon.source: "image://theme/icon-m-add?"
-            icon.width: Theme.iconSizeMedium * 1.35
-            icon.height: icon.width
-            onClicked: {
-                idToolsCollageImageDuration.focus = false
-                idToolsCollageImageTransitionDuration.focus = false
-                if ( collageToolbar.buttonSlideshow.selected ) { var targetModel = "slideshow" }
-                else if ( collageToolbar.buttonStoryline.selected ) { targetModel = "storyline" }
-                prepareCollageModel( targetModel )
-            }
-        }
-        Item {
-            width: parent.width / 6 * 2
-            height: standardDetailItemHeight
-        }
-    }
     Row {
         anchors.top:idToolsRowCollage3AddButton.bottom
         id: idToolsRowCollage4Slideshow
@@ -895,6 +850,41 @@ Item {
                 } // end dragable
             } // end listView
         } // end rectangle
+    }
+    Row {
+        id: idToolsRowCollage3AddButton
+        visible: (mainToolbar.buttonCollage.selected && (collageToolbar.buttonSlideshow.selected || collageToolbar.buttonStoryline.selected) )
+        x: spacerLandscapeLowerToolRow
+        topPadding: -Theme.paddingMedium
+        width: mainToolbar.width - 2 * spacerLandscapeLowerToolRow
+
+        Item {
+            width: mainToolbar.x
+            height: standardDetailItemHeight
+        }
+        Item {
+            width: parent.width / 6 * 2
+            height: standardDetailItemHeight
+        }
+        IconButton {
+            width: parent.width / 6 * 2
+            height: standardDetailItemHeight * 1.3
+            enabled: ( ( (collageToolbar.buttonSlideshow.selected && slideshowAddFileLoaded === true) || ( collageToolbar.buttonStoryline.selected && storylineAddFileLoaded === true) ) && idToolsCollageImageDuration.focus === false && idToolsCollageImageTransitionDuration.focus === false )
+            icon.source: "image://theme/icon-m-add?"
+            icon.width: Theme.iconSizeMedium * 1.35
+            icon.height: icon.width
+            onClicked: {
+                idToolsCollageImageDuration.focus = false
+                idToolsCollageImageTransitionDuration.focus = false
+                if ( collageToolbar.buttonSlideshow.selected ) { var targetModel = "slideshow" }
+                else if ( collageToolbar.buttonStoryline.selected ) { targetModel = "storyline" }
+                prepareCollageModel( targetModel )
+            }
+        }
+        Item {
+            width: parent.width / 6 * 2
+            height: standardDetailItemHeight
+        }
     }
 
 
